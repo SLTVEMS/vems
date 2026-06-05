@@ -1,0 +1,211 @@
+import styled from "styled-components";
+import {
+  Box,
+  Grid,
+  TextField,
+  Typography,
+} from "@mui/material";
+
+const SectionWrapper = styled(Box)`
+  margin-top: 24px;
+`;
+
+const SectionHeader = styled(Box)`
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+`;
+
+const GreenBar = styled(Box)`
+  width: 5px;
+  height: 30px;
+  background: #32d74b;
+  border-radius: 3px;
+`;
+
+const HeaderText = styled(Typography)`
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  color: #071b52 !important;
+  margin-left: 12px !important;
+  text-transform: uppercase;
+`;
+
+const Divider = styled(Box)`
+  flex: 1;
+  height: 1px;
+  background: #d9dde3;
+  margin-left: 16px;
+`;
+
+const Label = styled(Typography)`
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  margin-bottom: 6px !important;
+  color: #1f2937 !important;
+`;
+
+const Required = styled.span`
+  color: red;
+`;
+
+const inputStyle = {
+  "& .MuiOutlinedInput-root": {
+    height: "46px",
+    borderRadius: "10px",
+    backgroundColor: "#f5f6f8",
+
+    "& fieldset": {
+      borderColor: "#d1d5db",
+    },
+
+    "&:hover fieldset": {
+      borderColor: "#bfc5cc",
+    },
+
+    "&.Mui-focused fieldset": {
+      borderColor: "#071b52",
+      borderWidth: "2px",
+    },
+  },
+
+  "& .MuiInputBase-input": {
+    fontSize: "13px",
+    padding: "12px 14px",
+  },
+};
+
+function RequesterDetailsSection({ formik }) {
+  return (
+    <SectionWrapper>
+      <SectionHeader>
+        <GreenBar />
+        <HeaderText>Requester Details</HeaderText>
+        <Divider />
+      </SectionHeader>
+
+      <Grid container spacing={4}>
+        {/* Row 1 */}
+
+        <Grid item xs={12} md={3}>
+          <Label>
+            Request Date <Required>*</Required>
+          </Label>
+
+          <TextField
+            fullWidth
+            type="date"
+            name="requestDate"
+            value={formik.values.requestDate}
+            onChange={formik.handleChange}
+            InputLabelProps={{ shrink: true }}
+            sx={inputStyle}
+          />
+        </Grid>
+
+        <Grid item xs={12} md={3}>
+          <Label>
+            Requester Name <Required>*</Required>
+          </Label>
+
+          <TextField
+            fullWidth
+            placeholder="e.g. Kavindu Perera"
+            name="requesterName"
+            value={formik.values.requesterName}
+            onChange={formik.handleChange}
+            sx={inputStyle}
+          />
+        </Grid>
+
+        <Grid item xs={12} md={3}>
+          <Label>
+            Requester Email <Required>*</Required>
+          </Label>
+
+          <TextField
+            fullWidth
+            placeholder="name@sltmobitel.lk"
+            name="requesterEmail"
+            value={formik.values.requesterEmail}
+            onChange={formik.handleChange}
+            sx={inputStyle}
+          />
+        </Grid>
+
+        <Grid item xs={12} md={3}>
+          <Label>
+            Requester Service No <Required>*</Required>
+          </Label>
+
+          <TextField
+            fullWidth
+            placeholder="SVC0000"
+            name="requesterServiceNo"
+            value={formik.values.requesterServiceNo}
+            onChange={formik.handleChange}
+            sx={inputStyle}
+          />
+        </Grid>
+
+        {/* Row 2 */}
+
+        <Grid item xs={12} md={3}>
+          <Label>Requester Designation</Label>
+
+          <TextField
+            fullWidth
+            placeholder="e.g. Senior Engineer"
+            name="requesterDesignation"
+            value={formik.values.requesterDesignation}
+            onChange={formik.handleChange}
+            sx={inputStyle}
+          />
+        </Grid>
+
+        <Grid item xs={12} md={3}>
+          <Label>
+            Requester Contact No <Required>*</Required>
+          </Label>
+
+          <TextField
+            fullWidth
+            placeholder="+94 7X XXX XXXX"
+            name="requesterContactNo"
+            value={formik.values.requesterContactNo}
+            onChange={formik.handleChange}
+            sx={inputStyle}
+          />
+        </Grid>
+
+        <Grid item xs={12} md={3}>
+          <Label>Cost Center Code</Label>
+
+          <TextField
+            fullWidth
+            placeholder="CC-XXXX"
+            name="costCenterCode"
+            value={formik.values.costCenterCode}
+            onChange={formik.handleChange}
+            sx={inputStyle}
+          />
+        </Grid>
+
+        <Grid item xs={12} md={3}>
+          <Label>Cost Centre Name</Label>
+
+          <TextField
+            fullWidth
+            placeholder="e.g. IT Operations"
+            name="costCenterName"
+            value={formik.values.costCenterName}
+            onChange={formik.handleChange}
+            sx={inputStyle}
+          />
+        </Grid>
+      </Grid>
+    </SectionWrapper>
+  );
+}
+
+export default RequesterDetailsSection;
