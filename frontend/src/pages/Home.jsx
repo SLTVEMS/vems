@@ -24,7 +24,7 @@ const IconCheck = () => (
 );
 
 const IconMS = () => (
-  <svg width="20" height="20" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg">
+  <svg width="22" height="22" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg">
     <rect x="1"  y="1"  width="9" height="9" fill="#f25022" />
     <rect x="11" y="1"  width="9" height="9" fill="#7fba00" />
     <rect x="1"  y="11" width="9" height="9" fill="#00a4ef" />
@@ -70,12 +70,13 @@ const STYLES = `
     height: 320px;
   }
 
+  /* ── Hero left ── */
   .hp-hero-left {
     padding: 48px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 16px;
+    gap: 20px;
   }
 
   .hp-title-top {
@@ -98,49 +99,46 @@ const STYLES = `
 
   .hp-subtitle {
     font-size: 0.9rem;
-    color: #ffffff;
+    color: #CBD5E1;
     line-height: 1.65;
     max-width: 340px;
     text-align: left;
   }
 
-  /* ── CTA buttons ── */
-  .hp-btn-row {
-    display: flex;
+  /* ── Microsoft Sign-in button — moved to left panel ── */
+  .hp-ms-btn {
+    display: inline-flex;
+    align-items: center;
     gap: 12px;
-    flex-wrap: wrap;
+    background: #ffffff;
+    color: #1a1a2e;
+    border: none;
+    border-radius: 10px;
+    padding: 13px 28px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 700;
+    cursor: pointer;
+    width: fit-content;
+    box-shadow:
+      0 6px 28px rgba(0, 0, 0, 0.35),
+      0 2px 8px rgba(0, 0, 0, 0.20);
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    white-space: nowrap;
+    letter-spacing: 0.02em;
     margin-top: 4px;
   }
-
-  .hp-btn-primary {
-    background: transparent;
-    border: 2px solid #ffffff;
-    color: #ffffff;
-    font-family: 'Inter', sans-serif;
-    font-size: 0.85rem;
-    font-weight: 600;
-    padding: 9px 22px;
-    border-radius: 999px;
-    cursor: pointer;
-    transition: background 0.2s, color 0.2s;
-    white-space: nowrap;
+  .hp-ms-btn:hover {
+    background: #f0f4ff;
+    box-shadow:
+      0 10px 36px rgba(0, 0, 0, 0.45),
+      0 4px 12px rgba(0, 0, 0, 0.25);
+    transform: translateY(-2px);
   }
-  .hp-btn-primary:hover { background: #ffffff; color: #0F2042; }
-
-  .hp-btn-outline {
-    background: transparent;
-    border: 2px solid #ffffff55;
-    color: #ffffff;
-    font-family: 'Inter', sans-serif;
-    font-size: 0.85rem;
-    font-weight: 500;
-    padding: 9px 22px;
-    border-radius: 999px;
-    cursor: pointer;
-    transition: border-color 0.2s, background 0.2s;
-    white-space: nowrap;
+  .hp-ms-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
   }
-  .hp-btn-outline:hover { border-color: #ffffff; background: #ffffff18; }
 
   /* ── Hero right (image panel) ── */
   .hp-hero-right {
@@ -158,46 +156,6 @@ const STYLES = `
     position: absolute;
     top: 0;
     left: 0;
-  }
-
-  /* ── Microsoft Sign-in button ── */
-  /* Position is unchanged — only visual style upgraded */
-  .hp-ms-btn {
-    position: absolute;
-    bottom: 22px;
-    right: 22px;
-    z-index: 2;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: #ffffff;
-    color: #1a1a2e;
-    border: none;
-    border-radius: 10px;
-    padding: 13px 26px;
-    font-family: 'Inter', sans-serif;
-    font-size: 0.92rem;
-    font-weight: 700;
-    cursor: pointer;
-    box-shadow:
-      0 6px 28px rgba(0, 0, 0, 0.35),
-      0 2px 8px rgba(0, 0, 0, 0.20);
-    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
-    white-space: nowrap;
-    letter-spacing: 0.02em;
-    
-  }
-  .hp-ms-btn:hover {
-    background: #f0f4ff;
-    box-shadow:
-      0 10px 36px rgba(0, 0, 0, 0.45),
-      0 4px 12px rgba(0, 0, 0, 0.25);
-    transform: translateY(-2px);
-    outline-color: rgba(255, 255, 255, 0.9);
-  }
-  .hp-ms-btn:active {
-    transform: translateY(0);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
   }
 
   /* ── Feature strip ── */
@@ -278,9 +236,9 @@ const STYLES = `
     .hp-root { padding: 16px; }
     .hp-hero { grid-template-columns: 1fr; height: auto; }
     .hp-hero-right { height: 200px; }
-    .hp-hero-left { padding: 28px 22px; }
+    .hp-hero-left { padding: 28px 22px; gap: 16px; }
     .hp-title-top, .hp-title-bottom { font-size: 1.5rem; }
-    .hp-ms-btn { bottom: 12px; right: 12px; padding: 10px 18px; font-size: 0.82rem; }
+    .hp-ms-btn { padding: 11px 22px; font-size: 0.85rem; }
     .hp-features { flex-direction: column; padding: 20px 18px; gap: 16px; }
     .hp-feature-divider { display: none; }
   }
@@ -297,8 +255,6 @@ export default function HomePage() {
     }
   });
 
-  const handleRequestPass    = () => console.log("Navigate → /request-pass");
-  const handleTrackRequest   = () => console.log("Navigate → /track-request");
   const handleMicrosoftLogin = () => console.log("Trigger Microsoft SSO flow");
 
   return (
@@ -307,7 +263,7 @@ export default function HomePage() {
       {/* ── Hero Card ── */}
       <section className="hp-hero" aria-label="Visitor Pass Hero">
 
-        {/* Left — copy & CTA */}
+        {/* Left — title, subtitle, MS login button */}
         <div className="hp-hero-left">
           <div>
             <p className="hp-title-top">Request a</p>
@@ -316,31 +272,8 @@ export default function HomePage() {
           <p className="hp-subtitle">
             Easy and secure visitor registration for employees and visitors.
           </p>
-          <div className="hp-btn-row">
-            <button className="hp-btn-primary" onClick={handleRequestPass}>
-              Request Pass
-            </button>
-            <button className="hp-btn-outline" onClick={handleTrackRequest}>
-              Track Request
-            </button>
-          </div>
-        </div>
 
-        {/* Right — hero image + MS sign-in */}
-        <div className="hp-hero-right">
-          {/*
-           * ── HERO IMAGE ────────────────────────────────────────
-           * Replace HERO_IMAGE_SRC with your lobby photo:
-           *   import heroImage from "../assets/slt-lobby.jpg";
-           *   const HERO_IMAGE_SRC = heroImage;
-           */}
-          <img
-            src={HERO_IMAGE_SRC}
-            alt="SLTMobitel office lobby"
-            className="hp-hero-img"
-          />
-
-          {/* ── MICROSOFT SIGN-IN — position unchanged, style upgraded ── */}
+          {/* ── MICROSOFT SIGN-IN — now in the left panel ── */}
           <button
             className="hp-ms-btn"
             onClick={handleMicrosoftLogin}
@@ -349,6 +282,21 @@ export default function HomePage() {
             <IconMS />
             Sign in with Microsoft
           </button>
+        </div>
+
+        {/* Right — hero image only */}
+        <div className="hp-hero-right">
+          {/*
+           * ── HERO IMAGE ────────────────────────────────────────
+           * Replace with your lobby photo when ready:
+           *   import heroImage from "../assets/slt-lobby.jpg";
+           *   const HERO_IMAGE_SRC = heroImage;
+           */}
+          <img
+            src={HERO_IMAGE_SRC}
+            alt="SLTMobitel office lobby"
+            className="hp-hero-img"
+          />
         </div>
       </section>
 
