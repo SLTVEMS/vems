@@ -40,9 +40,9 @@ const DatePill = styled.div`
 `;
 
 const Title = styled(Typography)`
-  font-size: 31px;
-  font-weight: 800;
-  line-height: 1.1;
+  font-size: 42px;
+  font-weight: 900;
+  line-height: 1.05;
   color: #ffffff;
 `;
 
