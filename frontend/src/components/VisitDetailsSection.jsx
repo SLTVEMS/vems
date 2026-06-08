@@ -6,6 +6,12 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CancelIcon from "@mui/icons-material/Cancel";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { TimePicker } from "@mui/x-date-pickers/TimePicker";
+import dayjs from "dayjs";
 
 const SectionWrapper = styled(Box)`
   margin-top: 30px;
@@ -37,6 +43,12 @@ const Divider = styled(Box)`
   height: 1px;
   background: #d9dde3;
   margin-left: 16px;
+`;
+
+const StatusIconWrapper = styled(Box)`
+  margin-left: 12px;
+  display: flex;
+  align-items: center;
 `;
 
 const Label = styled(Typography)`
@@ -88,9 +100,15 @@ const inputStyle = {
     color: "#64748b",
   },
 
+  "& input[type='time']": {
+  cursor: "pointer",
+  fontWeight: 500,
+  },
+
   "& input[type='time']::-webkit-calendar-picker-indicator": {
     cursor: "pointer",
-    opacity: 1,
+    opacity: 0.8,
+    transform: "scale(1.2)",
   },
 
   "& input[type='date']::-webkit-calendar-picker-indicator": {
@@ -110,13 +128,44 @@ const menuProps = {
 };
 
 function VisitDetailsSection({ formik }) {
+  const visitRequiredFields = [
+  formik.values.visitorName,
+  formik.values.visitorEmail,
+  formik.values.entryStartDate,
+  formik.values.entryEndDate,
+  formik.values.nightWorkRequired,
+  formik.values.reason,
+];
+
+const visitCompletedCount =
+  visitRequiredFields.filter(Boolean).length;
+
+const visitTotalCount = visitRequiredFields.length;
+
   return (
     <SectionWrapper>
-      <SectionHeader>
-        <GreenBar />
-        <HeaderText>Visit Details</HeaderText>
-        <Divider />
-      </SectionHeader>
+     <SectionHeader>
+      <GreenBar />
+
+      <HeaderText>Visit Details</HeaderText>
+
+      <Divider />
+
+      <StatusIconWrapper>
+        <Typography
+          sx={{
+            fontWeight: 700,
+            fontSize: "14px",
+            color:
+              visitCompletedCount === visitTotalCount
+                ? "#22c55e"
+                : "#f59e0b",
+          }}
+        >
+          {visitCompletedCount}/{visitTotalCount}
+        </Typography>
+      </StatusIconWrapper>
+    </SectionHeader>
 
           
         <Grid container spacing={4}>
@@ -132,6 +181,10 @@ function VisitDetailsSection({ formik }) {
             name="visitorName"
             value={formik.values.visitorName}
             onChange={formik.handleChange}
+            error={
+              formik.submitCount > 0 &&
+              Boolean(formik.errors.visitorName)
+            }
             sx={inputStyle}
           />
         </Grid>
@@ -147,6 +200,10 @@ function VisitDetailsSection({ formik }) {
             name="visitorEmail"
             value={formik.values.visitorEmail}
             onChange={formik.handleChange}
+            error={
+              formik.submitCount > 0 &&
+              Boolean(formik.errors.visitorEmail)
+            }
             sx={inputStyle}
           />
         </Grid>
@@ -161,6 +218,10 @@ function VisitDetailsSection({ formik }) {
             name="entryStartDate"
             value={formik.values.entryStartDate}
             onChange={formik.handleChange}
+            error={
+              formik.submitCount > 0 &&
+              Boolean(formik.errors.entryStartDate)
+            }
             sx={inputStyle}
           />
         </Grid>
@@ -176,10 +237,15 @@ function VisitDetailsSection({ formik }) {
             name="entryEndDate"
             value={formik.values.entryEndDate}
             onChange={formik.handleChange}
+            error={
+              formik.submitCount > 0 &&
+              Boolean(formik.errors.entryEndDate)
+            }
             sx={inputStyle}
           />
         </Grid>
 
+        {formik.values.visitorType !== "Emp. Child" && (
         <Grid item xs={12} md={3}>
           <Label>
             Night Work Required <Required>*</Required>
@@ -191,6 +257,10 @@ function VisitDetailsSection({ formik }) {
             name="nightWorkRequired"
             value={formik.values.nightWorkRequired}
             onChange={formik.handleChange}
+            error={
+              formik.submitCount > 0 &&
+              Boolean(formik.errors.nightWorkRequired)
+            }
             sx={inputStyle}
             SelectProps={{
               MenuProps: menuProps,
@@ -201,6 +271,7 @@ function VisitDetailsSection({ formik }) {
             <MenuItem value="No">No</MenuItem>
           </TextField>
         </Grid>
+      )}
 
         <Grid item xs={12} md={3}>
           <Label>Visiting Building / Pass Type</Label>
@@ -215,41 +286,43 @@ function VisitDetailsSection({ formik }) {
           />
         </Grid>
 
-        {/* Row 2 - Night Work */}
-
-        {formik.values.nightWorkRequired === "Yes" && (
+        {formik.values.visitorType !== "Emp. Child" &&
+          formik.values.nightWorkRequired === "Yes" && (
           <>
             <Grid item xs={12} md={3}>
               <Label>Night Work Start Time</Label>
 
-              <TextField
-                fullWidth
-                type="time"
-                name="nightWorkStartTime"
-                value={formik.values.nightWorkStartTime}
-                onChange={formik.handleChange}
-                sx={inputStyle}
-              />
+                <TextField
+                  fullWidth
+                  type="time"
+                  name="nightWorkStartTime"
+                  value={formik.values.nightWorkStartTime}
+                  onChange={formik.handleChange}
+                  inputProps={{
+                    step: 300,
+                  }}
+                  sx={inputStyle}
+                />
             </Grid>
 
             <Grid item xs={12} md={3}>
               <Label>Night Work End Time</Label>
 
-              <TextField
-                fullWidth
-                type="time"
-                name="nightWorkEndTime"
-                value={formik.values.nightWorkEndTime}
-                onChange={formik.handleChange}
-                sx={inputStyle}
-              />
+                <TextField
+                  fullWidth
+                  type="time"
+                  name="nightWorkEndTime"
+                  value={formik.values.nightWorkEndTime}
+                  onChange={formik.handleChange}
+                  inputProps={{
+                    step: 300,
+                  }}
+                  sx={inputStyle}
+                />
             </Grid>
           </>
         )}
 
-        {/* Row 3 */}
-
-        {/* Row 3 */}
 
         <Grid item xs={12} md={3}>
           <Label>Visiting Section</Label>
@@ -309,14 +382,15 @@ function VisitDetailsSection({ formik }) {
               name="vehicleNumber"
               value={formik.values.vehicleNumber}
               onChange={formik.handleChange}
+              error={
+                formik.submitCount > 0 &&
+                Boolean(formik.errors.vehicleNumber)
+              }
               sx={inputStyle}
             />
           </Grid>
         )}
 
-        {/* Row 4 */}
-
-                {/* Row 4 */}
 
         <Grid item xs={12} md={3}>
           <Label>Telephone Number</Label>
@@ -344,7 +418,6 @@ function VisitDetailsSection({ formik }) {
           />
         </Grid>
 
-        {/* Row 5 - Full Width Reason */}
 
         <Box
           sx={{
@@ -365,6 +438,10 @@ function VisitDetailsSection({ formik }) {
             name="reason"
             value={formik.values.reason}
             onChange={formik.handleChange}
+            error={
+              formik.submitCount > 0 &&
+              Boolean(formik.errors.reason)
+            }
             sx={{
               width: "100%",
 
@@ -374,6 +451,11 @@ function VisitDetailsSection({ formik }) {
 
                 "& fieldset": {
                   borderColor: "#d1d5db",
+                },
+
+                "&.Mui-error fieldset": {
+                  borderColor: "#ef4444 !important",
+                  borderWidth: "2px",
                 },
 
                 "&:hover fieldset": {

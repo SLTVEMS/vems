@@ -12,20 +12,55 @@ import VisitorTypeSection from "../components/VisitorTypeSection";
 import RequesterDetailsSection from "../components/RequesterDetailsSection";
 import VisitDetailsSection from "../components/VisitDetailsSection";
 import RecommendingOfficerSection from "../components/RecommendingOfficerSection";
-import DutyOfficerSection from "../components/DutyOfficerSection";
 import SupportingDocumentsSection from "../components/SupportingDocumentsSection";
 
 const validationSchema = Yup.object({
-  requesterName: Yup.string().required(
-    "Requester Name is required"
-  ),
+  requestDate: Yup.string().required(),
+
+  requesterName: Yup.string().required(),
 
   requesterEmail: Yup.string()
     .email("Invalid Email")
-    .required("Requester Email is required"),
+    .required(),
 
-  requesterServiceNo: Yup.string().required(
-    "Service Number is required"
+  requesterServiceNo: Yup.string().required(),
+
+  requesterDesignation: Yup.string().required(),
+
+  requesterContactNo: Yup.string().required(),
+
+  costCenterCode: Yup.string().required(),
+
+  costCenterName: Yup.string().required(),
+
+  visitorName: Yup.string().required(),
+
+  visitorEmail: Yup.string()
+    .email("Invalid Email")
+    .required(),
+
+  entryStartDate: Yup.string().required(),
+
+  entryEndDate: Yup.string().required(),
+
+  reason: Yup.string().required(),
+
+  nightWorkRequired: Yup.string().when(
+    "visitorType",
+    {
+      is: (val) => val !== "Emp. Child",
+      then: (schema) => schema.required(),
+      otherwise: (schema) => schema.notRequired(),
+    }
+  ),
+
+  vehicleNumber: Yup.string().when(
+    "vehicleParking",
+    {
+      is: "Yes",
+      then: (schema) => schema.required(),
+      otherwise: (schema) => schema.notRequired(),
+    }
   ),
 });
 
@@ -63,11 +98,6 @@ const initialValues = {
   recommendationStatus: "",
   recommendedOn: "",
   recommendationRemarks: "",
-
-  dutyOfficerSvcNo: "",
-  dutyApprovalStatus: "",
-  dutyApprovedOn: "",
-  dutyOfficerRemarks: "",
 
   attachments: [],
 };
@@ -157,9 +187,11 @@ function CreateRequestForm() {
                   mx: "auto",
                 }}
               >
-                <VisitorTypeSection
-                  formik={formik}
-                />
+               <Box sx={{ mb: 10 }}>
+                  <VisitorTypeSection
+                    formik={formik}
+                  />
+                </Box>
 
                 <RequesterDetailsSection
                   formik={formik}
@@ -170,10 +202,6 @@ function CreateRequestForm() {
                 />
 
                 <RecommendingOfficerSection
-                  formik={formik}
-                />
-
-                <DutyOfficerSection
                   formik={formik}
                 />
 

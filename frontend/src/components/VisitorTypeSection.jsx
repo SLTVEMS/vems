@@ -1,31 +1,37 @@
 import styled from "styled-components";
 import { Box, Typography } from "@mui/material";
 
+import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
+import EngineeringOutlinedIcon from "@mui/icons-material/EngineeringOutlined";
+import RestaurantOutlinedIcon from "@mui/icons-material/RestaurantOutlined";
+import SchoolOutlinedIcon from "@mui/icons-material/SchoolOutlined";
+import ChildCareOutlinedIcon from "@mui/icons-material/ChildCareOutlined";
+
 const visitorTypes = [
   {
     label: "Guest",
     color: "#2F80ED",
-    icon: "👤",
+    icon: <PersonOutlinedIcon sx={{ fontSize: 32 }} />,
   },
   {
     label: "Contractor",
     color: "#FF7F22",
-    icon: "👷",
+    icon: <EngineeringOutlinedIcon sx={{ fontSize: 32 }} />,
   },
   {
     label: "Canteen",
     color: "#30C28E",
-    icon: "🍽️",
+    icon: <RestaurantOutlinedIcon sx={{ fontSize: 32 }} />,
   },
   {
     label: "Trainee",
     color: "#AF52DE",
-    icon: "🎓",
+    icon: <SchoolOutlinedIcon sx={{ fontSize: 32 }} />,
   },
   {
     label: "Emp. Child",
     color: "#2DB7D9",
-    icon: "👶",
+    icon: <ChildCareOutlinedIcon sx={{ fontSize: 32 }} />,
   },
 ];
 
@@ -45,8 +51,8 @@ const CardContainer = styled.div`
 `;
 
 const TypeCard = styled.div`
-  height: 120px;
-  border-radius: 24px;
+  height: 95px;
+  border-radius: 14px;
 
   background: ${(props) => props.bg};
 
@@ -62,16 +68,17 @@ const TypeCard = styled.div`
 
   border: ${(props) =>
     props.active
-      ? "3px solid rgba(255,255,255,0.8)"
+      ? "3px solid rgba(255,255,255,0.95)"
       : "none"};
 
-  box-shadow:
-    0 10px 20px rgba(0,0,0,0.12);
+  box-shadow: ${(props) =>
+    props.active
+      ? "0px 10px 24px rgba(0,0,0,0.18)"
+      : "0px 6px 14px rgba(0,0,0,0.12)"};
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow:
-      0 18px 30px rgba(0,0,0,0.18);
+    transform: translateY(-3px);
+    box-shadow: 0px 14px 24px rgba(0,0,0,0.18);
   }
 `;
 
@@ -82,6 +89,8 @@ function VisitorTypeSection({ formik }) {
         sx={{
           fontWeight: 700,
           fontSize: "16px",
+          color: "#071b52",
+          textAlign: "center",
         }}
       >
         Visitor Type
@@ -92,6 +101,7 @@ function VisitorTypeSection({ formik }) {
           fontSize: "13px",
           color: "#6B7280",
           mt: 0.5,
+          textAlign: "center",
         }}
       >
         Select the category of visitor.
@@ -103,8 +113,7 @@ function VisitorTypeSection({ formik }) {
             key={type.label}
             bg={type.color}
             active={
-              formik.values.visitorType ===
-              type.label
+              formik.values.visitorType === type.label
             }
             onClick={() =>
               formik.setFieldValue(
@@ -113,19 +122,23 @@ function VisitorTypeSection({ formik }) {
               )
             }
           >
-            <Typography
+            <Box
               sx={{
-                fontSize: "34px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#fff",
               }}
             >
               {type.icon}
-            </Typography>
+            </Box>
 
             <Typography
               sx={{
                 mt: 1,
                 fontWeight: 600,
-                fontSize: "14px",
+                fontSize: "13px",
+                color: "#fff",
               }}
             >
               {type.label}

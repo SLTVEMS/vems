@@ -38,6 +38,12 @@ const Divider = styled(Box)`
   margin-left: 16px;
 `;
 
+const StatusIconWrapper = styled(Box)`
+  margin-left: 12px;
+  display: flex;
+  align-items: center;
+`;
+
 const Label = styled(Typography)`
   font-size: 13px !important;
   font-weight: 600 !important;
@@ -59,6 +65,11 @@ const inputStyle = {
       borderColor: "#d1d5db",
     },
 
+    "&.Mui-error fieldset": {
+      borderColor: "#ef4444 !important",
+      borderWidth: "2px",
+    },
+
     "&:hover fieldset": {
       borderColor: "#bfc5cc",
     },
@@ -76,12 +87,44 @@ const inputStyle = {
 };
 
 function RequesterDetailsSection({ formik }) {
+  const requesterRequiredFields = [
+  formik.values.requestDate,
+  formik.values.requesterName,
+  formik.values.requesterEmail,
+  formik.values.requesterServiceNo,
+  formik.values.requesterDesignation,
+  formik.values.requesterContactNo,
+  formik.values.costCenterCode,
+  formik.values.costCenterName,
+];
+const requesterCompletedCount =
+  requesterRequiredFields.filter(Boolean).length;
+
+const requesterTotalCount = requesterRequiredFields.length;
+
   return (
     <SectionWrapper>
       <SectionHeader>
         <GreenBar />
+
         <HeaderText>Requester Details</HeaderText>
+
         <Divider />
+
+        <StatusIconWrapper>
+          <Typography
+            sx={{
+              fontWeight: 700,
+              fontSize: "14px",
+              color:
+                requesterCompletedCount === requesterTotalCount
+                  ? "#22c55e"
+                  : "#f59e0b",
+            }}
+          >
+            {requesterCompletedCount}/{requesterTotalCount}
+          </Typography>
+        </StatusIconWrapper>
       </SectionHeader>
 
       <Grid container spacing={4}>
@@ -98,6 +141,10 @@ function RequesterDetailsSection({ formik }) {
             name="requestDate"
             value={formik.values.requestDate}
             onChange={formik.handleChange}
+            error={
+              formik.submitCount > 0 &&
+              !formik.values.requestDate
+            }
             InputLabelProps={{ shrink: true }}
             sx={inputStyle}
           />
@@ -114,6 +161,10 @@ function RequesterDetailsSection({ formik }) {
             name="requesterName"
             value={formik.values.requesterName}
             onChange={formik.handleChange}
+            error={
+              formik.submitCount > 0 &&
+              !formik.values.requesterName
+            }
             sx={inputStyle}
           />
         </Grid>
@@ -129,6 +180,10 @@ function RequesterDetailsSection({ formik }) {
             name="requesterEmail"
             value={formik.values.requesterEmail}
             onChange={formik.handleChange}
+            error={
+              formik.submitCount > 0 &&
+              Boolean(formik.errors.requesterEmail)
+            }
             sx={inputStyle}
           />
         </Grid>
@@ -144,6 +199,10 @@ function RequesterDetailsSection({ formik }) {
             name="requesterServiceNo"
             value={formik.values.requesterServiceNo}
             onChange={formik.handleChange}
+            error={
+              formik.submitCount > 0 &&
+              !formik.values.requesterServiceNo
+            }
             sx={inputStyle}
           />
         </Grid>
@@ -159,6 +218,10 @@ function RequesterDetailsSection({ formik }) {
             name="requesterDesignation"
             value={formik.values.requesterDesignation}
             onChange={formik.handleChange}
+            error={
+              formik.submitCount > 0 &&
+              !formik.values.requesterDesignation
+            }
             sx={inputStyle}
           />
         </Grid>
@@ -174,6 +237,10 @@ function RequesterDetailsSection({ formik }) {
             name="requesterContactNo"
             value={formik.values.requesterContactNo}
             onChange={formik.handleChange}
+            error={
+              formik.submitCount > 0 &&
+              !formik.values.requesterContactNo
+            }
             sx={inputStyle}
           />
         </Grid>
@@ -181,14 +248,18 @@ function RequesterDetailsSection({ formik }) {
         <Grid item xs={12} md={3}>
           <Label>Cost Center Code</Label>
 
-          <TextField
-            fullWidth
-            placeholder="CC-XXXX"
-            name="costCenterCode"
-            value={formik.values.costCenterCode}
-            onChange={formik.handleChange}
-            sx={inputStyle}
-          />
+         <TextField
+          fullWidth
+          placeholder="CC-XXXX"
+          name="costCenterCode"
+          value={formik.values.costCenterCode}
+          onChange={formik.handleChange}
+          error={
+            formik.submitCount > 0 &&
+            !formik.values.costCenterCode
+          }
+          sx={inputStyle}
+        />
         </Grid>
 
         <Grid item xs={12} md={3}>
@@ -200,6 +271,10 @@ function RequesterDetailsSection({ formik }) {
             name="costCenterName"
             value={formik.values.costCenterName}
             onChange={formik.handleChange}
+            error={
+              formik.submitCount > 0 &&
+              !formik.values.costCenterName
+            }
             sx={inputStyle}
           />
         </Grid>
