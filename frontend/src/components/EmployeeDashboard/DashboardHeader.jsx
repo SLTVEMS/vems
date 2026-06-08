@@ -40,17 +40,19 @@ const DatePill = styled.div`
 `;
 
 const Title = styled(Typography)`
-  font-size: 42px;
+  font-size: 46px;
   font-weight: 900;
   line-height: 1.05;
+  letter-spacing: -0.02em;
   color: #ffffff;
 `;
 
 const Description = styled(Typography)`
-  font-size: 13px;
-  font-weight: 400;
+  font-size: 15px;
+  font-weight: 500;
   line-height: 1.6;
-  color: rgba(255, 255, 255, 0.76);
+  color: rgba(255, 255, 255, 0.82);
+  max-width: 740px;
 `;
 
 const Highlight = styled.span`
@@ -123,3 +125,5 @@ function DashboardHeader({ data }) {
 }
 
 export default DashboardHeader;
+
+

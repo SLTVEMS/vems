@@ -64,6 +64,14 @@ const Badge = styled.span`
   background: ${({ $theme }) => $theme.light};
 `;
 
+const StatValue = styled(Typography)`
+  font-size: 20px !important;
+  font-weight: 900 !important;
+  color: ${COLORS.textDark} !important;
+  line-height: 1.05 !important;
+  margin-top: 12px !important;
+`;
+
 const CardButton = styled(Button)`
   && {
     position: absolute;
@@ -113,15 +121,7 @@ function StatsCards({ cards }) {
                   {card.title}
                 </Typography>
 
-                <Typography
-                  fontSize="27px"
-                  fontWeight={900}
-                  color={COLORS.textDark}
-                  lineHeight={1.05}
-                  mt="12px"
-                >
-                  {card.value}
-                </Typography>
+                <StatValue>{card.value}</StatValue>
 
                 <Badge $theme={theme}>{card.badge}</Badge>
               </div>
