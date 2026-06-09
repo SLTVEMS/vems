@@ -73,7 +73,6 @@ function App() {
       <Sidebar
         activeItem={activeItem}
         isOpen={isSidebarOpen}
-        user={user}
         onItemChange={setActiveItem}
         onLogout={() => dispatch(logoutRequested())}
         onToggle={() => setIsSidebarOpen((open) => !open)}

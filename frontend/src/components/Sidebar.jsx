@@ -6,14 +6,14 @@ const navSections = [
     items: [
       { label: "Dashboard", icon: "grid", badge: "Live" },
       { label: "Create Request", icon: "filePlus" },
-      { label: "My Requests", icon: "document", count: 12 },
+      { label: "My Requests", icon: "document" },
     ],
   },
   {
     title: "Approvals",
     items: [
-      { label: "Approval Requests", icon: "check", count: 4 },
-      { label: "Pending Requests", icon: "clock", count: 8 },
+      { label: "Approval Requests", icon: "check" },
+      { label: "Pending Requests", icon: "clock" },
       { label: "Rejected Requests", icon: "xCircle" },
     ],
   },
@@ -133,16 +133,8 @@ function Icon({ name }) {
   );
 }
 
-function Sidebar({ activeItem, isOpen, user, onItemChange, onLogout, onToggle }) {
+function Sidebar({ activeItem, isOpen, onItemChange, onLogout, onToggle }) {
   const navBodyRef = useRef(null);
-  const profileName = user?.name ?? "C.M.Kulathunga";
-  const initials = profileName
-    .split(/[.\s]+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0])
-    .join("")
-    .toUpperCase();
 
   useEffect(() => {
     if (!isOpen) {
@@ -243,14 +235,6 @@ function Sidebar({ activeItem, isOpen, user, onItemChange, onLogout, onToggle })
         </div>
 
         <div className="sidebar-footer">
-          <div className="user-card">
-            <div className="avatar">{initials || "CM"}</div>
-            <div>
-              <p>{profileName}</p>
-              <span>{user?.department ?? "Engineer, IT Division"}</span>
-            </div>
-          </div>
-
           <button className="logout" onClick={onLogout} type="button">
             <Icon name="logout" />
             <span>Logout</span>

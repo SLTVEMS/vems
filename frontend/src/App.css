@@ -167,8 +167,6 @@
 .branch-card p,
 .branch-card span,
 .section-title,
-.user-card p,
-.user-card span,
 .page-title p,
 .page-title h2,
 .metric-card p,
@@ -189,7 +187,6 @@
 }
 
 .branch-card,
-.user-card,
 .sidebar-stats {
   display: flex;
   align-items: center;
@@ -246,15 +243,13 @@
   box-shadow: 0 0 0 5px rgba(96, 214, 105, 0.14);
 }
 
-.branch-card p,
-.user-card p {
+.branch-card p {
   color: var(--text-strong);
   font-size: 0.86rem;
   font-weight: 750;
 }
 
-.branch-card span,
-.user-card span {
+.branch-card span {
   color: var(--text-muted);
   font-size: 0.73rem;
 }
@@ -469,19 +464,6 @@
 .scroll-button:hover {
   background: linear-gradient(135deg, var(--accent-green), var(--accent-teal));
   color: #042756;
-}
-
-.avatar {
-  display: grid;
-  width: 36px;
-  height: 36px;
-  flex: 0 0 36px;
-  place-items: center;
-  border-radius: 8px;
-  background: rgba(96, 214, 105, 0.16);
-  color: #b8ffd2;
-  font-size: 0.78rem;
-  font-weight: 850;
 }
 
 .main-content {
