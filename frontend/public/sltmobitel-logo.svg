@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 250" role="img" aria-labelledby="title desc">
+  <title id="title">SLT Mobitel</title>
+  <desc id="desc">SLT Mobitel logo with blue and green connection mark</desc>
+  <g fill="none" stroke-linecap="round" stroke-width="17">
+    <path d="M 88 32 L 46 110" stroke="#13b6ea" />
+    <path d="M 92 100 L 50 178" stroke="#0d6fbd" />
+    <path d="M 162 100 L 120 178" stroke="#55cc4f" />
+  </g>
+  <circle cx="116" cy="116" r="10" fill="#55cc4f" />
+
+  <text x="210" y="164" fill="#0d6fbd" font-family="Arial Black, Arial, Helvetica, sans-serif" font-size="92" font-weight="900" letter-spacing="-2">SLT</text>
+  <text x="382" y="164" fill="#55cc4f" font-family="Arial Black, Arial, Helvetica, sans-serif" font-size="92" font-weight="900" letter-spacing="-2">MOBITEL</text>
+  <text x="332" y="211" fill="#0d6fbd" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="700" letter-spacing="10">The Connection</text>
+</svg>
