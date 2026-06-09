@@ -12,6 +12,8 @@ import {
 } from "@mui/material";
 import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
 import SearchIcon from "@mui/icons-material/Search";
+import CloseIcon from "@mui/icons-material/Close";
+import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import styled from "styled-components";
 
@@ -107,10 +109,16 @@ const LogoImage = styled.img`
   }
 
   @media (max-width: 620px) {
-    width: 48px;
-    max-height: 40px;
-    object-fit: contain;
-    object-position: left center;
+    display: none;
+  }
+`;
+
+const CompactLogoMark = styled.div`
+  display: none;
+
+  @media (max-width: 620px) {
+    display: block;
+    transform: scale(0.82);
   }
 `;
 
@@ -330,6 +338,33 @@ const DateCard = styled.div`
   }
 `;
 
+const StatusPill = styled.div`
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 12px;
+  border-radius: 8px;
+  background: rgba(95, 211, 111, 0.13);
+  color: #dfffe3;
+  border: 1px solid rgba(95, 211, 111, 0.26);
+  font-size: 12px;
+  line-height: 1;
+  font-weight: 800;
+  white-space: nowrap;
+
+  .MuiSvgIcon-root {
+    width: 9px;
+    height: 9px;
+    color: #5fd36f;
+    filter: drop-shadow(0 0 7px rgba(95, 211, 111, 0.56));
+  }
+
+  @media (max-width: 1180px) {
+    display: none;
+  }
+`;
+
 const SearchWrap = styled.div`
   width: 300px;
   max-width: 30vw;
@@ -387,6 +422,41 @@ const SearchWrap = styled.div`
   }
 `;
 
+const MobileSearchPanel = styled.div`
+  display: none;
+
+  @media (max-width: 760px) {
+    position: absolute;
+    z-index: 2;
+    left: 12px;
+    right: 12px;
+    top: calc(100% + 12px);
+    display: ${({ $open }) => ($open ? "block" : "none")};
+    padding: 10px;
+    border-radius: 8px;
+    background: #ffffff;
+    border: 1px solid rgba(13, 27, 47, 0.1);
+    box-shadow: 0 18px 40px rgba(0, 8, 31, 0.28);
+
+    .MuiInputBase-root {
+      height: 42px;
+      border-radius: 8px;
+      color: #0d1b2f;
+      background: #f4f7fb;
+    }
+
+    .MuiInputBase-input {
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .MuiInputAdornment-root,
+    .MuiSvgIcon-root {
+      color: #1674d1;
+    }
+  }
+`;
+
 const ControlButton = styled(IconButton)`
   width: 42px;
   height: 42px;
@@ -405,6 +475,14 @@ const ControlButton = styled(IconButton)`
     border-color: rgba(17, 167, 223, 0.48) !important;
     box-shadow: 0 12px 24px rgba(0, 8, 31, 0.24);
     transform: translateY(-1px);
+  }
+`;
+
+const MobileOnlyButton = styled(ControlButton)`
+  display: none !important;
+
+  @media (max-width: 760px) {
+    display: inline-flex !important;
   }
 `;
 
@@ -490,6 +568,7 @@ function Header({
   const [now, setNow] = useState(() => dayjs());
   const [profileAnchor, setProfileAnchor] = useState(null);
   const [hasLogoImage, setHasLogoImage] = useState(true);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const profileName = user?.name ?? "C.M.Kulathunga";
   const initials = profileName
     .split(/[.\s]+/)
@@ -510,11 +589,21 @@ function Header({
         <BrandBlock aria-label="SLT Mobitel">
           <LogoShell>
             {hasLogoImage ? (
-              <LogoImage
-                src="/sltmobitel-logo.svg"
-                alt="SLT Mobitel"
-                onError={() => setHasLogoImage(false)}
-              />
+              <>
+                <LogoImage
+                  src="/sltmobitel-logo.svg"
+                  alt="SLT Mobitel"
+                  onError={() => setHasLogoImage(false)}
+                />
+                <CompactLogoMark aria-hidden="true">
+                  <BrandMark>
+                    <span />
+                    <span />
+                    <span />
+                    <span />
+                  </BrandMark>
+                </CompactLogoMark>
+              </>
             ) : (
               <BrandFallback>
                 <BrandMark aria-hidden="true">
@@ -547,10 +636,17 @@ function Header({
           <strong>{now.format("HH:mm:ss")}</strong>
         </DateCard>
 
+        <StatusPill aria-label="System is online">
+          <FiberManualRecordIcon />
+          Online
+        </StatusPill>
+
         <SearchWrap>
           <TextField
             value={searchValue}
-            onChange={(event) => onSearchChange(event.target.value)}
+            onChange={(event) => {
+              onSearchChange(event.target.value);
+            }}
             size="small"
             placeholder="Search visitor NIC"
             fullWidth
@@ -564,9 +660,19 @@ function Header({
           />
         </SearchWrap>
 
+        <Tooltip title={mobileSearchOpen ? "Close search" : "Search visitors"}>
+          <MobileOnlyButton
+            onClick={() => setMobileSearchOpen((open) => !open)}
+            aria-label={mobileSearchOpen ? "Close visitor search" : "Open visitor search"}
+            aria-expanded={mobileSearchOpen}
+          >
+            {mobileSearchOpen ? <CloseIcon fontSize="small" /> : <SearchIcon fontSize="small" />}
+          </MobileOnlyButton>
+        </Tooltip>
+
         <Tooltip title="Notifications">
           <ControlButton onClick={onOpenNotifications} aria-label="Open notifications">
-            <Badge badgeContent={unreadCount} color="error">
+            <Badge badgeContent={unreadCount} max={99} color="error">
               <NotificationsOutlinedIcon fontSize="small" />
             </Badge>
           </ControlButton>
@@ -576,6 +682,8 @@ function Header({
           type="button"
           onClick={(event) => setProfileAnchor(event.currentTarget)}
           aria-label="Open user menu"
+          aria-haspopup="menu"
+          aria-expanded={Boolean(profileAnchor)}
         >
           <ProfileAvatar>{initials || "CM"}</ProfileAvatar>
           <ProfileText>
@@ -584,6 +692,24 @@ function Header({
           </ProfileText>
           <KeyboardArrowDownIcon fontSize="small" />
         </ProfileChip>
+
+        <MobileSearchPanel $open={mobileSearchOpen}>
+          <TextField
+            value={searchValue}
+            onChange={(event) => onSearchChange(event.target.value)}
+            size="small"
+            placeholder="Search visitor NIC"
+            fullWidth
+            autoFocus={mobileSearchOpen}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon fontSize="small" />
+                </InputAdornment>
+              ),
+            }}
+          />
+        </MobileSearchPanel>
 
         <Menu
           anchorEl={profileAnchor}
