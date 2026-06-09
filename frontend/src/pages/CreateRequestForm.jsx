@@ -11,7 +11,6 @@ import {
 import VisitorTypeSection from "../components/VisitorTypeSection";
 import RequesterDetailsSection from "../components/RequesterDetailsSection";
 import VisitDetailsSection from "../components/VisitDetailsSection";
-import RecommendingOfficerSection from "../components/RecommendingOfficerSection";
 import SupportingDocumentsSection from "../components/SupportingDocumentsSection";
 
 const validationSchema = Yup.object({
@@ -198,10 +197,6 @@ function CreateRequestForm() {
                 />
 
                 <VisitDetailsSection
-                  formik={formik}
-                />
-
-                <RecommendingOfficerSection
                   formik={formik}
                 />
 
