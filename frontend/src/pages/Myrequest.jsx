@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import styled from "styled-components";
-import NavBar from "../components/NavBar";
+import NavBar from "../components/Header";
 import SideBar from "../components/SideBar";
 import RequestsTable from "../components/RequestsTable";
 import REQUEST_DATA from "../mocks/requestData";
@@ -17,6 +17,7 @@ import REQUEST_DATA from "../mocks/requestData";
 // ─────────────────────────────────────────────────────────────
 // Styled components
 // ─────────────────────────────────────────────────────────────
+
 const PageWrapper = styled(Box)`
   min-height: 100vh;
   background: #f5f7fa;
@@ -28,15 +29,29 @@ const ContentRow = styled(Box)`
   display: flex;
   flex: 1;
   min-height: 0;
+  margin-top: 72px;
+
+  @media (max-width: 1200px) {
+    margin-top: 80px;
+  }
 `;
 
 const MainContent = styled(Box)`
+  /* ── KEY FIX: sidebar is 264px, add 32px breathing room = 296px ── */
+  margin-left: 296px;
   flex: 1;
-  padding: 36px 40px;
+  padding: 40px 48px;
   overflow-y: auto;
   text-align: left;
+  min-width: 0;
+
+  @media (max-width: 1200px) {
+    margin-left: 296px;
+    padding: 32px 32px;
+  }
 
   @media (max-width: 900px) {
+    margin-left: 0;
     padding: 24px 20px;
   }
 `;
@@ -73,9 +88,10 @@ const NewRequestBtn = styled(Button)`
   text-transform: none !important;
   box-shadow: none !important;
   gap: 6px;
+  white-space: nowrap;
   &:hover {
     background: #1a3566 !important;
-    box-shadow: 0 4px 14px rgba(15,32,66,0.25) !important;
+    box-shadow: 0 4px 14px rgba(15, 32, 66, 0.25) !important;
   }
 `;
 
@@ -133,9 +149,9 @@ const StyledSelect = styled(Select)`
 // ─────────────────────────────────────────────────────────────
 const STATUS_OPTIONS = [
   { label: "All Requests", value: "all" },
-  { label: "Approved", value: "Approved" },
-  { label: "Pending", value: "Pending" },
-  { label: "Rejected", value: "Rejected" },
+  { label: "Approved",     value: "Approved" },
+  { label: "Pending",      value: "Pending" },
+  { label: "Rejected",     value: "Rejected" },
 ];
 
 const filterByDate = (rows, range) => {
@@ -150,14 +166,17 @@ const filterByDate = (rows, range) => {
 // Component
 // ─────────────────────────────────────────────────────────────
 const MyRequestsPage = ({ requests = REQUEST_DATA }) => {
-  const [status, setStatus] = useState("all");
-  const [dateRange, setDateRange] = useState("all");
+  const [status,      setStatus]      = useState("all");
+  const [dateRange,   setDateRange]   = useState("all");
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Filter pipeline
-  const byDate = filterByDate(requests, dateRange);
-  const byStatus = status === "all" ? byDate : byDate.filter((r) => r.status === status);
-  const selectedStatusLabel = STATUS_OPTIONS.find((option) => option.value === status)?.label || "All Requests";
+  const byDate   = filterByDate(requests, dateRange);
+  const byStatus = status === "all"
+    ? byDate
+    : byDate.filter((r) => r.status === status);
+
+  const selectedStatusLabel =
+    STATUS_OPTIONS.find((o) => o.value === status)?.label ?? "All Requests";
 
   return (
     <PageWrapper>
@@ -166,7 +185,7 @@ const MyRequestsPage = ({ requests = REQUEST_DATA }) => {
       <ContentRow>
         <SideBar
           open={sidebarOpen}
-          active="requests"
+          active="my-requests"
           onClose={() => setSidebarOpen(false)}
           onNavigate={() => setSidebarOpen(false)}
         />
@@ -188,11 +207,10 @@ const MyRequestsPage = ({ requests = REQUEST_DATA }) => {
 
           {/* ── Card panel ── */}
           <CardPanel>
-            {/* Filters row */}
             <FilterRow>
               <FilterGroup>
-                {/* Status filter */}
                 <FilterLabel>{selectedStatusLabel}</FilterLabel>
+
                 <StyledSelect
                   value={status}
                   onChange={(e) => setStatus(e.target.value)}
@@ -201,14 +219,13 @@ const MyRequestsPage = ({ requests = REQUEST_DATA }) => {
                   input={<OutlinedInput />}
                   sx={{ minWidth: 170 }}
                 >
-                  {STATUS_OPTIONS.map((option) => (
-                    <MenuItem key={option.value} value={option.value} sx={{ fontSize: "0.82rem" }}>
-                      {option.label}
+                  {STATUS_OPTIONS.map((opt) => (
+                    <MenuItem key={opt.value} value={opt.value} sx={{ fontSize: "0.82rem" }}>
+                      {opt.label}
                     </MenuItem>
                   ))}
                 </StyledSelect>
 
-                {/* Date range filter */}
                 <StyledSelect
                   value={dateRange}
                   onChange={(e) => setDateRange(e.target.value)}
@@ -224,10 +241,8 @@ const MyRequestsPage = ({ requests = REQUEST_DATA }) => {
               </FilterGroup>
             </FilterRow>
 
-            {/* Divider */}
-            <Box sx={{ borderTop: "1px solid #f0f3f7", mx: -3, mt: 0 }} />
+            <Box sx={{ borderTop: "1px solid #f0f3f7", mx: -3 }} />
 
-            {/* ── Table ── */}
             <Box sx={{ mx: -3, mb: 0 }}>
               <RequestsTable rows={byStatus} />
             </Box>

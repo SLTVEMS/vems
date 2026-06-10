@@ -14,10 +14,9 @@ import styled from "styled-components";
 
 // ── Styled wrappers ──────────────────────────────────────────
 const StyledTableContainer = styled(TableContainer)`
-  border-radius: 12px !important;
+  border-radius: 0 !important;
   box-shadow: none !important;
-  border: 1px solid #e8edf3;
-  overflow: hidden;
+  overflow-x: auto;
 `;
 
 const StyledTableHead = styled(TableHead)`
@@ -64,22 +63,13 @@ const StyledRow = styled(TableRow)`
 
 // ── Status chip config ───────────────────────────────────────
 const STATUS_CONFIG = {
-  Approved: {
-    bg: "#e8f5e9",
-    text: "#2e7d32",
-  },
-  Pending: {
-    bg: "#e3f2fd",
-    text: "#1565c0",
-  },
-  Rejected: {
-    bg: "#fce4ec",
-    text: "#c62828",
-  },
+  Approved: { bg: "#e8f5e9", text: "#2e7d32" },
+  Pending:  { bg: "#e3f2fd", text: "#1565c0" },
+  Rejected: { bg: "#fce4ec", text: "#c62828" },
 };
 
 const StatusChip = ({ status }) => {
-  const cfg = STATUS_CONFIG[status] || STATUS_CONFIG.Pending;
+  const cfg = STATUS_CONFIG[status] ?? STATUS_CONFIG.Pending;
   return (
     <Chip
       icon={
@@ -88,41 +78,42 @@ const StatusChip = ({ status }) => {
           sx={{
             width: 9,
             height: 9,
-            borderRadius: 0.5,
+            borderRadius: "50%",
             background: cfg.text,
+            flexShrink: 0,
           }}
         />
       }
       label={status}
       size="small"
       sx={{
-        background: "transparent",
+        background: cfg.bg,
         color: cfg.text,
         fontWeight: 600,
         fontSize: "0.75rem",
         height: 26,
-        "& .MuiChip-icon": { color: cfg.text },
+        "& .MuiChip-icon": { color: cfg.text, marginLeft: "8px" },
       }}
     />
   );
 };
 
-// ── Table columns definition ─────────────────────────────────
+// ── Column definitions ───────────────────────────────────────
 const COLUMNS = [
-  { id: "visitingDate",     label: "Visiting Date" },
-  { id: "entryCode",        label: "Entry Code" },
-  { id: "visitorNIC",       label: "Visitor's NIC" },
-  { id: "visitorName",      label: "Visitor's Name" },
-  { id: "visitorEmail",     label: "Visitor's Email" },
-  { id: "supervisorName",   label: "Supervisor's Name" },
-  { id: "contactNo",        label: "Contact No" },
-  { id: "status",           label: "Status" },
+  { id: "visitingDate",   label: "Visiting Date" },
+  { id: "entryCode",      label: "Entry Code" },
+  { id: "visitorNIC",     label: "Visitor's NIC" },
+  { id: "visitorName",    label: "Visitor's Name" },
+  { id: "visitorEmail",   label: "Visitor's Email" },
+  { id: "supervisorName", label: "Supervisor's Name" },
+  { id: "contactNo",      label: "Contact No" },
+  { id: "status",         label: "Status" },
 ];
 
 // ── Component ────────────────────────────────────────────────
 const RequestsTable = ({ rows = [] }) => (
   <StyledTableContainer>
-    <Table size="small">
+    <Table size="small" sx={{ minWidth: 900 }}>
       <StyledTableHead>
         <TableRow>
           {COLUMNS.map((col) => (
@@ -130,33 +121,47 @@ const RequestsTable = ({ rows = [] }) => (
           ))}
         </TableRow>
       </StyledTableHead>
+
       <TableBody>
-        {rows.map((row, idx) => (
-          <StyledRow key={idx}>
-            <BodyCell>{row.visitingDate}</BodyCell>
-            <BodyCell>{row.entryCode}</BodyCell>
-            <BodyCell>{row.visitorNIC}</BodyCell>
-            <NameCell>{row.visitorName}</NameCell>
-            <EmailCell>{row.visitorEmail}</EmailCell>
-            <BodyCell>{row.supervisorName}</BodyCell>
-            <BodyCell>{row.contactNo}</BodyCell>
-            <BodyCell>
-              <StatusChip status={row.status} />
-            </BodyCell>
-          </StyledRow>
-        ))}
+        {rows.length === 0 ? (
+          <TableRow>
+            <TableCell
+              colSpan={COLUMNS.length}
+              sx={{ textAlign: "center", py: 5, color: "#8a94a6", fontSize: "0.85rem" }}
+            >
+              No requests found.
+            </TableCell>
+          </TableRow>
+        ) : (
+          rows.map((row, idx) => (
+            <StyledRow key={idx}>
+              <BodyCell>{row.visitingDate}</BodyCell>
+              <BodyCell>{row.entryCode}</BodyCell>
+              <BodyCell>{row.visitorNIC}</BodyCell>
+              <NameCell>{row.visitorName}</NameCell>
+              <EmailCell>{row.visitorEmail}</EmailCell>
+              <BodyCell>{row.supervisorName}</BodyCell>
+              <BodyCell>{row.contactNo}</BodyCell>
+              <BodyCell>
+                <StatusChip status={row.status} />
+              </BodyCell>
+            </StyledRow>
+          ))
+        )}
       </TableBody>
     </Table>
 
-    {/* Footer legend */}
+    {/* ── Footer legend ── */}
     <Box
       sx={{
-        px: 2,
-        py: 1.2,
+        px: 3,
+        py: 1.4,
         borderTop: "1px solid #f0f3f7",
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
+        flexWrap: "wrap",
+        gap: 1,
         background: "#fafbfc",
       }}
     >
@@ -168,8 +173,8 @@ const RequestsTable = ({ rows = [] }) => (
           STATUS
         </Typography>
         {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
-          <Box key={key} sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-            <Box sx={{ width: 10, height: 10, borderRadius: 0.5, background: cfg.text }} />
+          <Box key={key} sx={{ display: "flex", alignItems: "center", gap: 0.6 }}>
+            <Box sx={{ width: 10, height: 10, borderRadius: "50%", background: cfg.text }} />
             <Typography sx={{ fontSize: "0.75rem", color: "#8a94a6" }}>{key}</Typography>
           </Box>
         ))}
