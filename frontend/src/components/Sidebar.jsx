@@ -196,16 +196,6 @@ function Sidebar({ activeItem, isOpen, onItemChange, onLogout, onToggle }) {
             </div>
           </div>
 
-          <div className="sidebar-stats" aria-label="Request summary">
-            <div>
-              <strong>24</strong>
-              <span>Today</span>
-            </div>
-            <div>
-              <strong>08</strong>
-              <span>Pending</span>
-            </div>
-          </div>
         </div>
 
         <div className="nav-body" ref={navBodyRef}>

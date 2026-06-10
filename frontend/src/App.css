@@ -186,8 +186,7 @@
   font-size: 0.76rem;
 }
 
-.branch-card,
-.sidebar-stats {
+.branch-card {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -197,41 +196,6 @@
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.07);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-}
-
-.sidebar-stats {
-  justify-content: space-between;
-  gap: 8px;
-  min-height: 0;
-  padding: 8px;
-}
-
-.sidebar-stats div {
-  display: grid;
-  min-width: 0;
-  flex: 1;
-  gap: 2px;
-  padding: 8px 10px;
-  border-radius: 8px;
-  background: rgba(4, 27, 62, 0.38);
-}
-
-.sidebar-stats div + div {
-  border-left: 1px solid var(--line);
-}
-
-.sidebar-stats strong {
-  color: var(--text-strong);
-  font-size: 1rem;
-  line-height: 1;
-  font-weight: 850;
-}
-
-.sidebar-stats span {
-  color: var(--text-muted);
-  font-size: 0.68rem;
-  font-weight: 700;
-  text-transform: uppercase;
 }
 
 .branch-status {
