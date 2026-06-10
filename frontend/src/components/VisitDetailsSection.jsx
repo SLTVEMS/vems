@@ -129,18 +129,56 @@ const menuProps = {
 
 function VisitDetailsSection({ formik }) {
   const visitRequiredFields = [
-  formik.values.visitorName,
-  formik.values.visitorEmail,
-  formik.values.entryStartDate,
-  formik.values.entryEndDate,
-  formik.values.nightWorkRequired,
-  formik.values.reason,
-];
+    formik.values.visitorName,
+    formik.values.visitorEmail,
+    formik.values.entryStartDate,
+    formik.values.entryEndDate,
+    formik.values.nightWorkRequired,
+    formik.values.reason,
+  ];
 
-const visitCompletedCount =
-  visitRequiredFields.filter(Boolean).length;
+  // Same-day visit requires times
+  if (
+    formik.values.entryStartDate &&
+    formik.values.entryEndDate &&
+    formik.values.entryStartDate ===
+      formik.values.entryEndDate
+  ) {
+    visitRequiredFields.push(
+      formik.values.entryStartTime,
+      formik.values.entryEndTime
+    );
+  }
 
-const visitTotalCount = visitRequiredFields.length;
+  // Night work requires times
+  if (
+    formik.values.nightWorkRequired === "Yes"
+  ) {
+    visitRequiredFields.push(
+      formik.values.nightWorkStartTime,
+      formik.values.nightWorkEndTime
+    );
+  }
+
+  // Vehicle parking requires vehicle number
+  if (
+    formik.values.vehicleParking === "Yes"
+  ) {
+    visitRequiredFields.push(
+      formik.values.vehicleNumber
+    );
+  }
+
+  const visitCompletedCount =
+    visitRequiredFields.filter(
+      (field) =>
+        field !== "" &&
+        field !== null &&
+        field !== undefined
+    ).length;
+
+  const visitTotalCount =
+    visitRequiredFields.length;
 
   return (
     <SectionWrapper>
@@ -168,7 +206,7 @@ const visitTotalCount = visitRequiredFields.length;
     </SectionHeader>
 
           
-        <Grid container spacing={4}>
+        <Grid container spacing={3}>
 
         <Grid item xs={12} md={3}>
           <Label>
@@ -244,6 +282,56 @@ const visitTotalCount = visitRequiredFields.length;
             sx={inputStyle}
           />
         </Grid>
+        {formik.values.entryStartDate &&
+        formik.values.entryEndDate &&
+        formik.values.entryStartDate ===
+          formik.values.entryEndDate && (
+          <>
+            <Grid item xs={12} md={6}>
+              <Label>
+                Entry Start Time <Required>*</Required>
+              </Label>
+
+              <TextField
+                fullWidth
+                type="time"
+                name="entryStartTime"
+                value={formik.values.entryStartTime}
+                onChange={formik.handleChange}
+                error={
+                  formik.submitCount > 0 &&
+                  Boolean(formik.errors.entryStartTime)
+                }
+                inputProps={{
+                  step: 300,
+                }}
+                sx={inputStyle}
+              />
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <Label>
+                Entry End Time <Required>*</Required>
+              </Label>
+
+              <TextField
+                fullWidth
+                type="time"
+                name="entryEndTime"
+                value={formik.values.entryEndTime}
+                onChange={formik.handleChange}
+                error={
+                  formik.submitCount > 0 &&
+                  Boolean(formik.errors.entryEndTime)
+                }
+                inputProps={{
+                  step: 300,
+                }}
+                sx={inputStyle}
+              />
+            </Grid>
+          </>
+      )}
 
         {formik.values.visitorType !== "Emp. Child" && (
         <Grid item xs={12} md={3}>
@@ -273,6 +361,54 @@ const visitTotalCount = visitRequiredFields.length;
         </Grid>
       )}
 
+        {formik.values.visitorType !== "Emp. Child" &&
+          formik.values.nightWorkRequired === "Yes" && (
+          <>
+            <Grid item xs={12} md={6}>
+              <Label>
+                Night Work Start Time <Required>*</Required>
+              </Label>
+
+                <TextField
+                  fullWidth
+                  type="time"
+                  name="nightWorkStartTime"
+                  value={formik.values.nightWorkStartTime}
+                  onChange={formik.handleChange}
+                  error={
+                    formik.submitCount > 0 &&
+                    Boolean(formik.errors.nightWorkStartTime)
+                  }
+                  inputProps={{
+                    step: 300,
+                  }}
+                  sx={inputStyle}
+                />
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <Label>
+                Night Work Start Time <Required>*</Required>
+              </Label>
+
+                <TextField
+                  fullWidth
+                  type="time"
+                  name="nightWorkEndTime"
+                  value={formik.values.nightWorkEndTime}
+                  onChange={formik.handleChange}
+                  error={
+                    formik.submitCount > 0 &&
+                    Boolean(formik.errors.nightWorkEndTime)
+                  }
+                  inputProps={{
+                    step: 300,
+                  }}
+                  sx={inputStyle}
+                />
+            </Grid>
+          </>
+        )}
         <Grid item xs={12} md={3}>
           <Label>Visiting Building / Pass Type</Label>
 
@@ -285,43 +421,6 @@ const visitTotalCount = visitRequiredFields.length;
             sx={inputStyle}
           />
         </Grid>
-
-        {formik.values.visitorType !== "Emp. Child" &&
-          formik.values.nightWorkRequired === "Yes" && (
-          <>
-            <Grid item xs={12} md={3}>
-              <Label>Night Work Start Time</Label>
-
-                <TextField
-                  fullWidth
-                  type="time"
-                  name="nightWorkStartTime"
-                  value={formik.values.nightWorkStartTime}
-                  onChange={formik.handleChange}
-                  inputProps={{
-                    step: 300,
-                  }}
-                  sx={inputStyle}
-                />
-            </Grid>
-
-            <Grid item xs={12} md={3}>
-              <Label>Night Work End Time</Label>
-
-                <TextField
-                  fullWidth
-                  type="time"
-                  name="nightWorkEndTime"
-                  value={formik.values.nightWorkEndTime}
-                  onChange={formik.handleChange}
-                  inputProps={{
-                    step: 300,
-                  }}
-                  sx={inputStyle}
-                />
-            </Grid>
-          </>
-        )}
 
 
         <Grid item xs={12} md={3}>
@@ -350,27 +449,32 @@ const visitTotalCount = visitRequiredFields.length;
           />
         </Grid>
 
-        <Grid item xs={12} md={3}>
-          <Label>Vehicle Parking</Label>
+        {formik.values.visitorType !== "Emp. Child" &&
+          formik.values.visitorType !== "Trainee" && (
+            <Grid item xs={12} md={3}>
+              <Label>Vehicle Parking</Label>
 
-          <TextField
-            select
-            fullWidth
-            name="vehicleParking"
-            value={formik.values.vehicleParking}
-            onChange={formik.handleChange}
-            sx={inputStyle}
-            SelectProps={{
-              MenuProps: menuProps,
-            }}
-          >
-            <MenuItem value="">Select</MenuItem>
-            <MenuItem value="Yes">Yes</MenuItem>
-            <MenuItem value="No">No</MenuItem>
-          </TextField>
-        </Grid>
+              <TextField
+                select
+                fullWidth
+                name="vehicleParking"
+                value={formik.values.vehicleParking}
+                onChange={formik.handleChange}
+                sx={inputStyle}
+                SelectProps={{
+                  MenuProps: menuProps,
+                }}
+              >
+                <MenuItem value="">Select</MenuItem>
+                <MenuItem value="Yes">Yes</MenuItem>
+                <MenuItem value="No">No</MenuItem>
+              </TextField>
+            </Grid>
+          )}
 
-        {formik.values.vehicleParking === "Yes" && (
+        {formik.values.visitorType !== "Emp. Child" &&
+          formik.values.visitorType !== "Trainee" &&
+          formik.values.vehicleParking === "Yes" && (
           <Grid item xs={12} md={3}>
             <Label>
               Vehicle Number <Required>*</Required>
@@ -397,25 +501,56 @@ const visitTotalCount = visitRequiredFields.length;
 
           <TextField
             fullWidth
-            placeholder="Telephone Number"
+            placeholder="07XXXXXXXX"
             name="telephoneNumber"
             value={formik.values.telephoneNumber}
             onChange={formik.handleChange}
+            error={
+              formik.submitCount > 0 &&
+              Boolean(formik.errors.telephoneNumber)
+            }
             sx={inputStyle}
           />
         </Grid>
 
-        <Grid item xs={12} md={3}>
-          <Label>Company Name</Label>
+        {formik.values.visitorType === "Trainee" && (
+          <Grid item xs={12} md={3}>
+            <Label>
+              Laptop Serial Number <Required>*</Required>
+            </Label>
 
-          <TextField
-            fullWidth
-            placeholder="Company Name"
-            name="companyName"
-            value={formik.values.companyName}
-            onChange={formik.handleChange}
-            sx={inputStyle}
-          />
+            <TextField
+              fullWidth
+              placeholder="Enter Laptop Serial Number"
+              name="laptopSerialNumber"
+              value={formik.values.laptopSerialNumber}
+              onChange={formik.handleChange}
+              error={
+                formik.submitCount > 0 &&
+                Boolean(formik.errors.laptopSerialNumber)
+              }
+              sx={inputStyle}
+            />
+          </Grid>
+        )}
+
+        <Grid item xs={12} md={3}>
+
+          {formik.values.visitorType !== "Trainee" &&
+            formik.values.visitorType !== "Emp. Child" && (
+              <Grid item xs={12} md={3}>
+                <Label>Company Name</Label>
+
+                <TextField
+                  fullWidth
+                  placeholder="Company Name"
+                  name="companyName"
+                  value={formik.values.companyName}
+                  onChange={formik.handleChange}
+                  sx={inputStyle}
+                />
+              </Grid>
+            )}
         </Grid>
 
 

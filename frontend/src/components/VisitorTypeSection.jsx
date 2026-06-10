@@ -6,38 +6,44 @@ import EngineeringOutlinedIcon from "@mui/icons-material/EngineeringOutlined";
 import RestaurantOutlinedIcon from "@mui/icons-material/RestaurantOutlined";
 import SchoolOutlinedIcon from "@mui/icons-material/SchoolOutlined";
 import ChildCareOutlinedIcon from "@mui/icons-material/ChildCareOutlined";
+import BadgeOutlinedIcon from "@mui/icons-material/BadgeOutlined";
 
 const visitorTypes = [
   {
+  label: "Employee",
+  color: "#0EA5E9",
+  icon: <BadgeOutlinedIcon sx={{ fontSize: 40 }} />,
+  },
+  {
     label: "Guest",
     color: "#2F80ED",
-    icon: <PersonOutlinedIcon sx={{ fontSize: 32 }} />,
+    icon: <PersonOutlinedIcon sx={{ fontSize: 40 }} />,
   },
   {
     label: "Contractor",
     color: "#FF7F22",
-    icon: <EngineeringOutlinedIcon sx={{ fontSize: 32 }} />,
+    icon: <EngineeringOutlinedIcon sx={{ fontSize: 40 }} />,
   },
   {
     label: "Canteen",
     color: "#30C28E",
-    icon: <RestaurantOutlinedIcon sx={{ fontSize: 32 }} />,
+    icon: <RestaurantOutlinedIcon sx={{ fontSize: 40 }} />,
   },
   {
     label: "Trainee",
     color: "#AF52DE",
-    icon: <SchoolOutlinedIcon sx={{ fontSize: 32 }} />,
+    icon: <SchoolOutlinedIcon sx={{ fontSize: 40 }} />,
   },
   {
     label: "Emp. Child",
     color: "#2DB7D9",
-    icon: <ChildCareOutlinedIcon sx={{ fontSize: 32 }} />,
+    icon: <ChildCareOutlinedIcon sx={{ fontSize: 40 }} />,
   },
 ];
 
 const CardContainer = styled.div`
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 18px;
   margin-top: 20px;
 
@@ -51,7 +57,7 @@ const CardContainer = styled.div`
 `;
 
 const TypeCard = styled.div`
-  height: 95px;
+  height: 180px;
   border-radius: 14px;
 
   background: ${(props) => props.bg};
@@ -84,7 +90,13 @@ const TypeCard = styled.div`
 
 function VisitorTypeSection({ formik }) {
   return (
-    <Box mb={6}>
+    <Box
+      mb={6}
+      sx={{
+        maxWidth: "1100px",
+        mx: "auto",
+      }}
+    >
       <Typography
         sx={{
           fontWeight: 700,
@@ -98,7 +110,7 @@ function VisitorTypeSection({ formik }) {
 
       <Typography
         sx={{
-          fontSize: "13px",
+          fontSize: "18px",
           color: "#6B7280",
           mt: 0.5,
           textAlign: "center",
@@ -137,7 +149,7 @@ function VisitorTypeSection({ formik }) {
               sx={{
                 mt: 1,
                 fontWeight: 600,
-                fontSize: "13px",
+                fontSize: "18px",
                 color: "#fff",
               }}
             >

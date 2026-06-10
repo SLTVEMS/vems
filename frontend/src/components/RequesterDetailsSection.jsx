@@ -57,7 +57,7 @@ const Required = styled.span`
 
 const inputStyle = {
   "& .MuiOutlinedInput-root": {
-    height: "46px",
+    height: "48px",
     borderRadius: "10px",
     backgroundColor: "#f5f6f8",
 
@@ -127,8 +127,7 @@ const requesterTotalCount = requesterRequiredFields.length;
         </StatusIconWrapper>
       </SectionHeader>
 
-      <Grid container spacing={4}>
-        {/* Row 1 */}
+      <Grid container spacing={3}>
 
         <Grid item xs={12} md={3}>
           <Label>
@@ -239,7 +238,7 @@ const requesterTotalCount = requesterRequiredFields.length;
             onChange={formik.handleChange}
             error={
               formik.submitCount > 0 &&
-              !formik.values.requesterContactNo
+              Boolean(formik.errors.requesterContactNo)
             }
             sx={inputStyle}
           />

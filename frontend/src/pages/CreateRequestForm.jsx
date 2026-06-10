@@ -1,4 +1,5 @@
 import { Formik, Form } from "formik";
+import { useState } from "react";
 import * as Yup from "yup";
 
 import {
@@ -26,7 +27,12 @@ const validationSchema = Yup.object({
 
   requesterDesignation: Yup.string().required(),
 
-  requesterContactNo: Yup.string().required(),
+  requesterContactNo: Yup.string()
+  .matches(
+    /^(?:\+94|0)(70|71|72|74|75|76|77|78)\d{7}$/,
+    "Enter a valid Sri Lankan mobile number"
+  )
+  .required(),
 
   costCenterCode: Yup.string().required(),
 
@@ -42,12 +48,54 @@ const validationSchema = Yup.object({
 
   entryEndDate: Yup.string().required(),
 
+  entryStartTime: Yup.string().when(
+  ["entryStartDate", "entryEndDate"],
+  {
+    is: (start, end) =>
+      start &&
+      end &&
+      start === end,
+    then: (schema) => schema.required(),
+    otherwise: (schema) => schema.notRequired(),
+  }
+  ),
+
+  entryEndTime: Yup.string().when(
+    ["entryStartDate", "entryEndDate"],
+    {
+      is: (start, end) =>
+        start &&
+        end &&
+        start === end,
+      then: (schema) => schema.required(),
+      otherwise: (schema) => schema.notRequired(),
+    }
+  ),
+
   reason: Yup.string().required(),
 
   nightWorkRequired: Yup.string().when(
-    "visitorType",
+  "visitorType",
+  {
+    is: (val) => val !== "Emp. Child",
+    then: (schema) => schema.required(),
+    otherwise: (schema) => schema.notRequired(),
+  }
+),
+
+nightWorkStartTime: Yup.string().when(
+  "nightWorkRequired",
+  {
+    is: "Yes",
+    then: (schema) => schema.required(),
+    otherwise: (schema) => schema.notRequired(),
+  }
+  ),
+
+  nightWorkEndTime: Yup.string().when(
+    "nightWorkRequired",
     {
-      is: (val) => val !== "Emp. Child",
+      is: "Yes",
       then: (schema) => schema.required(),
       otherwise: (schema) => schema.notRequired(),
     }
@@ -61,10 +109,31 @@ const validationSchema = Yup.object({
       otherwise: (schema) => schema.notRequired(),
     }
   ),
+
+  vehicleNumber: Yup.string().when(
+    "vehicleParking",
+    {
+      is: "Yes",
+      then: (schema) => schema.required(),
+      otherwise: (schema) => schema.notRequired(),
+    }
+  ),
+  telephoneNumber: Yup.string().matches(
+  /^(?:\+94|0)(70|71|72|74|75|76|77|78)\d{7}$/,
+  "Enter a valid Sri Lankan mobile number"
+  ),
+  laptopSerialNumber: Yup.string().when(
+  "visitorType",
+  {
+    is: "Trainee",
+    then: (schema) => schema.required(),
+    otherwise: (schema) => schema.notRequired(),
+  }
+  ),
 });
 
 const initialValues = {
-  visitorType: "Guest",
+  visitorType: "",
 
   requestDate: "",
 
@@ -78,6 +147,8 @@ const initialValues = {
 
   entryStartDate: "",
   entryEndDate: "",
+  entryStartTime: "",
+  entryEndTime: "",
   nightWorkRequired: "",
   nightWorkStartTime: "",
   nightWorkEndTime: "",
@@ -88,6 +159,7 @@ const initialValues = {
   vehicleNumber: "",
   telephoneNumber: "",
   companyName: "",
+  laptopSerialNumber: "",
   reason: "",
 
   officerSvcNo: "",
@@ -102,8 +174,25 @@ const initialValues = {
 };
 
 function CreateRequestForm() {
+  const visitorTypeColors = {
+    Guest: "#2F80ED",
+    Contractor: "#FF7F22",
+    Canteen: "#30C28E",
+    Trainee: "#AF52DE",
+    "Emp. Child": "#2DB7D9",
+    Employee: "#0EA5E9",
+  };
+  const [showForm, setShowForm] = useState(false);
   const handleSubmit = (values) => {
     console.log(values);
+  };
+  const handleFormReset = (formik) => {
+    formik.setValues({
+      ...initialValues,
+
+      visitorType:
+        formik.values.visitorType,
+    });
   };
 
   return (
@@ -130,7 +219,6 @@ function CreateRequestForm() {
             "0px 15px 40px rgba(0,0,0,0.08)",
         }}
       >
-        {/* Header */}
         <Box
           sx={{
             background:
@@ -172,8 +260,14 @@ function CreateRequestForm() {
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
         >
-          {(formik) => (
-            <Form>
+          {(formik) => {
+            const selectedColor =
+              visitorTypeColors[
+                formik.values.visitorType
+              ] || "#071B52";
+
+            return (
+              <Form>
               <Box
                 sx={{
                   p: {
@@ -186,10 +280,138 @@ function CreateRequestForm() {
                   mx: "auto",
                 }}
               >
-               <Box sx={{ mb: 10 }}>
-                  <VisitorTypeSection
-                    formik={formik}
-                  />
+               {!showForm && (
+              <>
+                <Box sx={{ mb: 6 }}>
+                  <VisitorTypeSection formik={formik} />
+                </Box>
+
+                {formik.values.visitorType && (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      mb: 4,
+                    }}
+                  >
+                    <Button
+                      variant="contained"
+                      size="large"
+                      onClick={() => {
+                        window.scrollTo({
+                          top: 250,
+                          behavior: "smooth",
+                        });
+
+                        setTimeout(() => {
+                          setShowForm(true);
+                        }, 250);
+                      }}
+                      sx={{
+                        px: 7,
+                        py: 1.6,
+
+                        borderRadius: "18px",
+
+                        textTransform: "none",
+
+                        fontWeight: 700,
+                        fontSize: "15px",
+
+                        background:
+                          "linear-gradient(135deg,#021C54,#0A2F88)",
+
+                        boxShadow:
+                          "0px 10px 25px rgba(2,28,84,0.25)",
+
+                        transition: "all 0.25s ease",
+
+                        "&:hover": {
+                          transform: "translateY(-2px)",
+
+                          background:
+                            "linear-gradient(135deg,#021C54,#0A2F88)",
+
+                          boxShadow:
+                            "0px 15px 30px rgba(2,28,84,0.35)",
+                        },
+                      }}
+                    >
+                      Next
+                    </Button>
+                  </Box>
+                )}
+              </>
+            )}
+
+              {showForm && (
+                <Box
+                  sx={{
+                    animation: "fadeSlideIn 0.7s ease",
+
+                    "@keyframes fadeSlideIn": {
+                      from: {
+                        opacity: 0,
+                        transform: "translateY(25px)",
+                      },
+                      to: {
+                        opacity: 1,
+                        transform: "translateY(0)",
+                      },
+                    },
+                  }}
+                >
+                <Box
+                  sx={{
+                    mb: 4,
+                    p: 3.5,
+                    borderRadius: "24px",
+
+                    background: selectedColor,
+
+                    color: "#fff",
+
+                    boxShadow:
+                      "0 15px 35px rgba(0,0,0,0.15)",
+
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <Box>
+                    <Typography
+                      sx={{
+                        fontSize: "18px",
+                        fontWeight: 600,
+                        color: "#fff",
+                      }}
+                    >
+                      Visitor Category: {formik.values.visitorType}
+                    </Typography>
+                  </Box>
+
+                  <Button
+                    onClick={() => setShowForm(false)}
+                    sx={{
+                      borderRadius: "14px",
+                      px: 2.5,
+                      py: 1,
+
+                      color: "#fff",
+
+                      background: "rgba(255,255,255,0.15)",
+
+                      textTransform: "none",
+                      fontWeight: 600,
+
+                      "&:hover": {
+                        background: "rgba(255,255,255,0.25)",
+                      },
+                    }}
+                  >
+                    Change Visitor Type
+                  </Button>
                 </Box>
 
                 <RequesterDetailsSection
@@ -202,9 +424,7 @@ function CreateRequestForm() {
 
                 <SupportingDocumentsSection
                   values={formik.values}
-                  setFieldValue={
-                    formik.setFieldValue
-                  }
+                  setFieldValue={formik.setFieldValue}
                 />
 
                 <Box
@@ -216,15 +436,27 @@ function CreateRequestForm() {
                   }}
                 >
                   <Button
-                    variant="outlined"
-                    onClick={() =>
-                      formik.resetForm()
-                    }
+                    variant="contained"
+                    onClick={() => handleFormReset(formik)}
                     sx={{
-                      borderRadius: "12px",
+                      borderRadius: "16px",
                       px: 4,
-                      py: 1.3,
+                      py: 1.4,
+
                       textTransform: "none",
+
+                      fontWeight: 600,
+                      fontSize: "14px",
+
+                      background: "#F1F5F9",
+                      color: "#475569",
+
+                      boxShadow: "none",
+
+                      "&:hover": {
+                        background: "#E2E8F0",
+                        boxShadow: "none",
+                      },
                     }}
                   >
                     Reset
@@ -234,17 +466,32 @@ function CreateRequestForm() {
                     type="submit"
                     variant="contained"
                     sx={{
-                      borderRadius: "12px",
-                      px: 4,
-                      py: 1.3,
+                      borderRadius: "16px",
+
+                      px: 5,
+                      py: 1.4,
+
                       textTransform: "none",
-                      fontWeight: 600,
+
+                      fontWeight: 700,
+                      fontSize: "14px",
+
                       background:
                         "linear-gradient(135deg,#021C54,#0A2F88)",
 
+                      boxShadow:
+                        "0px 10px 25px rgba(2,28,84,0.25)",
+
+                      transition: "all 0.25s ease",
+
                       "&:hover": {
+                        transform: "translateY(-2px)",
+
                         background:
                           "linear-gradient(135deg,#021C54,#0A2F88)",
+
+                        boxShadow:
+                          "0px 15px 30px rgba(2,28,84,0.35)",
                       },
                     }}
                   >
@@ -252,8 +499,11 @@ function CreateRequestForm() {
                   </Button>
                 </Box>
               </Box>
+              )}
+              </Box>
             </Form>
-          )}
+            )
+          }}
         </Formik>
       </Paper>
     </Box>
