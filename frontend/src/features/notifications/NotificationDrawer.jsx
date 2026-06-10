@@ -1,4 +1,4 @@
-import { Drawer, List, ListItem, ListItemButton, ListItemText, Stack, Typography, Chip } from "@mui/material";
+import { Box, Drawer, List, ListItem, ListItemButton, ListItemText, Stack, Typography, Chip } from "@mui/material";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 
@@ -16,9 +16,9 @@ function NotificationDrawer({ open, onClose, notifications, onMarkRead }) {
             <ListItem key={item.id} disablePadding sx={{ mb: 1 }}>
               <ListItemButton
                 onClick={() => onMarkRead(item.id)}
+                style={{ alignItems: "flex-start" }}
                 sx={{
                   borderRadius: 2,
-                  alignItems: "flex-start",
                   bgcolor: item.unread ? "rgba(95, 211, 111, 0.08)" : "transparent",
                 }}
               >
@@ -28,12 +28,18 @@ function NotificationDrawer({ open, onClose, notifications, onMarkRead }) {
                     secondary: { component: "div" },
                   }}
                   primary={
-                    <Stack direction="row" spacing={1} alignItems="center">
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1,
+                      }}
+                    >
                       <Typography variant="subtitle2" fontWeight={800}>
                         {item.title}
                       </Typography>
                       {item.unread && <Chip label="New" size="small" color="primary" />}
-                    </Stack>
+                    </Box>
                   }
                   secondary={
                     <Stack spacing={0.5}>
