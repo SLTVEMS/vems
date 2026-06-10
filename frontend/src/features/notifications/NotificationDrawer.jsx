@@ -23,6 +23,10 @@ function NotificationDrawer({ open, onClose, notifications, onMarkRead }) {
                 }}
               >
                 <ListItemText
+                  slotProps={{
+                    primary: { component: "div" },
+                    secondary: { component: "div" },
+                  }}
                   primary={
                     <Stack direction="row" spacing={1} alignItems="center">
                       <Typography variant="subtitle2" fontWeight={800}>
