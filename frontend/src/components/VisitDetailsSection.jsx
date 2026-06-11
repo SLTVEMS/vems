@@ -284,7 +284,6 @@ if (formik.values.visitorType !== "Emp. Child") {
           </TextField>
         </Grid>
 
-        {/* ONE DAY */}
         {formik.values.passType === "One Day" && (
           <>
             <Grid item xs={12} sm={4}>
@@ -337,7 +336,6 @@ if (formik.values.visitorType !== "Emp. Child") {
           </>
         )}
 
-        {/* MORE THAN ONE DAY */}
         {formik.values.passType === "More Than One Day" && (
           <>
             <Grid item xs={12} sm={6}>
@@ -374,7 +372,6 @@ if (formik.values.visitorType !== "Emp. Child") {
           </>
         )}  
 
-        {/* Visitor Name */}
         <Grid item xs={12} sm={6} md={4}>
           <Label>
             Visitor Name <Required>*</Required>
@@ -394,7 +391,6 @@ if (formik.values.visitorType !== "Emp. Child") {
           />
         </Grid>
 
-        {/* Visitor Email */}
         <Grid item xs={12} sm={6} md={4}>
           <Label>
             {formik.values.visitorType === "Emp. Child"
@@ -421,7 +417,6 @@ if (formik.values.visitorType !== "Emp. Child") {
           />
         </Grid>
 
-        {/* EMPTY GRID TO FORCE NEW ROW */}
         <Grid item xs={12} />
 
         {formik.values.visitorType !== "Emp. Child" && (
