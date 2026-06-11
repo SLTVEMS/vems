@@ -11,7 +11,7 @@ import BadgeOutlinedIcon from "@mui/icons-material/BadgeOutlined";
 const visitorTypes = [
   {
     label: "Employee",
-    color: "#0EA5E9",
+    color: "#e7b900",
     icon: <BadgeOutlinedIcon sx={{ fontSize: 60 }} />,
   },
   {

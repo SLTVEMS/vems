@@ -183,7 +183,7 @@ function CreateRequestForm() {
     Canteen: "#30C28E",
     Trainee: "#AF52DE",
     "Emp. Child": "#2DB7D9",
-    Employee: "#0EA5E9",
+    Employee: "#e7b900",
   };
   const [showForm, setShowForm] = useState(false);
   const handleSubmit = (values) => {
