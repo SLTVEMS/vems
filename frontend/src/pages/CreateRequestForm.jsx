@@ -44,6 +44,8 @@ const validationSchema = Yup.object({
     .email("Invalid Email")
     .required(),
 
+  passType: Yup.string().required(),
+
   entryStartDate: Yup.string().required(),
 
   entryEndDate: Yup.string().required(),
@@ -145,6 +147,7 @@ const initialValues = {
   costCenterCode: "",
   costCenterName: "",
 
+  passType: "One Day",
   entryStartDate: "",
   entryEndDate: "",
   entryStartTime: "",
@@ -199,24 +202,19 @@ function CreateRequestForm() {
     <Box
       sx={{
         minHeight: "100vh",
-        background: "#F5F7FB",
-        padding: {
-          xs: "15px",
-          sm: "25px",
-          md: "40px",
-        },
+        background: "#FFFFFF",
+        padding: 0
       }}
     >
       <Paper
         elevation={0}
         sx={{
           width: "100%",
-          maxWidth: "1400px",
-          margin: "0 auto",
-          borderRadius: "28px",
-          overflow: "hidden",
-          boxShadow:
-            "0px 15px 40px rgba(0,0,0,0.08)",
+          borderRadius: 0,
+          overflowX: "hidden",
+          overflowY: "visible",
+          boxShadow: "none",
+          background: "#fff",
         }}
       >
         <Box
@@ -270,14 +268,11 @@ function CreateRequestForm() {
               <Form>
               <Box
                 sx={{
-                  p: {
-                    xs: 2,
-                    sm: 3,
-                    md: 5,
-                  },
-
-                  maxWidth: "1300px",
-                  mx: "auto",
+                  p: 3,
+                  width: "100%",
+                  maxWidth: "1600px",
+                  margin: "0 auto",
+                  boxSizing: "border-box",
                 }}
               >
                {!showForm && (
@@ -364,8 +359,10 @@ function CreateRequestForm() {
                 <Box
                   sx={{
                     mb: 4,
-                    p: 3.5,
-                    borderRadius: "24px",
+                      p: 3,
+                      width: "100%",
+                      boxSizing: "border-box",
+                      borderRadius: "24px",
 
                     background: selectedColor,
 

@@ -120,24 +120,70 @@ const inputStyle = {
 const menuProps = {
   PaperProps: {
     sx: {
-      borderRadius: "14px",
+      borderRadius: "20px",
       mt: 1,
-      boxShadow: "0px 12px 25px rgba(0,0,0,0.12)",
+      overflow: "hidden",
+
+      border: "1px solid #E2E8F0",
+
+      boxShadow:
+        "0px 20px 40px rgba(15,23,42,0.12)",
+
+      "& .MuiMenuItem-root": {
+        minHeight: "50px",
+
+        fontSize: "14px",
+        fontWeight: 500,
+
+        borderRadius: "12px",
+
+        margin: "4px 8px",
+
+        transition: "all 0.2s ease",
+      },
+
+      "& .MuiMenuItem-root:hover": {
+        background: "#F1F5F9",
+      },
+
+      "& .Mui-selected": {
+        background: "#E8F0FF !important",
+        color: "#0A2F88",
+        fontWeight: 600,
+      },
     },
   },
 };
 
 function VisitDetailsSection({ formik }) {
   const visitRequiredFields = [
-    formik.values.visitorName,
-    formik.values.visitorEmail,
-    formik.values.entryStartDate,
-    formik.values.entryEndDate,
-    formik.values.nightWorkRequired,
-    formik.values.reason,
-  ];
+  formik.values.visitorName,
+  formik.values.visitorEmail,
+  formik.values.passType,
+  formik.values.reason,
+];
 
-  // Same-day visit requires times
+if (formik.values.passType === "One Day") {
+  visitRequiredFields.push(
+    formik.values.entryStartDate,
+    formik.values.entryStartTime,
+    formik.values.entryEndTime
+  );
+}
+
+if (formik.values.passType === "More Than One Day") {
+  visitRequiredFields.push(
+    formik.values.entryStartDate,
+    formik.values.entryEndDate
+  );
+}
+
+if (formik.values.visitorType !== "Emp. Child") {
+  visitRequiredFields.push(
+    formik.values.nightWorkRequired
+  );
+}
+
   if (
     formik.values.entryStartDate &&
     formik.values.entryEndDate &&
@@ -150,7 +196,6 @@ function VisitDetailsSection({ formik }) {
     );
   }
 
-  // Night work requires times
   if (
     formik.values.nightWorkRequired === "Yes"
   ) {
@@ -160,7 +205,6 @@ function VisitDetailsSection({ formik }) {
     );
   }
 
-  // Vehicle parking requires vehicle number
   if (
     formik.values.vehicleParking === "Yes"
   ) {
@@ -206,9 +250,132 @@ function VisitDetailsSection({ formik }) {
     </SectionHeader>
 
           
-        <Grid container spacing={3}>
+        <Grid
+          container
+          spacing={2}
+          sx={{
+            width: "100%",
+            margin: 0,
+          }}
+        >
+        <Grid item xs={12} sm={4}>
+          <Label>
+            Pass Type <Required>*</Required>
+          </Label>
 
-        <Grid item xs={12} md={3}>
+          <TextField
+            select
+            fullWidth
+            name="passType"
+            value={formik.values.passType}
+            onChange={formik.handleChange}
+            sx={inputStyle}
+            SelectProps={{
+              MenuProps: menuProps,
+            }}
+          >
+            <MenuItem value="One Day">
+              One Day
+            </MenuItem>
+
+            <MenuItem value="More Than One Day">
+              More Than One Day
+            </MenuItem>
+          </TextField>
+        </Grid>
+
+        {/* ONE DAY */}
+        {formik.values.passType === "One Day" && (
+          <>
+            <Grid item xs={12} sm={4}>
+              <Label>
+                Entry Date <Required>*</Required>
+              </Label>
+
+              <TextField
+                fullWidth
+                type="date"
+                name="entryStartDate"
+                value={formik.values.entryStartDate}
+                onChange={formik.handleChange}
+                InputLabelProps={{ shrink: true }}
+                sx={inputStyle}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={4}>
+              <Label>
+                Start Time <Required>*</Required>
+              </Label>
+
+              <TextField
+                fullWidth
+                type="time"
+                name="entryStartTime"
+                value={formik.values.entryStartTime}
+                onChange={formik.handleChange}
+                InputLabelProps={{ shrink: true }}
+                sx={inputStyle}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={4}>
+              <Label>
+                End Time <Required>*</Required>
+              </Label>
+
+              <TextField
+                fullWidth
+                type="time"
+                name="entryEndTime"
+                value={formik.values.entryEndTime}
+                onChange={formik.handleChange}
+                InputLabelProps={{ shrink: true }}
+                sx={inputStyle}
+              />
+            </Grid>
+          </>
+        )}
+
+        {/* MORE THAN ONE DAY */}
+        {formik.values.passType === "More Than One Day" && (
+          <>
+            <Grid item xs={12} sm={6}>
+              <Label>
+                Entry Start Date <Required>*</Required>
+              </Label>
+
+              <TextField
+                fullWidth
+                type="date"
+                name="entryStartDate"
+                value={formik.values.entryStartDate}
+                onChange={formik.handleChange}
+                InputLabelProps={{ shrink: true }}
+                sx={inputStyle}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <Label>
+                Entry End Date <Required>*</Required>
+              </Label>
+
+              <TextField
+                fullWidth
+                type="date"
+                name="entryEndDate"
+                value={formik.values.entryEndDate}
+                onChange={formik.handleChange}
+                InputLabelProps={{ shrink: true }}
+                sx={inputStyle}
+              />
+            </Grid>
+          </>
+        )}  
+
+        {/* Visitor Name */}
+        <Grid item xs={12} sm={6} md={4}>
           <Label>
             Visitor Name <Required>*</Required>
           </Label>
@@ -227,14 +394,22 @@ function VisitDetailsSection({ formik }) {
           />
         </Grid>
 
-        <Grid item xs={12} md={3}>
+        {/* Visitor Email */}
+        <Grid item xs={12} sm={6} md={4}>
           <Label>
-            Visitor Email <Required>*</Required>
+            {formik.values.visitorType === "Emp. Child"
+              ? "Visitor / Guardian Email"
+              : "Visitor Email"}{" "}
+            <Required>*</Required>
           </Label>
 
           <TextField
             fullWidth
-            placeholder="Enter Visitor Email"
+            placeholder={
+              formik.values.visitorType === "Emp. Child"
+                ? "guardian@example.com"
+                : "visitor@example.com"
+            }
             name="visitorEmail"
             value={formik.values.visitorEmail}
             onChange={formik.handleChange}
@@ -245,96 +420,12 @@ function VisitDetailsSection({ formik }) {
             sx={inputStyle}
           />
         </Grid>
-        <Grid item xs={12} md={3}>
-          <Label>
-            Entry Start Date <Required>*</Required>
-          </Label>
 
-          <TextField
-            fullWidth
-            type="date"
-            name="entryStartDate"
-            value={formik.values.entryStartDate}
-            onChange={formik.handleChange}
-            error={
-              formik.submitCount > 0 &&
-              Boolean(formik.errors.entryStartDate)
-            }
-            sx={inputStyle}
-          />
-        </Grid>
-
-        <Grid item xs={12} md={3}>
-          <Label>
-            Entry End Date <Required>*</Required>
-          </Label>
-
-          <TextField
-            fullWidth
-            type="date"
-            name="entryEndDate"
-            value={formik.values.entryEndDate}
-            onChange={formik.handleChange}
-            error={
-              formik.submitCount > 0 &&
-              Boolean(formik.errors.entryEndDate)
-            }
-            sx={inputStyle}
-          />
-        </Grid>
-        {formik.values.entryStartDate &&
-        formik.values.entryEndDate &&
-        formik.values.entryStartDate ===
-          formik.values.entryEndDate && (
-          <>
-            <Grid item xs={12} md={6}>
-              <Label>
-                Entry Start Time <Required>*</Required>
-              </Label>
-
-              <TextField
-                fullWidth
-                type="time"
-                name="entryStartTime"
-                value={formik.values.entryStartTime}
-                onChange={formik.handleChange}
-                error={
-                  formik.submitCount > 0 &&
-                  Boolean(formik.errors.entryStartTime)
-                }
-                inputProps={{
-                  step: 300,
-                }}
-                sx={inputStyle}
-              />
-            </Grid>
-
-            <Grid item xs={12} md={6}>
-              <Label>
-                Entry End Time <Required>*</Required>
-              </Label>
-
-              <TextField
-                fullWidth
-                type="time"
-                name="entryEndTime"
-                value={formik.values.entryEndTime}
-                onChange={formik.handleChange}
-                error={
-                  formik.submitCount > 0 &&
-                  Boolean(formik.errors.entryEndTime)
-                }
-                inputProps={{
-                  step: 300,
-                }}
-                sx={inputStyle}
-              />
-            </Grid>
-          </>
-      )}
+        {/* EMPTY GRID TO FORCE NEW ROW */}
+        <Grid item xs={12} />
 
         {formik.values.visitorType !== "Emp. Child" && (
-        <Grid item xs={12} md={3}>
+        <Grid item xs={12} sm={6} md={4}>
           <Label>
             Night Work Required <Required>*</Required>
           </Label>
@@ -388,7 +479,7 @@ function VisitDetailsSection({ formik }) {
 
             <Grid item xs={12} md={6}>
               <Label>
-                Night Work Start Time <Required>*</Required>
+                Night Work End Time <Required>*</Required>
               </Label>
 
                 <TextField
@@ -409,8 +500,8 @@ function VisitDetailsSection({ formik }) {
             </Grid>
           </>
         )}
-        <Grid item xs={12} md={3}>
-          <Label>Visiting Building / Pass Type</Label>
+        <Grid item xs={12} sm={6} md={4}>
+          <Label>Visiting Building</Label>
 
           <TextField
             fullWidth
@@ -423,7 +514,7 @@ function VisitDetailsSection({ formik }) {
         </Grid>
 
 
-        <Grid item xs={12} md={3}>
+        <Grid item xs={12} sm={6} md={4}>
           <Label>Visiting Section</Label>
 
           <TextField
@@ -436,7 +527,7 @@ function VisitDetailsSection({ formik }) {
           />
         </Grid>
 
-        <Grid item xs={12} md={3}>
+        <Grid item xs={12} sm={6} md={4}>
           <Label>Meeting With</Label>
 
           <TextField
@@ -451,7 +542,7 @@ function VisitDetailsSection({ formik }) {
 
         {formik.values.visitorType !== "Emp. Child" &&
           formik.values.visitorType !== "Trainee" && (
-            <Grid item xs={12} md={3}>
+            <Grid item xs={12} sm={6} md={4}>
               <Label>Vehicle Parking</Label>
 
               <TextField
@@ -475,7 +566,7 @@ function VisitDetailsSection({ formik }) {
         {formik.values.visitorType !== "Emp. Child" &&
           formik.values.visitorType !== "Trainee" &&
           formik.values.vehicleParking === "Yes" && (
-          <Grid item xs={12} md={3}>
+          <Grid item xs={12} sm={6} md={4}>
             <Label>
               Vehicle Number <Required>*</Required>
             </Label>
@@ -496,7 +587,7 @@ function VisitDetailsSection({ formik }) {
         )}
 
 
-        <Grid item xs={12} md={3}>
+        <Grid item xs={12} sm={6} md={4}>
           <Label>Telephone Number</Label>
 
           <TextField
@@ -514,7 +605,7 @@ function VisitDetailsSection({ formik }) {
         </Grid>
 
         {formik.values.visitorType === "Trainee" && (
-          <Grid item xs={12} md={3}>
+          <Grid item xs={12} sm={6} md={4}>
             <Label>
               Laptop Serial Number <Required>*</Required>
             </Label>
@@ -534,24 +625,21 @@ function VisitDetailsSection({ formik }) {
           </Grid>
         )}
 
-        <Grid item xs={12} md={3}>
+        {formik.values.visitorType !== "Trainee" &&
+          formik.values.visitorType !== "Emp. Child" && (
+            <Grid item xs={12} sm={6} md={4}>
+              <Label>Company Name</Label>
 
-          {formik.values.visitorType !== "Trainee" &&
-            formik.values.visitorType !== "Emp. Child" && (
-              <Grid item xs={12} md={3}>
-                <Label>Company Name</Label>
-
-                <TextField
-                  fullWidth
-                  placeholder="Company Name"
-                  name="companyName"
-                  value={formik.values.companyName}
-                  onChange={formik.handleChange}
-                  sx={inputStyle}
-                />
-              </Grid>
-            )}
-        </Grid>
+              <TextField
+                fullWidth
+                placeholder="Company Name"
+                name="companyName"
+                value={formik.values.companyName}
+                onChange={formik.handleChange}
+                sx={inputStyle}
+              />
+            </Grid>
+        )}
 
 
         <Box

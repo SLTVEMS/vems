@@ -127,9 +127,16 @@ const requesterTotalCount = requesterRequiredFields.length;
         </StatusIconWrapper>
       </SectionHeader>
 
-      <Grid container spacing={3}>
+      <Grid
+        container
+        spacing={2}
+        sx={{
+          width: "100%",
+          margin: 0,
+        }}
+      >
 
-        <Grid item xs={12} md={3}>
+        <Grid item xs={12} sm={6}>
           <Label>
             Request Date <Required>*</Required>
           </Label>
@@ -149,7 +156,7 @@ const requesterTotalCount = requesterRequiredFields.length;
           />
         </Grid>
 
-        <Grid item xs={12} md={3}>
+        <Grid item xs={12} sm={6}>
           <Label>
             Requester Name <Required>*</Required>
           </Label>
@@ -168,7 +175,7 @@ const requesterTotalCount = requesterRequiredFields.length;
           />
         </Grid>
 
-        <Grid item xs={12} md={3}>
+        <Grid item xs={12} sm={6}>
           <Label>
             Requester Email <Required>*</Required>
           </Label>
@@ -187,7 +194,7 @@ const requesterTotalCount = requesterRequiredFields.length;
           />
         </Grid>
 
-        <Grid item xs={12} md={3}>
+        <Grid item xs={12} sm={6}>
           <Label>
             Requester Service No <Required>*</Required>
           </Label>
@@ -208,7 +215,7 @@ const requesterTotalCount = requesterRequiredFields.length;
 
         {/* Row 2 */}
 
-        <Grid item xs={12} md={3}>
+        <Grid item xs={12} sm={6}>
           <Label>Requester Designation</Label>
 
           <TextField
@@ -225,7 +232,7 @@ const requesterTotalCount = requesterRequiredFields.length;
           />
         </Grid>
 
-        <Grid item xs={12} md={3}>
+        <Grid item xs={12} sm={6}>
           <Label>
             Requester Contact No <Required>*</Required>
           </Label>
@@ -244,7 +251,7 @@ const requesterTotalCount = requesterRequiredFields.length;
           />
         </Grid>
 
-        <Grid item xs={12} md={3}>
+        <Grid item xs={12} sm={6}>
           <Label>Cost Center Code</Label>
 
          <TextField
@@ -261,7 +268,7 @@ const requesterTotalCount = requesterRequiredFields.length;
         />
         </Grid>
 
-        <Grid item xs={12} md={3}>
+        <Grid item xs={12} sm={6}>
           <Label>Cost Centre Name</Label>
 
           <TextField
