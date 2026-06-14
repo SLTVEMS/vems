@@ -7,6 +7,8 @@ import {
   Button,
   Paper,
   Typography,
+  Dialog,
+  DialogContent,
 } from "@mui/material";
 
 import VisitorTypeSection from "../components/VisitorTypeSection";
@@ -186,8 +188,25 @@ function CreateRequestForm() {
     Employee: "#e7b900",
   };
   const [showForm, setShowForm] = useState(false);
+  const [requestSubmitted, setRequestSubmitted] =
+  useState(false);
+  const [showDuplicateWarning, setShowDuplicateWarning] =
+  useState(false);
+
+  const duplicateVisitorData = {
+    requestCode: "VE20260615-90",
+    nic: "200534009821",
+    visitorName: "Saman Kumara",
+  };
+
   const handleSubmit = (values) => {
-    console.log(values);
+  console.log(values);
+
+  // testing duplicate popup
+  setShowDuplicateWarning(true);
+
+  // later:
+  // setRequestSubmitted(true);
   };
   const handleFormReset = (formik) => {
     formik.setValues({
@@ -339,7 +358,7 @@ function CreateRequestForm() {
               </>
             )}
 
-              {showForm && (
+              {showForm && !requestSubmitted && (
                 <Box
                   sx={{
                     animation: "fadeSlideIn 0.7s ease",
@@ -354,8 +373,10 @@ function CreateRequestForm() {
                         transform: "translateY(0)",
                       },
                     },
+                    
                   }}
-                >
+                  >
+
                 <Box
                   sx={{
                     mb: 4,
@@ -497,7 +518,303 @@ function CreateRequestForm() {
                 </Box>
               </Box>
               )}
+
+             {requestSubmitted && (
+              <Paper
+                elevation={0}
+                sx={{
+                  maxWidth: "620px",
+                  margin: "40px auto",
+                  padding: "50px",
+                  borderRadius: "24px",
+                  textAlign: "center",
+                  border: "1px solid #E5E7EB",
+                  background: "#FFFFFF",
+                }}
+              >
+                <Box
+                  sx={{
+                    width: 100,
+                    height: 100,
+                    borderRadius: "50%",
+                    background: "#22C55E",
+                    color: "#FFFFFF",
+                    fontSize: "48px",
+                    fontWeight: 700,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    margin: "0 auto 24px",
+                    boxShadow: "0 10px 25px rgba(34,197,94,0.25)",
+                  }}
+                >
+                  ✓
+                </Box>
+
+                <Typography
+                  sx={{
+                    fontSize: "32px",
+                    fontWeight: 700,
+                    color: "#021C54",
+                    mb: 1,
+                  }}
+                >
+                  Request Submitted Successfully!
+                </Typography>
+
+                <Typography
+                  sx={{
+                    color: "#64748B",
+                    fontSize: "15px",
+                    mb: 4,
+                  }}
+                >
+                  Your visitor request has been sent for supervisor approval.
+                </Typography>
+
+                <Box
+                  sx={{
+                    background: "#F0FDF4",
+                    border: "1px dashed #86EFAC",
+                    borderRadius: "16px",
+                    padding: "24px",
+                    mb: 4,
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      fontSize: "12px",
+                      color: "#64748B",
+                      letterSpacing: "1px",
+                      mb: 1,
+                    }}
+                  >
+                    ENTRY CODE
+                  </Typography>
+
+                  <Typography
+                    sx={{
+                      fontSize: "28px",
+                      fontWeight: 700,
+                      color: "#166534",
+                    }}
+                  >
+                    VE20260615-001
+                  </Typography>
+                </Box>
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    gap: 2,
+                    flexWrap: "wrap",
+                  }}
+                >
+                  <Button
+                    variant="outlined"
+                    onClick={() => {
+                      console.log("My Requests");
+                    }}
+                    sx={{
+                      borderRadius: "14px",
+                      px: 4,
+                      py: 1.2,
+                      textTransform: "none",
+                      fontWeight: 600,
+                    }}
+                  >
+                    View My Request
+                  </Button>
+
+                  <Button
+                    variant="contained"
+                    onClick={() => {
+                      handleFormReset(formik);
+                      setRequestSubmitted(false);
+                      setShowForm(false);
+                    }}
+                    sx={{
+                      borderRadius: "14px",
+                      px: 4,
+                      py: 1.2,
+                      textTransform: "none",
+                      fontWeight: 600,
+                      background:
+                        "linear-gradient(135deg,#021C54,#0A2F88)",
+
+                      "&:hover": {
+                        background:
+                          "linear-gradient(135deg,#021C54,#0A2F88)",
+                      },
+                    }}
+                  >
+                    Create Another Request
+                  </Button>
+                </Box>
+              </Paper>
+            )}
+              
               </Box>
+              <Dialog
+                open={showDuplicateWarning}
+                onClose={() => setShowDuplicateWarning(false)}
+                maxWidth="md"
+                fullWidth
+                PaperProps={{
+                  sx: {
+                    borderRadius: "24px",
+                    maxWidth: "700px",
+                  },
+                }}
+              >
+                <DialogContent
+                  sx={{
+                    p: 0,
+                    overflow: "hidden",
+                    borderRadius: "24px",
+                  }}
+                >
+                  <Box
+                    sx={{
+                      position: "relative",
+                      p: 5,
+                      textAlign: "center",
+                      background: "#FFFFFF",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        width: 95,
+                        height: 95,
+                        margin: "0 auto 24px",
+                        borderRadius: "50%",
+                        background: "#FFF5E6",
+                        border: "2px solid #F5C26B",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: "42px",
+                      }}
+                    >
+                      ⚠️
+                    </Box>
+
+                    <Typography
+                      sx={{
+                        fontSize: "34px",
+                        fontWeight: 700,
+                        color: "#E89B17",
+                        mb: 3,
+                      }}
+                    >
+                      Duplicate Visitor Request Detected
+                    </Typography>
+
+                    <Typography
+                      sx={{
+                        fontSize: "18px",
+                        fontWeight: 700,
+                        color: "#4B5563",
+                        mb: 1,
+                      }}
+                    >
+                      PREVIOUS REQUEST CODE:
+                      {" "}
+                      {duplicateVisitorData.requestCode}
+                    </Typography>
+
+                    <Typography
+                      sx={{
+                        fontSize: "16px",
+                        color: "#6B7280",
+                        mb: 1,
+                      }}
+                    >
+                      NIC: {duplicateVisitorData.nic}
+                    </Typography>
+
+                    <Typography
+                      sx={{
+                        fontSize: "16px",
+                        fontWeight: 600,
+                        color: "#374151",
+                        mb: 4,
+                      }}
+                    >
+                      VISITOR NAME: {duplicateVisitorData.visitorName}
+                    </Typography>
+
+                    <Paper
+                      elevation={0}
+                      sx={{
+                        p: 4,
+                        mb: 4,
+                        borderRadius: "18px",
+                        background: "#FFF9EE",
+                        border: "1px solid #F3C15A",
+                      }}
+                    >
+                      <Typography
+                        sx={{
+                          fontSize: "15px",
+                          lineHeight: 1.8,
+                          color: "#5B6470",
+                        }}
+                      >
+                        An approved visitor request already exists for this visitor on the selected date.
+                        The entered NIC matches an existing approved visitor request.
+                        Please review the existing request before proceeding.
+                        Multiple visitor requests for the same visitor on the same date are not permitted.
+                      </Typography>
+                    </Paper>
+
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                        gap: 2,
+                      }}
+                    >
+                      <Button
+                        variant="outlined"
+                        onClick={() =>
+                          setShowDuplicateWarning(false)
+                        }
+                        sx={{
+                          borderRadius: "14px",
+                          px: 4,
+                          py: 1.2,
+                          textTransform: "none",
+                          fontWeight: 600,
+                        }}
+                      >
+                        Return to Form
+                      </Button>
+
+                      <Button
+                        variant="contained"
+                        sx={{
+                          borderRadius: "14px",
+                          px: 4,
+                          py: 1.2,
+                          textTransform: "none",
+                          fontWeight: 600,
+                          background:
+                            "linear-gradient(135deg,#021C54,#0A2F88)",
+
+                          "&:hover": {
+                            background:
+                              "linear-gradient(135deg,#021C54,#0A2F88)",
+                          },
+                        }}
+                      >
+                        View Existing Request
+                      </Button>
+                    </Box>
+                  </Box>
+                </DialogContent>
+              </Dialog>
             </Form>
             )
           }}
