@@ -196,17 +196,16 @@ function CreateRequestForm() {
   const duplicateVisitorData = {
     requestCode: "VE20260615-90",
     nic: "200534009821",
-    visitorName: "Saman Kumara",
+    visitorName: "Kasun Perera",
   };
 
   const handleSubmit = (values) => {
   console.log(values);
 
-  // testing duplicate popup
-  setShowDuplicateWarning(true);
 
-  // later:
-  // setRequestSubmitted(true);
+  setRequestSubmitted(true);
+
+
   };
   const handleFormReset = (formik) => {
     formik.setValues({
