@@ -673,7 +673,13 @@ function Header({
         </Tooltip>
 
         <Tooltip title="Notifications">
-          <ControlButton onClick={onOpenNotifications} aria-label="Open notifications">
+          <ControlButton
+            onClick={(event) => {
+              event.currentTarget.blur();
+              onOpenNotifications();
+            }}
+            aria-label="Open notifications"
+          >
             <Badge badgeContent={unreadCount} max={99} color="error">
               <NotificationsOutlinedIcon fontSize="small" />
             </Badge>
