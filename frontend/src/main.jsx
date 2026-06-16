@@ -7,7 +7,6 @@ import App from "./App.jsx";
 import { store } from "./app/store.js";
 import { GlobalStyles } from "./styles/globalStyles.js";
 import { theme } from "./styles/theme.js";
-import Home from "./pages/Home.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -15,7 +14,7 @@ createRoot(document.getElementById("root")).render(
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <GlobalStyles />
-        <Home />
+        <App />
       </ThemeProvider>
     </Provider>
   </StrictMode>,
