@@ -3,66 +3,57 @@ import RestrictedVisitorAlert from './components/RestrictedVisitorAlert';
 import DirectEntry from './components/DirectEntry';
 import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Alert, Box, Drawer, useMediaQuery } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
-import styled from "styled-components";
 import Header from "./components/Header.jsx";
 import Sidebar from "./components/Sidebar.jsx";
-import LoginPage from "./features/auth/LoginPage.jsx";
 import { bootstrapAuthRequested, logoutRequested } from "./features/auth/auth.actions.js";
-import DashboardPage from "./features/dashboard/DashboardPage.jsx";
 import NotificationDrawer from "./features/notifications/NotificationDrawer.jsx";
 import {
   loadNotificationsRequested,
   markNotificationReadRequested,
 } from "./features/notifications/notifications.actions.js";
-import RequestForm from "./features/requests/RequestForm.jsx";
-import RequestList from "./features/requests/RequestList.jsx";
-import { loadRequestsRequested } from "./features/requests/requests.actions.js";
+import "./App.css";
 
-const Shell = styled.div`
-  min-height: 100svh;
-  background: #071f45;
-`;
+const metrics = [
+  { label: "Vehicles Today", value: "42", trend: "+12%", tone: "blue" },
+  { label: "Pending Approvals", value: "8", trend: "4 urgent", tone: "green" },
+  { label: "Visitors On Site", value: "19", trend: "Live", tone: "teal" },
+  { label: "Rejected Requests", value: "3", trend: "-2 vs yesterday", tone: "amber" },
+];
 
-const Main = styled.div`
-  min-width: 0;
-  background: #f4f7fb;
-  --header-height: 72px;
-  padding-top: var(--header-height);
-
-  @media (min-width: 901px) {
-    margin-left: 264px;
-  }
-
-  @media (max-width: 1200px) {
-    --header-height: 80px;
-  }
-`;
-
-const Content = styled.main`
-  min-height: calc(100svh - var(--header-height));
-  padding: 24px;
-  box-sizing: border-box;
-
-  @media (max-width: 720px) {
-    padding: 16px;
-  }
-`;
+const requests = [
+  {
+    id: "REQ-24018",
+    visitor: "Nimal Perera",
+    vehicle: "WP CAA-4582",
+    branch: "Colombo",
+    status: "Approved",
+  },
+  {
+    id: "REQ-24019",
+    visitor: "Asha Fernando",
+    vehicle: "CP KV-1831",
+    branch: "Kandy",
+    status: "Pending",
+  },
+  {
+    id: "REQ-24020",
+    visitor: "Ruwan Silva",
+    vehicle: "SP BCL-7710",
+    branch: "Galle",
+    status: "Review",
+  },
+];
 
 function App() {
   const dispatch = useDispatch();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const { isAuthenticated, user, error: authError } = useSelector((state) => state.auth);
-  const requestsError = useSelector((state) => state.requests.error);
+  const { user } = useSelector((state) => state.auth);
   const notifications = useSelector((state) => state.notifications.items);
   const unreadCount = useMemo(
     () => notifications.filter((item) => item.unread).length,
     [notifications],
   );
-  const [activePage, setActivePage] = useState("dashboard");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [activeItem, setActiveItem] = useState("Dashboard");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
 
@@ -71,75 +62,98 @@ function App() {
     dispatch(loadNotificationsRequested());
   }, [dispatch]);
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      dispatch(loadRequestsRequested(activePage));
-    }
-  }, [activePage, dispatch, isAuthenticated]);
-
-  if (!isAuthenticated) {
-    return <LoginPage />;
-  }
-
-  const content = {
-    dashboard: <DashboardPage />,
-    "create-request": <RequestForm />,
-    "request-success": <RequestSuccess onCreateAnother={() => setActivePage("create-request")} />,
-    "restricted-alert": <RestrictedVisitorAlert />,
-    "my-requests": <RequestList scope="my-requests" searchQuery={searchValue} />,
-    "approval-requests": <RequestList scope="approval" searchQuery={searchValue} />,
-    "pending-requests": <RequestList scope="pending" searchQuery={searchValue} />,
-    "rejected-requests": <RequestList scope="rejected" searchQuery={searchValue} />,
-    "tracking-details": <RequestList scope="tracking" searchQuery={searchValue} />,
-    "direct-entry": <DirectEntry />,
-  }[activePage] ?? <DashboardPage />;
-
-  const sidebar = (
-    <Sidebar
-      activePage={activePage}
-      onNavigate={(page) => {
-        setActivePage(page);
-        setSidebarOpen(false);
-      }}
-      onLogout={() => {
-        setActivePage("dashboard");
-        dispatch(logoutRequested());
-      }}
-    />
-  );
-
   return (
-    <Shell>
-      {!isMobile && sidebar}
-      {isMobile && (
-        <Drawer open={sidebarOpen} onClose={() => setSidebarOpen(false)}>
-          <Box sx={{ width: 280 }}>{sidebar}</Box>
-        </Drawer>
-      )}
+    <div className={`app-shell${isSidebarOpen ? " sidebar-open" : ""}`}>
+      <Header
+        user={user}
+        unreadCount={unreadCount}
+        searchValue={searchValue}
+        onSearchChange={setSearchValue}
+        onOpenNotifications={() => setNotificationsOpen(true)}
+        onLogout={() => dispatch(logoutRequested())}
+      />
 
-      <Main>
-        <Header
-          user={user}
-          unreadCount={unreadCount}
-          searchValue={searchValue}
-          onSearchChange={setSearchValue}
-          onOpenNotifications={() => setNotificationsOpen(true)}
-          onOpenSidebar={() => setSidebarOpen(true)}
-          onLogout={() => {
-            setActivePage("dashboard");
-            dispatch(logoutRequested());
-          }}
-        />
+      <Sidebar
+        activeItem={activeItem}
+        isOpen={isSidebarOpen}
+        onItemChange={setActiveItem}
+        onLogout={() => dispatch(logoutRequested())}
+        onToggle={() => setIsSidebarOpen((open) => !open)}
+      />
 
-        <Content>
-          {(authError || requestsError) && (
-            <Alert severity="warning" sx={{ mb: 2 }}>
-              {authError || requestsError}
-            </Alert>
-          )}
-          {content}
-        </Content>
-      </Main>
+      <main className="main-content">
+        <section className="page-title">
+          <div>
+            <p>Live Operations</p>
+            <h2>{activeItem}</h2>
+          </div>
+          <button className="primary-action" type="button">
+            New Vehicle Request
+          </button>
+        </section>
+
+        <section className="metrics-grid" aria-label="Branch metrics">
+          {metrics.map((metric) => (
+            <article className={`metric-card ${metric.tone}`} key={metric.label}>
+              <span>{metric.label}</span>
+              <strong>{metric.value}</strong>
+              <p>{metric.trend}</p>
+            </article>
+          ))}
+        </section>
+
+        <section className="dashboard-grid">
+          <article className="panel request-panel">
+            <div className="panel-heading">
+              <div>
+                <p>Queue</p>
+                <h3>Recent Vehicle Requests</h3>
+              </div>
+              <button type="button">View all</button>
+            </div>
+
+            <div className="request-list">
+              {requests.map((request) => (
+                <div className="request-row" key={request.id}>
+                  <div>
+                    <strong>{request.id}</strong>
+                    <span>{request.visitor}</span>
+                  </div>
+                  <span>{request.vehicle}</span>
+                  <span>{request.branch}</span>
+                  <span className={`status ${request.status.toLowerCase()}`}>
+                    {request.status}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </article>
+
+          <article className="panel branch-panel">
+            <div className="panel-heading">
+              <div>
+                <p>Branch</p>
+                <h3>Today Summary</h3>
+              </div>
+            </div>
+
+            <div className="summary-stack">
+              <div>
+                <span>Gate A</span>
+                <strong>14 entries</strong>
+              </div>
+              <div>
+                <span>Gate B</span>
+                <strong>9 exits</strong>
+              </div>
+              <div>
+                <span>Average approval</span>
+                <strong>11 min</strong>
+              </div>
+            </div>
+          </article>
+        </section>
+      </main>
 
       <NotificationDrawer
         open={notificationsOpen}
@@ -147,7 +161,7 @@ function App() {
         notifications={notifications}
         onMarkRead={(id) => dispatch(markNotificationReadRequested(id))}
       />
-    </Shell>
+    </div>
   );
 }
 

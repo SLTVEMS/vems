@@ -1,298 +1,257 @@
-import { useEffect, useState } from "react";
-import dayjs from "dayjs";
-import {
-  Badge,
-  IconButton,
-  InputAdornment,
-  Menu,
-  MenuItem,
-  TextField,
-  Tooltip,
-} from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
-import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
-import RefreshIcon from "@mui/icons-material/Refresh";
-import SearchIcon from "@mui/icons-material/Search";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import styled from "styled-components";
+import { useEffect, useRef } from "react";
 
-const Bar = styled.header`
-  position: fixed;
-  top: 0;
-  right: 0;
-  left: 264px;
-  min-height: var(--header-height, 72px);
-  width: calc(100% - 264px);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #001f4d;
-  color: #ffffff;
-  z-index: 30;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+const navSections = [
+  {
+    title: "Workspace",
+    items: [
+      { label: "Dashboard", icon: "grid", badge: "Live" },
+      { label: "Create Request", icon: "filePlus" },
+      { label: "My Requests", icon: "document" },
+    ],
+  },
+  {
+    title: "Approvals",
+    items: [
+      { label: "Approval Requests", icon: "check" },
+      { label: "Pending Requests", icon: "clock" },
+      { label: "Rejected Requests", icon: "xCircle" },
+    ],
+  },
+  {
+    title: "Operations",
+    items: [
+      { label: "Tracking Details", icon: "pin" },
+      { label: "Vehicle Log", icon: "vehicle" },
+      { label: "Reports", icon: "chart" },
+      { label: "Settings", icon: "settings" },
+    ],
+  },
+];
 
-  @media (max-width: 1200px) {
-    min-height: var(--header-height, 80px);
-  }
-
-  @media (max-width: 900px) {
-    left: 0;
-    width: 100%;
-  }
-`;
-
-const LeftCluster = styled.div`
-  display: flex;
-  align-items: center;
-  min-width: 0;
-`;
-
-const MainCopy = styled.div`
-  min-width: 0;
-  padding: 12px 20px 10px 24px;
-  display: flex;
-  align-items: center;
-`;
-
-const MobileMenuButton = styled(IconButton)`
-  margin-left: 10px !important;
-  color: #ffffff !important;
-
-  @media (min-width: 901px) {
-    display: none !important;
-  }
-`;
-
-const TitleWrap = styled.div`
-  min-width: 0;
-  display: grid;
-  gap: 3px;
-`;
-
-const Title = styled.h1`
-  margin: 0;
-  color: #ffffff;
-  font-size: 17px;
-  line-height: 1.1;
-  font-weight: 700;
-  letter-spacing: 0;
-`;
-
-const Subtitle = styled.p`
-  margin: 0;
-  color: #d5e0ef;
-  font-size: 11px;
-  line-height: 1.3;
-  font-weight: 500;
-`;
-
-const RightCluster = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 16px 10px 0;
-  flex-wrap: nowrap;
-
-  @media (max-width: 1240px) {
-    gap: 8px;
-  }
-`;
-
-const DateCard = styled.div`
-  min-width: 154px;
-  padding: 7px 12px 6px;
-  border-radius: 16px;
-  background: #ffffff;
-  color: #0d1b2f;
-  text-align: center;
-  box-shadow: 0 10px 22px rgba(0, 8, 31, 0.18);
-
-  span {
-    display: block;
-    color: #74839a;
-    font-size: 10px;
-    line-height: 1.1;
-  }
-
-  strong {
-    display: block;
-    margin-top: 4px;
-    font-size: 14px;
-    line-height: 1;
-    font-weight: 800;
-  }
-`;
-
-const SearchWrap = styled.div`
-  width: 178px;
-  max-width: 22vw;
-
-  .MuiInputBase-root {
-    border-radius: 999px;
-    background: #ffffff;
-    box-shadow: 0 10px 22px rgba(0, 8, 31, 0.18);
-  }
-
-  @media (min-width: 1280px) {
-    width: 226px;
-  }
-`;
-
-const ControlButton = styled(IconButton)`
-  width: 38px;
-  height: 38px;
-  background: #ffffff !important;
-  color: #0d1b2f !important;
-  box-shadow: 0 10px 22px rgba(0, 8, 31, 0.18);
-
-  &:hover {
-    background: #eef4ff !important;
-  }
-`;
-
-const ProfileChip = styled.button`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-height: 38px;
-  padding: 4px 10px 4px 12px;
-  border: 0;
-  border-radius: 999px;
-  background: #ffffff;
-  color: #0d1b2f;
-  cursor: pointer;
-  box-shadow: 0 10px 22px rgba(0, 8, 31, 0.18);
-  text-align: left;
-
-  &:hover {
-    background: #f8fbff;
-  }
-`;
-
-const ProfileText = styled.div`
-  display: grid;
-  min-width: 0;
-
-  strong {
-    font-size: 11px;
-    line-height: 1.15;
-    font-weight: 800;
-    color: #0d1b2f;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  small {
-    font-size: 8px;
-    line-height: 1.1;
-    font-weight: 700;
-    color: #5f7089;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-`;
-
-function Header({
-  user,
-  unreadCount,
-  searchValue,
-  onSearchChange,
-  onOpenNotifications,
-  onOpenSidebar,
-  onLogout,
-}) {
-  const [now, setNow] = useState(() => dayjs());
-  const [profileAnchor, setProfileAnchor] = useState(null);
-
-  useEffect(() => {
-    const timer = window.setInterval(() => setNow(dayjs()), 1000);
-    return () => window.clearInterval(timer);
-  }, []);
+function Icon({ name }) {
+  const paths = {
+    grid: (
+      <>
+        <rect x="3" y="3" width="7" height="7" rx="1.5" />
+        <rect x="14" y="3" width="7" height="7" rx="1.5" />
+        <rect x="3" y="14" width="7" height="7" rx="1.5" />
+        <rect x="14" y="14" width="7" height="7" rx="1.5" />
+      </>
+    ),
+    filePlus: (
+      <>
+        <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
+        <path d="M14 3v5h5" />
+        <path d="M12 11v6" />
+        <path d="M9 14h6" />
+      </>
+    ),
+    document: (
+      <>
+        <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
+        <path d="M14 3v5h5" />
+        <path d="M9 13h6" />
+        <path d="M9 17h6" />
+      </>
+    ),
+    check: (
+      <>
+        <circle cx="12" cy="12" r="9" />
+        <path d="m8.5 12.5 2.2 2.2 4.8-5.2" />
+      </>
+    ),
+    clock: (
+      <>
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 7v5l3.5 2" />
+      </>
+    ),
+    xCircle: (
+      <>
+        <circle cx="12" cy="12" r="9" />
+        <path d="m9.5 9.5 5 5" />
+        <path d="m14.5 9.5-5 5" />
+      </>
+    ),
+    pin: (
+      <>
+        <path d="M12 21s6-5.5 6-11a6 6 0 0 0-12 0c0 5.5 6 11 6 11z" />
+        <circle cx="12" cy="10" r="2.4" />
+      </>
+    ),
+    vehicle: (
+      <>
+        <path d="M5 17h14l-1.4-6.2A3 3 0 0 0 14.7 8H9.3a3 3 0 0 0-2.9 2.8z" />
+        <path d="M7 17v2" />
+        <path d="M17 17v2" />
+        <path d="M8 13h8" />
+      </>
+    ),
+    chart: (
+      <>
+        <path d="M4 19V5" />
+        <path d="M4 19h16" />
+        <path d="M8 16v-5" />
+        <path d="M12 16V8" />
+        <path d="M16 16v-3" />
+      </>
+    ),
+    settings: (
+      <>
+        <circle cx="12" cy="12" r="3" />
+        <path d="M19.4 15a1.8 1.8 0 0 0 .4 2l.1.1-2 3.4-.2-.1a1.8 1.8 0 0 0-2.1.2l-.4.3-3.4-2 .1-.5a1.8 1.8 0 0 0-1.1-1.8l-.5-.2v-4l.5-.2a1.8 1.8 0 0 0 1.1-1.8l-.1-.5 3.4-2 .4.3a1.8 1.8 0 0 0 2.1.2l.2-.1 2 3.4-.1.1a1.8 1.8 0 0 0-.4 2z" />
+      </>
+    ),
+    logout: (
+      <>
+        <path d="M10 17 15 12 10 7" />
+        <path d="M15 12H3" />
+        <path d="M21 3v18" />
+      </>
+    ),
+    menu: (
+      <>
+        <path d="M4 7h16" />
+        <path d="M4 12h16" />
+        <path d="M4 17h16" />
+      </>
+    ),
+    close: (
+      <>
+        <path d="m6 6 12 12" />
+        <path d="m18 6-12 12" />
+      </>
+    ),
+    chevronUp: <path d="m7 14 5-5 5 5" />,
+    chevronDown: <path d="m7 10 5 5 5-5" />,
+  };
 
   return (
-    <Bar>
-      <LeftCluster>
-        <MobileMenuButton onClick={onOpenSidebar} aria-label="Open sidebar">
-          <MenuIcon />
-        </MobileMenuButton>
-        <MainCopy>
-          <TitleWrap>
-            <Title>Employee Dashboard</Title>
-            <Subtitle>
-              Welcome back, C.M.Kulathunga - here&apos;s what&apos;s happening across your gates today.
-            </Subtitle>
-          </TitleWrap>
-        </MainCopy>
-      </LeftCluster>
-
-      <RightCluster>
-        <DateCard>
-          <span>{now.format("dddd, DD MMMM YYYY")}</span>
-          <strong>{now.format("HH:mm:ss")}</strong>
-        </DateCard>
-
-        <SearchWrap>
-          <TextField
-            value={searchValue}
-            onChange={(event) => onSearchChange(event.target.value)}
-            size="small"
-            placeholder="Search Visitor NIC"
-            fullWidth
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon fontSize="small" />
-                </InputAdornment>
-              ),
-            }}
-          />
-        </SearchWrap>
-
-        <Tooltip title="Refresh time">
-          <ControlButton onClick={() => setNow(dayjs())} aria-label="Refresh date and time">
-            <RefreshIcon fontSize="small" />
-          </ControlButton>
-        </Tooltip>
-
-        <Tooltip title="Notifications">
-          <ControlButton onClick={onOpenNotifications} aria-label="Open notifications">
-            <Badge badgeContent={unreadCount} color="error">
-              <NotificationsOutlinedIcon fontSize="small" />
-            </Badge>
-          </ControlButton>
-        </Tooltip>
-
-        <ProfileChip onClick={(event) => setProfileAnchor(event.currentTarget)}>
-          <ProfileText>
-            <strong>{user?.name ?? "C.M.Kulathunga"}</strong>
-            <small>{user?.department ?? "Engineer.IT Division"}</small>
-          </ProfileText>
-          <KeyboardArrowDownIcon fontSize="small" />
-        </ProfileChip>
-
-        <Menu
-          anchorEl={profileAnchor}
-          open={Boolean(profileAnchor)}
-          onClose={() => setProfileAnchor(null)}
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-          transformOrigin={{ vertical: "top", horizontal: "right" }}
-        >
-          <MenuItem onClick={() => setProfileAnchor(null)}>Profile</MenuItem>
-          <MenuItem onClick={() => setProfileAnchor(null)}>Settings</MenuItem>
-          <MenuItem
-            onClick={() => {
-              setProfileAnchor(null);
-              onLogout();
-            }}
-          >
-            Logout
-          </MenuItem>
-        </Menu>
-      </RightCluster>
-    </Bar>
+    <svg className="icon" viewBox="0 0 24 24" aria-hidden="true">
+      {paths[name]}
+    </svg>
   );
 }
 
-export default Header;
+function Sidebar({ activeItem, isOpen, onItemChange, onLogout, onToggle }) {
+  const navBodyRef = useRef(null);
+
+  useEffect(() => {
+    if (!isOpen) {
+      return undefined;
+    }
+
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") {
+        onToggle();
+      }
+    };
+
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [isOpen, onToggle]);
+
+  const scrollSidebar = (distance) => {
+    navBodyRef.current?.scrollBy({
+      top: distance,
+      behavior: "smooth",
+    });
+  };
+
+  return (
+    <>
+      <button
+        className="sidebar-toggle"
+        type="button"
+        aria-label={isOpen ? "Close sidebar" : "Open sidebar"}
+        aria-expanded={isOpen}
+        onClick={onToggle}
+      >
+        <Icon name={isOpen ? "close" : "menu"} />
+      </button>
+
+      <button
+        className="sidebar-backdrop"
+        type="button"
+        aria-label="Close sidebar"
+        tabIndex={isOpen ? 0 : -1}
+        onClick={onToggle}
+      />
+
+      <aside className="sidebar" aria-label="Main navigation" aria-hidden={!isOpen}>
+        <div className="sidebar-header">
+          <div className="brand">
+            <div className="brand-mark">V</div>
+            <div>
+              <p className="brand-title">VEMS</p>
+              <p className="brand-subtitle">Branch Portal</p>
+            </div>
+          </div>
+
+          <div className="branch-card">
+            <span className="branch-status" />
+            <div>
+              <p>Colombo Branch</p>
+              <span>Vehicle entry desk</span>
+            </div>
+          </div>
+
+        </div>
+
+        <div className="nav-body" ref={navBodyRef}>
+          {navSections.map((section) => (
+            <nav className="nav-section" aria-label={section.title} key={section.title}>
+              <p className="section-title">{section.title}</p>
+              <div className="nav-list">
+                {section.items.map((item) => (
+                  <button
+                    className={`nav-item${activeItem === item.label ? " active" : ""}`}
+                    key={item.label}
+                    onClick={() => onItemChange(item.label)}
+                    type="button"
+                    aria-current={activeItem === item.label ? "page" : undefined}
+                  >
+                    <span className="nav-icon">
+                      <Icon name={item.icon} />
+                    </span>
+                    <span className="nav-label">{item.label}</span>
+                    {item.badge && <span className="nav-badge">{item.badge}</span>}
+                    {item.count && <span className="nav-count">{item.count}</span>}
+                  </button>
+                ))}
+              </div>
+            </nav>
+          ))}
+        </div>
+
+        <div className="sidebar-footer">
+          <button className="logout" onClick={onLogout} type="button">
+            <Icon name="logout" />
+            <span>Logout</span>
+          </button>
+        </div>
+
+        <div className="scroll-controls" aria-label="Sidebar scroll controls">
+          <button
+            className="scroll-button"
+            type="button"
+            aria-label="Scroll sidebar up"
+            onClick={() => scrollSidebar(-180)}
+          >
+            <Icon name="chevronUp" />
+          </button>
+          <button
+            className="scroll-button"
+            type="button"
+            aria-label="Scroll sidebar down"
+            onClick={() => scrollSidebar(180)}
+          >
+            <Icon name="chevronDown" />
+          </button>
+        </div>
+      </aside>
+    </>
+  );
+}
+
+export default Sidebar;
