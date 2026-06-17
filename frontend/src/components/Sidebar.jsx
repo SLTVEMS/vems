@@ -1,213 +1,298 @@
-import { Button, Divider, Stack } from "@mui/material";
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import AddIcon from "@mui/icons-material/Add";
-import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
-import FactCheckOutlinedIcon from "@mui/icons-material/FactCheckOutlined";
-import HourglassTopOutlinedIcon from "@mui/icons-material/HourglassTopOutlined";
-import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
-import RoomOutlinedIcon from "@mui/icons-material/RoomOutlined";
-import LogoutIcon from "@mui/icons-material/Logout";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import dayjs from "dayjs";
+import {
+  Badge,
+  IconButton,
+  InputAdornment,
+  Menu,
+  MenuItem,
+  TextField,
+  Tooltip,
+} from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
+import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
+import RefreshIcon from "@mui/icons-material/Refresh";
+import SearchIcon from "@mui/icons-material/Search";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import styled from "styled-components";
 
-const Aside = styled.aside`
+const Bar = styled.header`
   position: fixed;
-  inset: 0 auto 0 0;
-  width: 264px;
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  padding: 16px 14px 18px;
-  background: #061c3f;
-  color: #fff;
-  overflow: hidden;
-  z-index: 20;
-`;
-
-const Brand = styled.div`
-  min-height: 68px;
+  top: 0;
+  right: 0;
+  left: 264px;
+  min-height: var(--header-height, 72px);
+  width: calc(100% - 264px);
   display: flex;
   align-items: center;
-  padding: 2px 2px 20px;
-  margin-bottom: 8px;
+  justify-content: space-between;
+  background: #001f4d;
+  color: #ffffff;
+  z-index: 30;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+  @media (max-width: 1200px) {
+    min-height: var(--header-height, 80px);
+  }
+
+  @media (max-width: 900px) {
+    left: 0;
+    width: 100%;
+  }
 `;
 
-const LogoImage = styled.img`
-  width: 132px;
-  max-height: 42px;
-  display: block;
-  object-fit: contain;
+const LeftCluster = styled.div`
+  display: flex;
+  align-items: center;
+  min-width: 0;
 `;
 
-const BrandFallback = styled.div`
+const MainCopy = styled.div`
+  min-width: 0;
+  padding: 12px 20px 10px 24px;
+  display: flex;
+  align-items: center;
+`;
+
+const MobileMenuButton = styled(IconButton)`
+  margin-left: 10px !important;
+  color: #ffffff !important;
+
+  @media (min-width: 901px) {
+    display: none !important;
+  }
+`;
+
+const TitleWrap = styled.div`
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+`;
+
+const Title = styled.h1`
+  margin: 0;
+  color: #ffffff;
+  font-size: 17px;
+  line-height: 1.1;
+  font-weight: 700;
+  letter-spacing: 0;
+`;
+
+const Subtitle = styled.p`
+  margin: 0;
+  color: #d5e0ef;
+  font-size: 11px;
+  line-height: 1.3;
+  font-weight: 500;
+`;
+
+const RightCluster = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
+  padding: 10px 16px 10px 0;
+  flex-wrap: nowrap;
+
+  @media (max-width: 1240px) {
+    gap: 8px;
+  }
 `;
 
-const BrandMark = styled.div`
-  position: relative;
-  width: 28px;
-  height: 28px;
-  flex: 0 0 auto;
+const DateCard = styled.div`
+  min-width: 154px;
+  padding: 7px 12px 6px;
+  border-radius: 16px;
+  background: #ffffff;
+  color: #0d1b2f;
+  text-align: center;
+  box-shadow: 0 10px 22px rgba(0, 8, 31, 0.18);
 
   span {
-    position: absolute;
     display: block;
-    border-radius: 6px;
+    color: #74839a;
+    font-size: 10px;
+    line-height: 1.1;
   }
 
-  span:nth-child(1) {
-    width: 3px;
-    height: 22px;
-    left: 2px;
-    top: 2px;
-    background: linear-gradient(180deg, #11a7df, #5fd36f);
-    transform: rotate(16deg);
-  }
-
-  span:nth-child(2) {
-    width: 3px;
-    height: 15px;
-    left: 11px;
-    top: 4px;
-    background: #5fd36f;
-    transform: rotate(16deg);
-  }
-
-  span:nth-child(3) {
-    width: 3px;
-    height: 11px;
-    left: 18px;
-    top: 10px;
-    background: #11a7df;
-    transform: rotate(16deg);
+  strong {
+    display: block;
+    margin-top: 4px;
+    font-size: 14px;
+    line-height: 1;
+    font-weight: 800;
   }
 `;
 
-const BrandText = styled.div`
+const SearchWrap = styled.div`
+  width: 178px;
+  max-width: 22vw;
+
+  .MuiInputBase-root {
+    border-radius: 999px;
+    background: #ffffff;
+    box-shadow: 0 10px 22px rgba(0, 8, 31, 0.18);
+  }
+
+  @media (min-width: 1280px) {
+    width: 226px;
+  }
+`;
+
+const ControlButton = styled(IconButton)`
+  width: 38px;
+  height: 38px;
+  background: #ffffff !important;
+  color: #0d1b2f !important;
+  box-shadow: 0 10px 22px rgba(0, 8, 31, 0.18);
+
+  &:hover {
+    background: #eef4ff !important;
+  }
+`;
+
+const ProfileChip = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 38px;
+  padding: 4px 10px 4px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #0d1b2f;
+  cursor: pointer;
+  box-shadow: 0 10px 22px rgba(0, 8, 31, 0.18);
+  text-align: left;
+
+  &:hover {
+    background: #f8fbff;
+  }
+`;
+
+const ProfileText = styled.div`
   display: grid;
-  line-height: 1;
+  min-width: 0;
 
   strong {
-    color: #5fd36f;
-    font-size: 15px;
+    font-size: 11px;
+    line-height: 1.15;
     font-weight: 800;
-    letter-spacing: 0.02em;
+    color: #0d1b2f;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   small {
-    margin-top: 3px;
-    color: #7db5d7;
-    font-size: 6px;
+    font-size: 8px;
+    line-height: 1.1;
     font-weight: 700;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
+    color: #5f7089;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 `;
 
-const NavButton = styled(Button)`
-  justify-content: flex-start !important;
-  padding: 12px 14px !important;
-  min-height: 46px;
-  border-radius: 14px !important;
-  font-weight: 500 !important;
-  letter-spacing: 0 !important;
-`;
+function Header({
+  user,
+  unreadCount,
+  searchValue,
+  onSearchChange,
+  onOpenNotifications,
+  onOpenSidebar,
+  onLogout,
+}) {
+  const [now, setNow] = useState(() => dayjs());
+  const [profileAnchor, setProfileAnchor] = useState(null);
 
-const NavScrollArea = styled(Stack)`
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  padding-right: 2px;
-`;
-
-const LogoutSection = styled.div`
-  margin-top: auto;
-`;
-
-const navItems = [
-  { id: "dashboard", label: "Dashboard", icon: <DashboardIcon /> },
-  { id: "create-request", label: "Create Request", icon: <AddIcon /> },
-  { id: "my-requests", label: "My Requests", icon: <DescriptionOutlinedIcon /> },
-  { id: "approval-requests", label: "Approval Requests", icon: <FactCheckOutlinedIcon /> },
-  { id: "pending-requests", label: "Pending Requests", icon: <HourglassTopOutlinedIcon /> },
-  { id: "rejected-requests", label: "Rejected Requests", icon: <CancelOutlinedIcon /> },
-  { id: "tracking-details", label: "Tracking Details", icon: <RoomOutlinedIcon /> },
-];
-
-function Sidebar({ activePage, onNavigate, onLogout }) {
-  const [hasLogoImage, setHasLogoImage] = useState(true);
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(dayjs()), 1000);
+    return () => window.clearInterval(timer);
+  }, []);
 
   return (
-    <Aside>
-      <Brand>
-        {hasLogoImage ? (
-          <LogoImage
-            src="/sltmobitel-logo.png"
-            alt="SLT Mobitel"
-            onError={() => setHasLogoImage(false)}
-          />
-        ) : (
-          <BrandFallback>
-            <BrandMark aria-hidden="true">
-              <span />
-              <span />
-              <span />
-            </BrandMark>
-            <BrandText aria-label="SLT Mobitel">
-              <strong>SLTMOBITEL</strong>
-              <small>The Connection</small>
-            </BrandText>
-          </BrandFallback>
-        )}
-      </Brand>
+    <Bar>
+      <LeftCluster>
+        <MobileMenuButton onClick={onOpenSidebar} aria-label="Open sidebar">
+          <MenuIcon />
+        </MobileMenuButton>
+        <MainCopy>
+          <TitleWrap>
+            <Title>Employee Dashboard</Title>
+            <Subtitle>
+              Welcome back, C.M.Kulathunga - here&apos;s what&apos;s happening across your gates today.
+            </Subtitle>
+          </TitleWrap>
+        </MainCopy>
+      </LeftCluster>
 
-      <NavScrollArea spacing={1.25}>
-        {navItems.map((item) => (
-          <NavButton
-            key={item.id}
+      <RightCluster>
+        <DateCard>
+          <span>{now.format("dddd, DD MMMM YYYY")}</span>
+          <strong>{now.format("HH:mm:ss")}</strong>
+        </DateCard>
+
+        <SearchWrap>
+          <TextField
+            value={searchValue}
+            onChange={(event) => onSearchChange(event.target.value)}
+            size="small"
+            placeholder="Search Visitor NIC"
             fullWidth
-            variant={activePage === item.id ? "contained" : "text"}
-            color={activePage === item.id ? "primary" : "inherit"}
-            startIcon={item.icon}
-            onClick={() => onNavigate(item.id)}
-            sx={{
-              color: activePage === item.id ? "#fff" : "#b6c3d7",
-              backgroundColor:
-                activePage === item.id ? "#5fd36f" : "transparent",
-              boxShadow:
-                activePage === item.id ? "0 14px 30px rgba(95, 211, 111, 0.25)" : "none",
-              "&:hover": {
-                backgroundColor:
-                  activePage === item.id ? "#5fd36f" : "rgba(255,255,255,0.08)",
-              },
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon fontSize="small" />
+                </InputAdornment>
+              ),
+            }}
+          />
+        </SearchWrap>
+
+        <Tooltip title="Refresh time">
+          <ControlButton onClick={() => setNow(dayjs())} aria-label="Refresh date and time">
+            <RefreshIcon fontSize="small" />
+          </ControlButton>
+        </Tooltip>
+
+        <Tooltip title="Notifications">
+          <ControlButton onClick={onOpenNotifications} aria-label="Open notifications">
+            <Badge badgeContent={unreadCount} color="error">
+              <NotificationsOutlinedIcon fontSize="small" />
+            </Badge>
+          </ControlButton>
+        </Tooltip>
+
+        <ProfileChip onClick={(event) => setProfileAnchor(event.currentTarget)}>
+          <ProfileText>
+            <strong>{user?.name ?? "C.M.Kulathunga"}</strong>
+            <small>{user?.department ?? "Engineer.IT Division"}</small>
+          </ProfileText>
+          <KeyboardArrowDownIcon fontSize="small" />
+        </ProfileChip>
+
+        <Menu
+          anchorEl={profileAnchor}
+          open={Boolean(profileAnchor)}
+          onClose={() => setProfileAnchor(null)}
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          transformOrigin={{ vertical: "top", horizontal: "right" }}
+        >
+          <MenuItem onClick={() => setProfileAnchor(null)}>Profile</MenuItem>
+          <MenuItem onClick={() => setProfileAnchor(null)}>Settings</MenuItem>
+          <MenuItem
+            onClick={() => {
+              setProfileAnchor(null);
+              onLogout();
             }}
           >
-            {item.label}
-          </NavButton>
-        ))}
-      </NavScrollArea>
-
-      <Divider sx={{ borderColor: "rgba(255,255,255,0.08)", my: 2 }} />
-
-      <LogoutSection>
-        <Button
-          startIcon={<LogoutIcon />}
-          onClick={onLogout}
-          sx={{
-            justifyContent: "flex-start",
-            color: "#cfd8e7",
-            borderRadius: 2,
-            px: 1.5,
-            py: 1.25,
-          }}
-        >
-          Logout
-        </Button>
-      </LogoutSection>
-    </Aside>
+            Logout
+          </MenuItem>
+        </Menu>
+      </RightCluster>
+    </Bar>
   );
 }
 
-export default Sidebar;
+export default Header;

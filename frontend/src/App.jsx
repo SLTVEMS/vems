@@ -1,3 +1,6 @@
+import RequestSuccess from './components/RequestSuccess';
+import RestrictedVisitorAlert from './components/RestrictedVisitorAlert';
+import DirectEntry from './components/DirectEntry';
 import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Alert, Box, Drawer, useMediaQuery } from "@mui/material";
@@ -81,11 +84,14 @@ function App() {
   const content = {
     dashboard: <DashboardPage />,
     "create-request": <RequestForm />,
+    "request-success": <RequestSuccess onCreateAnother={() => setActivePage("create-request")} />,
+    "restricted-alert": <RestrictedVisitorAlert />,
     "my-requests": <RequestList scope="my-requests" searchQuery={searchValue} />,
     "approval-requests": <RequestList scope="approval" searchQuery={searchValue} />,
     "pending-requests": <RequestList scope="pending" searchQuery={searchValue} />,
     "rejected-requests": <RequestList scope="rejected" searchQuery={searchValue} />,
     "tracking-details": <RequestList scope="tracking" searchQuery={searchValue} />,
+    "direct-entry": <DirectEntry />,
   }[activePage] ?? <DashboardPage />;
 
   const sidebar = (
