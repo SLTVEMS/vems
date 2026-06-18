@@ -1,6 +1,7 @@
 import RequestSuccess from './components/RequestSuccess';
 import RestrictedVisitorAlert from './components/RestrictedVisitorAlert';
 import DirectEntry from './components/DirectEntry';
+import CreateRequestForm from './components/CreateRequestForm';
 import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Header from "./components/Header.jsx";
@@ -62,6 +63,83 @@ function App() {
     dispatch(loadNotificationsRequested());
   }, [dispatch]);
 
+  const renderContent = () => {
+    switch (activeItem) {
+      case 'Create Request':
+        return <CreateRequestForm />;
+      case 'Direct Entry':
+        return <DirectEntry />;
+      case 'Restricted Visitor Alert':
+        return <RestrictedVisitorAlert />;
+      default:
+        return (
+          <>
+            <section className="metrics-grid" aria-label="Branch metrics">
+              {metrics.map((metric) => (
+                <article className={`metric-card ${metric.tone}`} key={metric.label}>
+                  <span>{metric.label}</span>
+                  <strong>{metric.value}</strong>
+                  <p>{metric.trend}</p>
+                </article>
+              ))}
+            </section>
+
+            <section className="dashboard-grid">
+              <article className="panel request-panel">
+                <div className="panel-heading">
+                  <div>
+                    <p>Queue</p>
+                    <h3>Recent Vehicle Requests</h3>
+                  </div>
+                  <button type="button">View all</button>
+                </div>
+
+                <div className="request-list">
+                  {requests.map((request) => (
+                    <div className="request-row" key={request.id}>
+                      <div>
+                        <strong>{request.id}</strong>
+                        <span>{request.visitor}</span>
+                      </div>
+                      <span>{request.vehicle}</span>
+                      <span>{request.branch}</span>
+                      <span className={`status ${request.status.toLowerCase()}`}>
+                        {request.status}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </article>
+
+              <article className="panel branch-panel">
+                <div className="panel-heading">
+                  <div>
+                    <p>Branch</p>
+                    <h3>Today Summary</h3>
+                  </div>
+                </div>
+
+                <div className="summary-stack">
+                  <div>
+                    <span>Gate A</span>
+                    <strong>14 entries</strong>
+                  </div>
+                  <div>
+                    <span>Gate B</span>
+                    <strong>9 exits</strong>
+                  </div>
+                  <div>
+                    <span>Average approval</span>
+                    <strong>11 min</strong>
+                  </div>
+                </div>
+              </article>
+            </section>
+          </>
+        );
+    }
+  };
+
   return (
     <div className={`app-shell${isSidebarOpen ? " sidebar-open" : ""}`}>
       <Header
@@ -87,72 +165,16 @@ function App() {
             <p>Live Operations</p>
             <h2>{activeItem}</h2>
           </div>
-          <button className="primary-action" type="button">
+          <button
+            className="primary-action"
+            type="button"
+            onClick={() => setActiveItem("Create Request")}
+          >
             New Vehicle Request
           </button>
         </section>
 
-        <section className="metrics-grid" aria-label="Branch metrics">
-          {metrics.map((metric) => (
-            <article className={`metric-card ${metric.tone}`} key={metric.label}>
-              <span>{metric.label}</span>
-              <strong>{metric.value}</strong>
-              <p>{metric.trend}</p>
-            </article>
-          ))}
-        </section>
-
-        <section className="dashboard-grid">
-          <article className="panel request-panel">
-            <div className="panel-heading">
-              <div>
-                <p>Queue</p>
-                <h3>Recent Vehicle Requests</h3>
-              </div>
-              <button type="button">View all</button>
-            </div>
-
-            <div className="request-list">
-              {requests.map((request) => (
-                <div className="request-row" key={request.id}>
-                  <div>
-                    <strong>{request.id}</strong>
-                    <span>{request.visitor}</span>
-                  </div>
-                  <span>{request.vehicle}</span>
-                  <span>{request.branch}</span>
-                  <span className={`status ${request.status.toLowerCase()}`}>
-                    {request.status}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </article>
-
-          <article className="panel branch-panel">
-            <div className="panel-heading">
-              <div>
-                <p>Branch</p>
-                <h3>Today Summary</h3>
-              </div>
-            </div>
-
-            <div className="summary-stack">
-              <div>
-                <span>Gate A</span>
-                <strong>14 entries</strong>
-              </div>
-              <div>
-                <span>Gate B</span>
-                <strong>9 exits</strong>
-              </div>
-              <div>
-                <span>Average approval</span>
-                <strong>11 min</strong>
-              </div>
-            </div>
-          </article>
-        </section>
+        {renderContent()}
       </main>
 
       <NotificationDrawer
