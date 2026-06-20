@@ -6,6 +6,7 @@ import {
   MenuItem,
   Select,
   OutlinedInput,
+<<<<<<< HEAD
   Dialog,
   DialogTitle,
   DialogContent,
@@ -15,20 +16,15 @@ import {
   IconButton,
   TextField,
   InputAdornment,
+=======
+>>>>>>> 2ee48b3b76b5087391959dee1ed80a3be46a619e
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import CloseIcon from "@mui/icons-material/Close";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import BadgeIcon from "@mui/icons-material/Badge";
-import PersonIcon from "@mui/icons-material/Person";
-import EmailIcon from "@mui/icons-material/Email";
-import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
-import PhoneIcon from "@mui/icons-material/Phone";
-import QrCodeIcon from "@mui/icons-material/QrCode";
 import styled from "styled-components";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import RequestsTable from "../components/RequestsTable";
+import RequestDetailModal from "../components/RequestDetaipopup";
 import requestData from "../mocks/requestData";
 import "../App.css";
 
@@ -40,6 +36,7 @@ const HEADER_HEIGHT_SM = 76;
 const SIDEBAR_WIDTH = 304;
 
 // ─────────────────────────────────────────────────────────────
+<<<<<<< HEAD
 // Status config
 // ─────────────────────────────────────────────────────────────
 const STATUS_CONFIG = {
@@ -50,20 +47,54 @@ const STATUS_CONFIG = {
 
 // ─────────────────────────────────────────────────────────────
 // Styled components
+=======
+// Styled components — EXACTLY as provided, no changes
+>>>>>>> 2ee48b3b76b5087391959dee1ed80a3be46a619e
 // ─────────────────────────────────────────────────────────────
 const PageWrapper = styled.div`
+  min-height: 100vh;
   background: #f5f7fa;
+  
+  &.sidebar-open .sidebar {
+    transform: translateX(0);
+  }
+  
+  &.sidebar-open .sidebar-backdrop {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  
+  &.sidebar-open .sidebar-toggle {
+    left: calc(${SIDEBAR_WIDTH}px - 56px);
+  }
+  
+  &.sidebar-open .scroll-controls {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(0);
+  }
+
+  @media (min-width: 901px) {
+    &.sidebar-open .main-content {
+      left: calc(${SIDEBAR_WIDTH}px + 16px); 
+    }
+  }
 `;
 
 const MainContent = styled.div`
   position: fixed;
   top: ${HEADER_HEIGHT}px;
+<<<<<<< HEAD
   left: ${({ $sidebarOpen }) => ($sidebarOpen ? `${SIDEBAR_WIDTH}px` : "0")};
+=======
+  left: 0; 
+>>>>>>> 2ee48b3b76b5087391959dee1ed80a3be46a619e
   right: 0;
   bottom: 0;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+<<<<<<< HEAD
   padding: 36px 40px 0 ${({ $sidebarOpen }) => ($sidebarOpen ? "40px" : "88px")};
   box-sizing: border-box;
   background: #f5f7fa;
@@ -82,6 +113,23 @@ const MainContent = styled.div`
     left: 0;
     padding: 24px 20px 0;
   }
+=======
+  padding: 36px 40px 0 75px; 
+  box-sizing: border-box;
+  background: #f5f7fa;
+  transition: left 260ms ease, padding-left 260ms ease;
+
+  .sidebar-open & {
+    @media (min-width: 901px) {
+      padding-left: 40px; 
+    }
+  }
+
+  @media (max-width: 900px) {
+    padding: 24px 20px 0;
+  }
+  
+>>>>>>> 2ee48b3b76b5087391959dee1ed80a3be46a619e
   @media (max-width: 600px) {
     padding: 16px 14px 0;
   }
@@ -117,6 +165,7 @@ const NewRequestBtn = styled(Button)`
   box-shadow: none !important;
   white-space: nowrap;
   flex-shrink: 0;
+  
   &:hover {
     background: #1a3566 !important;
     box-shadow: 0 4px 14px rgba(15, 32, 66, 0.25) !important;
@@ -128,9 +177,17 @@ const StatsRow = styled.div`
   grid-template-columns: repeat(4, 1fr);
   gap: 16px;
   margin-top: 20px;
+<<<<<<< HEAD
   @media (max-width: 900px) {
     grid-template-columns: repeat(2, 1fr);
   }
+=======
+  
+  @media (max-width: 900px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+>>>>>>> 2ee48b3b76b5087391959dee1ed80a3be46a619e
   @media (max-width: 500px) {
     grid-template-columns: 1fr;
   }
@@ -183,7 +240,6 @@ const CardTopBar = styled.div`
   flex-shrink: 0;
 `;
 
-/* Pill-style select */
 const PillSelect = styled(Select)`
   height: 32px !important;
   border-radius: 999px !important;
@@ -196,6 +252,7 @@ const PillSelect = styled(Select)`
     padding-left: 14px !important;
     padding-right: 28px !important;
   }
+<<<<<<< HEAD
   & .MuiOutlinedInput-notchedOutline {
     border: none !important;
   }
@@ -239,6 +296,16 @@ const DetailValue = styled(Typography)`
   color: #1a2332 !important;
   font-weight: 600 !important;
   line-height: 1.3 !important;
+=======
+  
+  & .MuiOutlinedInput-notchedOutline {
+    border: none !important;
+  }
+  
+  & .MuiSvgIcon-root {
+    color: #ffffff !important;
+  }
+>>>>>>> 2ee48b3b76b5087391959dee1ed80a3be46a619e
 `;
 
 // ─────────────────────────────────────────────────────────────
@@ -246,6 +313,7 @@ const DetailValue = styled(Typography)`
 // ─────────────────────────────────────────────────────────────
 const STATUS_OPTIONS = [
   { label: "All Requests", value: "all" },
+<<<<<<< HEAD
   { label: "Approved", value: "Approved" },
   { label: "Pending", value: "Pending" },
   { label: "Rejected", value: "Rejected" },
@@ -253,6 +321,15 @@ const STATUS_OPTIONS = [
 
 const DATE_OPTIONS = [
   { label: "Last 7 days", value: "7d" },
+=======
+  { label: "Approved",     value: "Approved" },
+  { label: "Pending",      value: "Pending" },
+  { label: "Rejected",     value: "Rejected" },
+];
+
+const DATE_OPTIONS = [
+  { label: "Last 7 days",  value: "7d" },
+>>>>>>> 2ee48b3b76b5087391959dee1ed80a3be46a619e
   { label: "Last 30 days", value: "30d" },
   { label: "Last 90 days", value: "90d" },
   { label: "All time", value: "all" },
@@ -260,9 +337,16 @@ const DATE_OPTIONS = [
 
 const filterByDate = (rows, range) => {
   if (range === "all") return rows;
+<<<<<<< HEAD
   const now = new Date();
   const days = range === "7d" ? 7 : range === "30d" ? 30 : 90;
   const cutoff = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+=======
+  const days     = range === "7d" ? 7 : range === "30d" ? 30 : 90;
+  const allDates = rows.map((r) => new Date(r.visitingDate).getTime());
+  const latest   = new Date(Math.max(...allDates));
+  const cutoff   = new Date(latest.getTime() - days * 24 * 60 * 60 * 1000);
+>>>>>>> 2ee48b3b76b5087391959dee1ed80a3be46a619e
   return rows.filter((r) => new Date(r.visitingDate) >= cutoff);
 };
 
@@ -580,6 +664,7 @@ const NewRequestModal = ({ open, onClose, onSubmit }) => {
 };
 
 // ─────────────────────────────────────────────────────────────
+<<<<<<< HEAD
 // View Detail Modal
 // ─────────────────────────────────────────────────────────────
 const ViewDetailModal = ({ open, row, onClose }) => {
@@ -722,14 +807,21 @@ const ViewDetailModal = ({ open, row, onClose }) => {
 };
 
 // ─────────────────────────────────────────────────────────────
+=======
+>>>>>>> 2ee48b3b76b5087391959dee1ed80a3be46a619e
 // Main Component
 // ─────────────────────────────────────────────────────────────
 const MyRequestsPage = () => {
   const [requests, setRequests] = useState(requestData);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [searchValue, setSearchValue] = useState("");
+<<<<<<< HEAD
   const [status, setStatus] = useState("all");
   const [dateRange, setDateRange] = useState("30d");
+=======
+  const [status,      setStatus]      = useState("all");
+  const [dateRange,   setDateRange]   = useState("7d");
+>>>>>>> 2ee48b3b76b5087391959dee1ed80a3be46a619e
   const [selectedRow, setSelectedRow] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [newModalOpen, setNewModalOpen] = useState(false);
@@ -783,7 +875,12 @@ const MyRequestsPage = () => {
   };
 
   return (
+<<<<<<< HEAD
     <PageWrapper className={`app-shell${sidebarOpen ? " sidebar-open" : ""}`}>
+=======
+    <PageWrapper className={sidebarOpen ? "sidebar-open" : ""}>
+
+>>>>>>> 2ee48b3b76b5087391959dee1ed80a3be46a619e
       <Header
         searchValue={searchValue}
         onSearchChange={setSearchValue}
@@ -791,6 +888,7 @@ const MyRequestsPage = () => {
         onOpenNotifications={() => {}}
         onLogout={() => {}}
       />
+
       <Sidebar
         isOpen={sidebarOpen}
         activeItem="My Requests"
@@ -799,9 +897,14 @@ const MyRequestsPage = () => {
         onToggle={() => setSidebarOpen((o) => !o)}
       />
 
+<<<<<<< HEAD
       <MainContent $sidebarOpen={sidebarOpen}>
+=======
+      <MainContent className="main-content">
+>>>>>>> 2ee48b3b76b5087391959dee1ed80a3be46a619e
         <StaticSection>
           {/* ── Page header ── */}
+<<<<<<< HEAD
           <Box
             sx={{
               display: "flex",
@@ -833,13 +936,19 @@ const MyRequestsPage = () => {
                     whiteSpace: "nowrap",
                   }}
                 >
+=======
+          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 2, flexWrap: "wrap" }}>
+            <Box>
+              <Breadcrumb>Visitor Management</Breadcrumb>
+
+              <Box sx={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
+                <Typography sx={{ fontSize: "1.75rem", fontWeight: 700, color: "#0f2042", lineHeight: 1.2, whiteSpace: "nowrap" }}>
+>>>>>>> 2ee48b3b76b5087391959dee1ed80a3be46a619e
                   Requests
                 </Typography>
 
-                {/* Spacer pushes pills rightward toward the middle */}
                 <Box sx={{ width: "160px", flexShrink: 0 }} />
 
-                {/* Status pill */}
                 <PillSelect
                   value={status}
                   onChange={(e) => setStatus(e.target.value)}
@@ -858,7 +967,6 @@ const MyRequestsPage = () => {
                   ))}
                 </PillSelect>
 
-                {/* Date range pill */}
                 <PillSelect
                   value={dateRange}
                   onChange={(e) => setDateRange(e.target.value)}
@@ -882,6 +990,7 @@ const MyRequestsPage = () => {
               </PageSubtitle>
             </Box>
 
+<<<<<<< HEAD
             {/* RIGHT — New Request button alone on far right */}
             <NewRequestBtn
               startIcon={<AddIcon />}
@@ -889,6 +998,9 @@ const MyRequestsPage = () => {
             >
               New Request
             </NewRequestBtn>
+=======
+            <NewRequestBtn startIcon={<AddIcon />}>New Request</NewRequestBtn>
+>>>>>>> 2ee48b3b76b5087391959dee1ed80a3be46a619e
           </Box>
 
           {/* ── Stat cards ── */}
@@ -912,7 +1024,7 @@ const MyRequestsPage = () => {
           </StatsRow>
         </StaticSection>
 
-        {/* ── Table card — fills the rest of the viewport height ── */}
+        {/* ── Table card ── */}
         <CardPanel>
           <CardTopBar>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
@@ -940,34 +1052,38 @@ const MyRequestsPage = () => {
             </Box>
           </CardTopBar>
 
-          {/*
-           * FIX 2 — stickyHeader on the MUI Table makes the <thead> stick
-           * while only <tbody> rows scroll. overflow-x keeps horizontal scroll.
-           * overflow-y: auto on this wrapper gives the ONE scrollbar.
-           */}
           <Box sx={{ flex: 1, overflow: "auto", minHeight: 0 }}>
             <RequestsTable
               rows={filteredRows}
+<<<<<<< HEAD
               stickyHeader
               onView={(row) => {
                 setSelectedRow(row);
                 setModalOpen(true);
               }}
+=======
+              onView={(row) => { setSelectedRow(row); setModalOpen(true); }}
+>>>>>>> 2ee48b3b76b5087391959dee1ed80a3be46a619e
             />
           </Box>
         </CardPanel>
       </MainContent>
 
-      <ViewDetailModal
+      {/* ── Modal as separate component ── */}
+      <RequestDetailModal
         open={modalOpen}
         row={selectedRow}
         onClose={() => setModalOpen(false)}
       />
+<<<<<<< HEAD
       <NewRequestModal
         open={newModalOpen}
         onClose={() => setNewModalOpen(false)}
         onSubmit={createRequest}
       />
+=======
+
+>>>>>>> 2ee48b3b76b5087391959dee1ed80a3be46a619e
     </PageWrapper>
   );
 };
