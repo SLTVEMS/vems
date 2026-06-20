@@ -3,11 +3,10 @@ import { createRoot } from "react-dom/client";
 import { CssBaseline } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import { Provider } from "react-redux";
-import App from "./App.jsx";
 import { store } from "./app/store.js";
 import { GlobalStyles } from "./styles/globalStyles.js";
 import { theme } from "./styles/theme.js";
-import Home from "./pages/Home.jsx";
+import Root from "./Root.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -15,7 +14,7 @@ createRoot(document.getElementById("root")).render(
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <GlobalStyles />
-        <Home />
+        <Root />
       </ThemeProvider>
     </Provider>
   </StrictMode>,

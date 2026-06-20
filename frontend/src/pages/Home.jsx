@@ -5,38 +5,79 @@ const HERO_IMAGE_SRC = sltLogo;
 
 // ── Icon components ──────────────────────────────────────────
 const IconBolt = () => (
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#38BDF8" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width="22"
+    height="22"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="#38BDF8"
+    strokeWidth="2.2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
   </svg>
 );
 
 const IconLock = () => (
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#38BDF8" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width="22"
+    height="22"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="#38BDF8"
+    strokeWidth="2.2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
     <path d="M7 11V7a5 5 0 0 1 10 0v4" />
   </svg>
 );
 
 const IconCheck = () => (
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#38BDF8" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width="22"
+    height="22"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="#38BDF8"
+    strokeWidth="2.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <polyline points="20 6 9 17 4 12" />
   </svg>
 );
 
 const IconMS = () => (
-  <svg width="22" height="22" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg">
-    <rect x="1"  y="1"  width="9" height="9" fill="#f25022" />
-    <rect x="11" y="1"  width="9" height="9" fill="#7fba00" />
-    <rect x="1"  y="11" width="9" height="9" fill="#00a4ef" />
+  <svg
+    width="22"
+    height="22"
+    viewBox="0 0 21 21"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <rect x="1" y="1" width="9" height="9" fill="#f25022" />
+    <rect x="11" y="1" width="9" height="9" fill="#7fba00" />
+    <rect x="1" y="11" width="9" height="9" fill="#00a4ef" />
     <rect x="11" y="11" width="9" height="9" fill="#ffb900" />
   </svg>
 );
 
 // ── Feature data ─────────────────────────────────────────────
 const FEATURES = [
-  { icon: <IconBolt />, text: "Quick and efficient visitor approval workflow." },
-  { icon: <IconLock />, text: "Enhanced security with QR-based visitor verification." },
-  { icon: <IconCheck />, text: "Monitor visitor entry and exit activities in real time." },
+  {
+    icon: <IconBolt />,
+    text: "Quick and efficient visitor approval workflow.",
+  },
+  {
+    icon: <IconLock />,
+    text: "Enhanced security with QR-based visitor verification.",
+  },
+  {
+    icon: <IconCheck />,
+    text: "Monitor visitor entry and exit activities in real time.",
+  },
 ];
 
 // ── Styles ───────────────────────────────────────────────────
@@ -245,9 +286,12 @@ const STYLES = `
 `;
 
 // ── Component ────────────────────────────────────────────────
-export default function HomePage() {
+export default function HomePage({ onLogin }) {
   useState(() => {
-    if (typeof document !== "undefined" && !document.getElementById("hp-styles")) {
+    if (
+      typeof document !== "undefined" &&
+      !document.getElementById("hp-styles")
+    ) {
       const tag = document.createElement("style");
       tag.id = "hp-styles";
       tag.textContent = STYLES;
@@ -255,14 +299,12 @@ export default function HomePage() {
     }
   });
 
-  const handleMicrosoftLogin = () => console.log("Trigger Microsoft SSO flow");
+  const handleMicrosoftLogin = () => onLogin?.();
 
   return (
     <div className="hp-root">
-
       {/* ── Hero Card ── */}
       <section className="hp-hero" aria-label="Visitor Pass Hero">
-
         {/* Left — title, subtitle, MS login button */}
         <div className="hp-hero-left">
           <div>
@@ -321,7 +363,6 @@ export default function HomePage() {
           © 2026 SLTMobitel. All Rights Reserved.
         </div>
       </footer>
-
     </div>
   );
 }
