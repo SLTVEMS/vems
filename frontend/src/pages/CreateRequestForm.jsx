@@ -15,6 +15,8 @@ import VisitorTypeSection from "../components/VisitorTypeSection";
 import RequesterDetailsSection from "../components/RequesterDetailsSection";
 import VisitDetailsSection from "../components/VisitDetailsSection";
 import SupportingDocumentsSection from "../components/SupportingDocumentsSection";
+import VisitorCreateRequestForm from "../components/VisitorCreateRequestForm";
+import VisitorSuccessScreen from "../components/VisitorSuccessScreen";
 
 const validationSchema = Yup.object({
   requestDate: Yup.string().required(),
@@ -178,7 +180,7 @@ const initialValues = {
   attachments: [],
 };
 
-function CreateRequestForm() {
+function CreateRequestForm({ onClose, onRequestCreated } = {}) {
   const visitorTypeColors = {
     Guest: "#2F80ED",
     Contractor: "#FF7F22",
@@ -192,6 +194,10 @@ function CreateRequestForm() {
   useState(false);
   const [showDuplicateWarning, setShowDuplicateWarning] =
   useState(false);
+  const [shareFormOpen, setShareFormOpen] = useState(false);
+  const [visitorRequestSubmitted, setVisitorRequestSubmitted] =
+  useState(false);
+  const [sharedFormValues, setSharedFormValues] = useState(null);
 
   const duplicateVisitorData = {
     requestCode: "VE20260615-90",
@@ -205,6 +211,9 @@ function CreateRequestForm() {
 
   setRequestSubmitted(true);
 
+  if (onRequestCreated) {
+    onRequestCreated(values);
+  }
 
   };
   const handleFormReset = (formik) => {
@@ -215,6 +224,32 @@ function CreateRequestForm() {
         formik.values.visitorType,
     });
   };
+
+  // ── Visitor success screen ──
+  // Shown after the shared Visitor Create Request Form is submitted.
+  if (visitorRequestSubmitted) {
+    return (
+      <VisitorSuccessScreen
+        onCreateAnother={() => {
+          setVisitorRequestSubmitted(false);
+          setShareFormOpen(false);
+          setSharedFormValues(null);
+        }}
+      />
+    );
+  }
+
+  // ── Visitor Create Request Form ──
+  // Opened by clicking "Share Form" on the main request form below.
+  if (shareFormOpen) {
+    return (
+      <VisitorCreateRequestForm
+        sharedValues={sharedFormValues || {}}
+        onBack={() => setShareFormOpen(false)}
+        onSubmitted={() => setVisitorRequestSubmitted(true)}
+      />
+    );
+  }
 
   return (
     <Box
@@ -448,43 +483,17 @@ function CreateRequestForm() {
                   sx={{
                     mt: 5,
                     display: "flex",
-                    justifyContent: "flex-end",
-                    gap: 2,
+                    justifyContent: "center",
                   }}
                 >
                   <Button
                     variant="contained"
-                    onClick={() => handleFormReset(formik)}
-                    sx={{
-                      borderRadius: "16px",
-                      px: 4,
-                      py: 1.4,
-
-                      textTransform: "none",
-
-                      fontWeight: 600,
-                      fontSize: "14px",
-
-                      background: "#F1F5F9",
-                      color: "#475569",
-
-                      boxShadow: "none",
-
-                      "&:hover": {
-                        background: "#E2E8F0",
-                        boxShadow: "none",
-                      },
+                    onClick={() => {
+                      setSharedFormValues(formik.values);
+                      setShareFormOpen(true);
                     }}
-                  >
-                    Reset
-                  </Button>
-
-                  <Button
-                    type="submit"
-                    variant="contained"
                     sx={{
                       borderRadius: "16px",
-
                       px: 5,
                       py: 1.4,
 
@@ -512,8 +521,109 @@ function CreateRequestForm() {
                       },
                     }}
                   >
-                    Submit Request
+                    Share Form
                   </Button>
+                </Box>
+
+                <Box
+                  sx={{
+                    mt: 4,
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    gap: 2,
+                  }}
+                >
+                  <Button
+                    variant="outlined"
+                    onClick={() => {
+                      if (onClose) {
+                        onClose();
+                      } else {
+                        setShowForm(false);
+                      }
+                    }}
+                    sx={{
+                      borderRadius: "16px",
+                      px: 4,
+                      py: 1.4,
+
+                      textTransform: "none",
+
+                      fontWeight: 600,
+                      fontSize: "14px",
+
+                      borderColor: "#E2E8F0",
+                      color: "#475569",
+
+                      "&:hover": {
+                        borderColor: "#CBD5E1",
+                        background: "#F8FAFC",
+                      },
+                    }}
+                  >
+                    ← Back
+                  </Button>
+
+                  <Box
+                    sx={{
+                      display: "flex",
+                      gap: 2,
+                    }}
+                  >
+                    <Button
+                      variant="text"
+                      onClick={() => handleFormReset(formik)}
+                      sx={{
+                        borderRadius: "16px",
+                        px: 3,
+                        py: 1.4,
+
+                        textTransform: "none",
+
+                        fontWeight: 600,
+                        fontSize: "14px",
+
+                        color: "#64748B",
+                      }}
+                    >
+                      Clear
+                    </Button>
+
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      sx={{
+                        borderRadius: "16px",
+
+                        px: 5,
+                        py: 1.4,
+
+                        textTransform: "none",
+
+                        fontWeight: 700,
+                        fontSize: "14px",
+
+                        background: "#22C55E",
+
+                        boxShadow:
+                          "0px 10px 25px rgba(34,197,94,0.25)",
+
+                        transition: "all 0.25s ease",
+
+                        "&:hover": {
+                          transform: "translateY(-2px)",
+
+                          background: "#1EA94F",
+
+                          boxShadow:
+                            "0px 15px 30px rgba(34,197,94,0.35)",
+                        },
+                      }}
+                    >
+                      Submit Request
+                    </Button>
+                  </Box>
                 </Box>
               </Box>
               )}
