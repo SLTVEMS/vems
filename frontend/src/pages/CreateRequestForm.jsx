@@ -15,6 +15,7 @@ import VisitorTypeSection from "../components/VisitorTypeSection";
 import RequesterDetailsSection from "../components/RequesterDetailsSection";
 import VisitDetailsSection from "../components/VisitDetailsSection";
 import SupportingDocumentsSection from "../components/SupportingDocumentsSection";
+import FormProgressTracker from "../components/FormProgressTracker";
 
 const validationSchema = Yup.object({
   requestDate: Yup.string().required(),
@@ -278,6 +279,11 @@ function CreateRequestForm() {
               visitorTypeColors[
                 formik.values.visitorType
               ] || "#071B52";
+                const activeStep = requestSubmitted
+                  ? 2
+                  : showForm
+                  ? 1
+                  : 0;
 
             return (
               <Form>
@@ -289,68 +295,20 @@ function CreateRequestForm() {
                   margin: "0 auto",
                   boxSizing: "border-box",
                 }}
+                
               >
+                <FormProgressTracker
+                  activeStep={activeStep}
+                  activeColor={selectedColor}
+                />
                {!showForm && (
               <>
                 <Box sx={{ mb: 6 }}>
-                  <VisitorTypeSection formik={formik} />
+                  <VisitorTypeSection
+                    formik={formik}
+                    onAutoNext={() => setShowForm(true)}
+                  />
                 </Box>
-
-                {formik.values.visitorType && (
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      mb: 4,
-                    }}
-                  >
-                    <Button
-                      variant="contained"
-                      size="large"
-                      onClick={() => {
-                        window.scrollTo({
-                          top: 250,
-                          behavior: "smooth",
-                        });
-
-                        setTimeout(() => {
-                          setShowForm(true);
-                        }, 250);
-                      }}
-                      sx={{
-                        px: 7,
-                        py: 1.6,
-
-                        borderRadius: "18px",
-
-                        textTransform: "none",
-
-                        fontWeight: 700,
-                        fontSize: "15px",
-
-                        background:
-                          "linear-gradient(135deg,#021C54,#0A2F88)",
-
-                        boxShadow:
-                          "0px 10px 25px rgba(2,28,84,0.25)",
-
-                        transition: "all 0.25s ease",
-
-                        "&:hover": {
-                          transform: "translateY(-2px)",
-
-                          background:
-                            "linear-gradient(135deg,#021C54,#0A2F88)",
-
-                          boxShadow:
-                            "0px 15px 30px rgba(2,28,84,0.35)",
-                        },
-                      }}
-                    >
-                      Next
-                    </Button>
-                  </Box>
-                )}
               </>
             )}
 
