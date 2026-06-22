@@ -202,10 +202,7 @@ function CreateRequestForm() {
   const handleSubmit = (values) => {
   console.log(values);
 
-
   setRequestSubmitted(true);
-
-
   };
   const handleFormReset = (formik) => {
     formik.setValues({
