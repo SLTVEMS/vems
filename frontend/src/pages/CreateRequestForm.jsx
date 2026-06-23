@@ -15,9 +15,7 @@ import VisitorTypeSection from "../components/VisitorTypeSection";
 import RequesterDetailsSection from "../components/RequesterDetailsSection";
 import VisitDetailsSection from "../components/VisitDetailsSection";
 import SupportingDocumentsSection from "../components/SupportingDocumentsSection";
-import FormProgressTracker from "../components/FormProgressTracker";
-import VisitorCreateRequestForm from "../components/VisitorCreateRequestForm";
-import VisitorSuccessScreen from "../components/VisitorSuccessScreen";
+import RequestSuccess from "../components/RequestSuccess";
 
 const validationSchema = Yup.object({
   requestDate: Yup.string().required(),
@@ -181,7 +179,7 @@ const initialValues = {
   attachments: [],
 };
 
-function CreateRequestForm({ onClose, onRequestCreated } = {}) {
+function CreateRequestForm() {
   const visitorTypeColors = {
     Guest: "#2F80ED",
     Contractor: "#FF7F22",
@@ -195,10 +193,6 @@ function CreateRequestForm({ onClose, onRequestCreated } = {}) {
   useState(false);
   const [showDuplicateWarning, setShowDuplicateWarning] =
   useState(false);
-  const [shareFormOpen, setShareFormOpen] = useState(false);
-  const [visitorRequestSubmitted, setVisitorRequestSubmitted] =
-  useState(false);
-  const [sharedFormValues, setSharedFormValues] = useState(null);
 
   const duplicateVisitorData = {
     requestCode: "VE20260615-90",
@@ -207,13 +201,12 @@ function CreateRequestForm({ onClose, onRequestCreated } = {}) {
   };
 
   const handleSubmit = (values) => {
-    console.log(values);
+  console.log(values);
 
-    setRequestSubmitted(true);
 
-    if (onRequestCreated) {
-      onRequestCreated(values);
-    }
+  setRequestSubmitted(true);
+
+
   };
   const handleFormReset = (formik) => {
     formik.setValues({
@@ -223,32 +216,6 @@ function CreateRequestForm({ onClose, onRequestCreated } = {}) {
         formik.values.visitorType,
     });
   };
-
-  // ── Visitor success screen ──
-  // Shown after the shared Visitor Create Request Form is submitted.
-  if (visitorRequestSubmitted) {
-    return (
-      <VisitorSuccessScreen
-        onCreateAnother={() => {
-          setVisitorRequestSubmitted(false);
-          setShareFormOpen(false);
-          setSharedFormValues(null);
-        }}
-      />
-    );
-  }
-
-  // ── Visitor Create Request Form ──
-  // Opened by clicking "Share Form" on the main request form below.
-  if (shareFormOpen) {
-    return (
-      <VisitorCreateRequestForm
-        sharedValues={sharedFormValues || {}}
-        onBack={() => setShareFormOpen(false)}
-        onSubmitted={() => setVisitorRequestSubmitted(true)}
-      />
-    );
-  }
 
   return (
     <Box
@@ -315,11 +282,6 @@ function CreateRequestForm({ onClose, onRequestCreated } = {}) {
               visitorTypeColors[
                 formik.values.visitorType
               ] || "#071B52";
-                const activeStep = requestSubmitted
-                  ? 2
-                  : showForm
-                  ? 1
-                  : 0;
 
             return (
               <Form>
@@ -331,20 +293,68 @@ function CreateRequestForm({ onClose, onRequestCreated } = {}) {
                   margin: "0 auto",
                   boxSizing: "border-box",
                 }}
-                
               >
-                <FormProgressTracker
-                  activeStep={activeStep}
-                  activeColor={selectedColor}
-                />
                {!showForm && (
               <>
                 <Box sx={{ mb: 6 }}>
-                  <VisitorTypeSection
-                    formik={formik}
-                    onAutoNext={() => setShowForm(true)}
-                  />
+                  <VisitorTypeSection formik={formik} />
                 </Box>
+
+                {formik.values.visitorType && (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      mb: 4,
+                    }}
+                  >
+                    <Button
+                      variant="contained"
+                      size="large"
+                      onClick={() => {
+                        window.scrollTo({
+                          top: 250,
+                          behavior: "smooth",
+                        });
+
+                        setTimeout(() => {
+                          setShowForm(true);
+                        }, 250);
+                      }}
+                      sx={{
+                        px: 7,
+                        py: 1.6,
+
+                        borderRadius: "18px",
+
+                        textTransform: "none",
+
+                        fontWeight: 700,
+                        fontSize: "15px",
+
+                        background:
+                          "linear-gradient(135deg,#021C54,#0A2F88)",
+
+                        boxShadow:
+                          "0px 10px 25px rgba(2,28,84,0.25)",
+
+                        transition: "all 0.25s ease",
+
+                        "&:hover": {
+                          transform: "translateY(-2px)",
+
+                          background:
+                            "linear-gradient(135deg,#021C54,#0A2F88)",
+
+                          boxShadow:
+                            "0px 15px 30px rgba(2,28,84,0.35)",
+                        },
+                      }}
+                    >
+                      Next
+                    </Button>
+                  </Box>
+                )}
               </>
             )}
 
@@ -439,17 +449,43 @@ function CreateRequestForm({ onClose, onRequestCreated } = {}) {
                   sx={{
                     mt: 5,
                     display: "flex",
-                    justifyContent: "center",
+                    justifyContent: "flex-end",
+                    gap: 2,
                   }}
                 >
                   <Button
                     variant="contained"
-                    onClick={() => {
-                      setSharedFormValues(formik.values);
-                      setShareFormOpen(true);
-                    }}
+                    onClick={() => handleFormReset(formik)}
                     sx={{
                       borderRadius: "16px",
+                      px: 4,
+                      py: 1.4,
+
+                      textTransform: "none",
+
+                      fontWeight: 600,
+                      fontSize: "14px",
+
+                      background: "#F1F5F9",
+                      color: "#475569",
+
+                      boxShadow: "none",
+
+                      "&:hover": {
+                        background: "#E2E8F0",
+                        boxShadow: "none",
+                      },
+                    }}
+                  >
+                    Reset
+                  </Button>
+
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    sx={{
+                      borderRadius: "16px",
+
                       px: 5,
                       py: 1.4,
 
@@ -477,247 +513,20 @@ function CreateRequestForm({ onClose, onRequestCreated } = {}) {
                       },
                     }}
                   >
-                    Share Form
+                    Submit Request
                   </Button>
-                </Box>
-
-                <Box
-                  sx={{
-                    mt: 4,
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    gap: 2,
-                  }}
-                >
-                  <Button
-                    variant="outlined"
-                    onClick={() => {
-                      if (onClose) {
-                        onClose();
-                      } else {
-                        setShowForm(false);
-                      }
-                    }}
-                    sx={{
-                      borderRadius: "16px",
-                      px: 4,
-                      py: 1.4,
-
-                      textTransform: "none",
-
-                      fontWeight: 600,
-                      fontSize: "14px",
-
-                      borderColor: "#E2E8F0",
-                      color: "#475569",
-
-                      "&:hover": {
-                        borderColor: "#CBD5E1",
-                        background: "#F8FAFC",
-                      },
-                    }}
-                  >
-                    ← Back
-                  </Button>
-
-                  <Box
-                    sx={{
-                      display: "flex",
-                      gap: 2,
-                    }}
-                  >
-                    <Button
-                      variant="text"
-                      onClick={() => handleFormReset(formik)}
-                      sx={{
-                        borderRadius: "16px",
-                        px: 3,
-                        py: 1.4,
-
-                        textTransform: "none",
-
-                        fontWeight: 600,
-                        fontSize: "14px",
-
-                        color: "#64748B",
-                      }}
-                    >
-                      Clear
-                    </Button>
-
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      sx={{
-                        borderRadius: "16px",
-
-                        px: 5,
-                        py: 1.4,
-
-                        textTransform: "none",
-
-                        fontWeight: 700,
-                        fontSize: "14px",
-
-                        background: "#22C55E",
-
-                        boxShadow:
-                          "0px 10px 25px rgba(34,197,94,0.25)",
-
-                        transition: "all 0.25s ease",
-
-                        "&:hover": {
-                          transform: "translateY(-2px)",
-
-                          background: "#1EA94F",
-
-                          boxShadow:
-                            "0px 15px 30px rgba(34,197,94,0.35)",
-                        },
-                      }}
-                    >
-                      Submit Request
-                    </Button>
-                  </Box>
                 </Box>
               </Box>
               )}
 
              {requestSubmitted && (
-              <Paper
-                elevation={0}
-                sx={{
-                  maxWidth: "620px",
-                  margin: "40px auto",
-                  padding: "50px",
-                  borderRadius: "24px",
-                  textAlign: "center",
-                  border: "1px solid #E5E7EB",
-                  background: "#FFFFFF",
+              <RequestSuccess
+                onCreateAnother={() => {
+                  handleFormReset(formik);
+                  setRequestSubmitted(false);
+                  setShowForm(false);
                 }}
-              >
-                <Box
-                  sx={{
-                    width: 100,
-                    height: 100,
-                    borderRadius: "50%",
-                    background: "#22C55E",
-                    color: "#FFFFFF",
-                    fontSize: "48px",
-                    fontWeight: 700,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    margin: "0 auto 24px",
-                    boxShadow: "0 10px 25px rgba(34,197,94,0.25)",
-                  }}
-                >
-                  ✓
-                </Box>
-
-                <Typography
-                  sx={{
-                    fontSize: "32px",
-                    fontWeight: 700,
-                    color: "#021C54",
-                    mb: 1,
-                  }}
-                >
-                  Request Submitted Successfully!
-                </Typography>
-
-                <Typography
-                  sx={{
-                    color: "#64748B",
-                    fontSize: "15px",
-                    mb: 4,
-                  }}
-                >
-                  Your visitor request has been sent for supervisor approval.
-                </Typography>
-
-                <Box
-                  sx={{
-                    background: "#F0FDF4",
-                    border: "1px dashed #86EFAC",
-                    borderRadius: "16px",
-                    padding: "24px",
-                    mb: 4,
-                  }}
-                >
-                  <Typography
-                    sx={{
-                      fontSize: "12px",
-                      color: "#64748B",
-                      letterSpacing: "1px",
-                      mb: 1,
-                    }}
-                  >
-                    ENTRY CODE
-                  </Typography>
-
-                  <Typography
-                    sx={{
-                      fontSize: "28px",
-                      fontWeight: 700,
-                      color: "#166534",
-                    }}
-                  >
-                    VE20260615-001
-                  </Typography>
-                </Box>
-
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    gap: 2,
-                    flexWrap: "wrap",
-                  }}
-                >
-                  <Button
-                    variant="outlined"
-                    onClick={() => {
-                      console.log("My Requests");
-                    }}
-                    sx={{
-                      borderRadius: "14px",
-                      px: 4,
-                      py: 1.2,
-                      textTransform: "none",
-                      fontWeight: 600,
-                    }}
-                  >
-                    View My Request
-                  </Button>
-
-                  <Button
-                    variant="contained"
-                    onClick={() => {
-                      handleFormReset(formik);
-                      setRequestSubmitted(false);
-                      setShowForm(false);
-                    }}
-                    sx={{
-                      borderRadius: "14px",
-                      px: 4,
-                      py: 1.2,
-                      textTransform: "none",
-                      fontWeight: 600,
-                      background:
-                        "linear-gradient(135deg,#021C54,#0A2F88)",
-
-                      "&:hover": {
-                        background:
-                          "linear-gradient(135deg,#021C54,#0A2F88)",
-                      },
-                    }}
-                  >
-                    Create Another Request
-                  </Button>
-                </Box>
-              </Paper>
+              />
             )}
               
               </Box>
