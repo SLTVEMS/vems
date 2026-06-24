@@ -16,132 +16,69 @@ import RequesterDetailsSection from "../components/RequesterDetailsSection";
 import VisitDetailsSection from "../components/VisitDetailsSection";
 import SupportingDocumentsSection from "../components/SupportingDocumentsSection";
 import RequestSuccess from "../components/RequestSuccess";
+import RestrictedVisitorAlert from "../components/RestrictedVisitorAlert";
 
 const validationSchema = Yup.object({
   requestDate: Yup.string().required(),
-
   requesterName: Yup.string().required(),
-
-  requesterEmail: Yup.string()
-    .email("Invalid Email")
-    .required(),
-
+  requesterEmail: Yup.string().email("Invalid Email").required(),
   requesterServiceNo: Yup.string().required(),
-
   requesterDesignation: Yup.string().required(),
-
   requesterContactNo: Yup.string()
-  .matches(
-    /^(?:\+94|0)(70|71|72|74|75|76|77|78)\d{7}$/,
-    "Enter a valid Sri Lankan mobile number"
-  )
-  .required(),
-
-  costCenterCode: Yup.string().required(),
-
-  costCenterName: Yup.string().required(),
-
-  visitorName: Yup.string().required(),
-
-  visitorEmail: Yup.string()
-    .email("Invalid Email")
+    .matches(/^(?:\+94|0)(70|71|72|74|75|76|77|78)\d{7}$/, "Enter a valid Sri Lankan mobile number")
     .required(),
-
+  costCenterCode: Yup.string().required(),
+  costCenterName: Yup.string().required(),
+  visitorName: Yup.string().required(),
+  visitorEmail: Yup.string().email("Invalid Email").required(),
   passType: Yup.string().required(),
-
   entryStartDate: Yup.string().required(),
-
   entryEndDate: Yup.string().required(),
-
-  entryStartTime: Yup.string().when(
-  ["entryStartDate", "entryEndDate"],
-  {
-    is: (start, end) =>
-      start &&
-      end &&
-      start === end,
+  entryStartTime: Yup.string().when(["entryStartDate", "entryEndDate"], {
+    is: (start, end) => start && end && start === end,
     then: (schema) => schema.required(),
     otherwise: (schema) => schema.notRequired(),
-  }
-  ),
-
-  entryEndTime: Yup.string().when(
-    ["entryStartDate", "entryEndDate"],
-    {
-      is: (start, end) =>
-        start &&
-        end &&
-        start === end,
-      then: (schema) => schema.required(),
-      otherwise: (schema) => schema.notRequired(),
-    }
-  ),
-
+  }),
+  entryEndTime: Yup.string().when(["entryStartDate", "entryEndDate"], {
+    is: (start, end) => start && end && start === end,
+    then: (schema) => schema.required(),
+    otherwise: (schema) => schema.notRequired(),
+  }),
   reason: Yup.string().required(),
-
-  nightWorkRequired: Yup.string().when(
-  "visitorType",
-  {
+  nightWorkRequired: Yup.string().when("visitorType", {
     is: (val) => val !== "Emp. Child",
     then: (schema) => schema.required(),
     otherwise: (schema) => schema.notRequired(),
-  }
-),
-
-nightWorkStartTime: Yup.string().when(
-  "nightWorkRequired",
-  {
+  }),
+  nightWorkStartTime: Yup.string().when("nightWorkRequired", {
     is: "Yes",
     then: (schema) => schema.required(),
     otherwise: (schema) => schema.notRequired(),
-  }
-  ),
-
-  nightWorkEndTime: Yup.string().when(
-    "nightWorkRequired",
-    {
-      is: "Yes",
-      then: (schema) => schema.required(),
-      otherwise: (schema) => schema.notRequired(),
-    }
-  ),
-
-  vehicleNumber: Yup.string().when(
-    "vehicleParking",
-    {
-      is: "Yes",
-      then: (schema) => schema.required(),
-      otherwise: (schema) => schema.notRequired(),
-    }
-  ),
-
-  vehicleNumber: Yup.string().when(
-    "vehicleParking",
-    {
-      is: "Yes",
-      then: (schema) => schema.required(),
-      otherwise: (schema) => schema.notRequired(),
-    }
-  ),
+  }),
+  nightWorkEndTime: Yup.string().when("nightWorkRequired", {
+    is: "Yes",
+    then: (schema) => schema.required(),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+  vehicleNumber: Yup.string().when("vehicleParking", {
+    is: "Yes",
+    then: (schema) => schema.required(),
+    otherwise: (schema) => schema.notRequired(),
+  }),
   telephoneNumber: Yup.string().matches(
-  /^(?:\+94|0)(70|71|72|74|75|76|77|78)\d{7}$/,
-  "Enter a valid Sri Lankan mobile number"
+    /^(?:\+94|0)(70|71|72|74|75|76|77|78)\d{7}$/,
+    "Enter a valid Sri Lankan mobile number"
   ),
-  laptopSerialNumber: Yup.string().when(
-  "visitorType",
-  {
+  laptopSerialNumber: Yup.string().when("visitorType", {
     is: "Trainee",
     then: (schema) => schema.required(),
     otherwise: (schema) => schema.notRequired(),
-  }
-  ),
+  }),
 });
 
 const initialValues = {
   visitorType: "",
-
   requestDate: "",
-
   requesterName: "",
   requesterEmail: "",
   requesterServiceNo: "",
@@ -149,7 +86,6 @@ const initialValues = {
   requesterContactNo: "",
   costCenterCode: "",
   costCenterName: "",
-
   passType: "One Day",
   entryStartDate: "",
   entryEndDate: "",
@@ -167,7 +103,6 @@ const initialValues = {
   companyName: "",
   laptopSerialNumber: "",
   reason: "",
-
   officerSvcNo: "",
   officerName: "",
   officerEmail: "",
@@ -175,11 +110,10 @@ const initialValues = {
   recommendationStatus: "",
   recommendedOn: "",
   recommendationRemarks: "",
-
   attachments: [],
 };
 
-function CreateRequestForm() {
+function CreateRequestForm({ onShareForm }) {
   const visitorTypeColors = {
     Guest: "#2F80ED",
     Contractor: "#FF7F22",
@@ -188,11 +122,11 @@ function CreateRequestForm() {
     "Emp. Child": "#2DB7D9",
     Employee: "#e7b900",
   };
+
   const [showForm, setShowForm] = useState(false);
-  const [requestSubmitted, setRequestSubmitted] =
-  useState(false);
-  const [showDuplicateWarning, setShowDuplicateWarning] =
-  useState(false);
+  const [requestSubmitted, setRequestSubmitted] = useState(false);
+  const [showDuplicateWarning, setShowDuplicateWarning] = useState(false);
+  const [showRestrictedAlert, setShowRestrictedAlert] = useState(false);
 
   const duplicateVisitorData = {
     requestCode: "VE20260615-90",
@@ -201,74 +135,57 @@ function CreateRequestForm() {
   };
 
   const handleSubmit = (values) => {
-  console.log(values);
+    console.log(values);
 
+    // ── Restricted visitor check ──
+    const RESTRICTED_NAMES = ["Kasun Pradeep Jayasinghe"];
+    if (
+      RESTRICTED_NAMES.map((n) => n.toLowerCase()).includes(
+        values.visitorName?.trim().toLowerCase()
+      )
+    ) {
+      setShowRestrictedAlert(true);
+      return;
+    }
 
-  setRequestSubmitted(true);
-
-
+    setRequestSubmitted(true);
   };
+
   const handleFormReset = (formik) => {
     formik.setValues({
       ...initialValues,
-
-      visitorType:
-        formik.values.visitorType,
+      visitorType: formik.values.visitorType,
     });
   };
 
+  // ── Restricted Visitor Alert ──
+  if (showRestrictedAlert) {
+    return <RestrictedVisitorAlert />;
+  }
+
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        background: "#FFFFFF",
-        padding: 0
-      }}
-    >
+    <Box sx={{ minHeight: "100vh", background: "#FFFFFF", padding: 0 }}>
       <Paper
         elevation={0}
         sx={{
-          width: "100%",
-          borderRadius: 0,
-          overflowX: "hidden",
-          overflowY: "visible",
-          boxShadow: "none",
-          background: "#fff",
+          width: "100%", borderRadius: 0,
+          overflowX: "hidden", overflowY: "visible",
+          boxShadow: "none", background: "#fff",
         }}
       >
         <Box
           sx={{
-            background:
-              "linear-gradient(135deg,#021C54,#0A2F88)",
+            background: "linear-gradient(135deg,#021C54,#0A2F88)",
             color: "white",
-            padding: {
-              xs: "25px",
-              md: "32px 40px",
-            },
+            padding: { xs: "25px", md: "32px 40px" },
             textAlign: "center",
           }}
         >
-          <Typography
-            sx={{
-              fontSize: {
-                xs: "24px",
-                md: "32px",
-              },
-              fontWeight: 700,
-            }}
-          >
+          <Typography sx={{ fontSize: { xs: "24px", md: "32px" }, fontWeight: 700 }}>
             Visitor Entry Request Form
           </Typography>
-
-          <Typography
-            sx={{
-              mt: 1,
-              fontSize: "14px",
-              opacity: 0.85,
-            }}
-          >
-            Fill in the details below to register a
-            visitor entry request.
+          <Typography sx={{ mt: 1, fontSize: "14px", opacity: 0.85 }}>
+            Fill in the details below to register a visitor entry request.
           </Typography>
         </Box>
 
@@ -279,418 +196,224 @@ function CreateRequestForm() {
         >
           {(formik) => {
             const selectedColor =
-              visitorTypeColors[
-                formik.values.visitorType
-              ] || "#071B52";
+              visitorTypeColors[formik.values.visitorType] || "#071B52";
 
             return (
               <Form>
-              <Box
-                sx={{
-                  p: 3,
-                  width: "100%",
-                  maxWidth: "1600px",
-                  margin: "0 auto",
-                  boxSizing: "border-box",
-                }}
-              >
-               {!showForm && (
-              <>
-                <Box sx={{ mb: 6 }}>
-                  <VisitorTypeSection formik={formik} />
-                </Box>
+                <Box sx={{ p: 3, width: "100%", maxWidth: "1600px", margin: "0 auto", boxSizing: "border-box" }}>
 
-                {formik.values.visitorType && (
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      mb: 4,
-                    }}
-                  >
-                    <Button
-                      variant="contained"
-                      size="large"
-                      onClick={() => {
-                        window.scrollTo({
-                          top: 250,
-                          behavior: "smooth",
-                        });
+                  {!showForm && (
+                    <>
+                      <Box sx={{ mb: 6 }}>
+                        <VisitorTypeSection formik={formik} />
+                      </Box>
 
-                        setTimeout(() => {
-                          setShowForm(true);
-                        }, 250);
-                      }}
+                      {formik.values.visitorType && (
+                        <Box sx={{ display: "flex", justifyContent: "center", mb: 4 }}>
+                          <Button
+                            variant="contained" type="button" size="large"
+                            onClick={() => {
+                              window.scrollTo({ top: 250, behavior: "smooth" });
+                              setTimeout(() => { setShowForm(true); }, 250);
+                            }}
+                            sx={{
+                              px: 7, py: 1.6, borderRadius: "18px",
+                              textTransform: "none", fontWeight: 700, fontSize: "15px",
+                              background: "linear-gradient(135deg,#021C54,#0A2F88)",
+                              boxShadow: "0px 10px 25px rgba(2,28,84,0.25)",
+                              transition: "all 0.25s ease",
+                              "&:hover": {
+                                transform: "translateY(-2px)",
+                                background: "linear-gradient(135deg,#021C54,#0A2F88)",
+                                boxShadow: "0px 15px 30px rgba(2,28,84,0.35)",
+                              },
+                            }}
+                          >
+                            Next
+                          </Button>
+                        </Box>
+                      )}
+                    </>
+                  )}
+
+                  {showForm && !requestSubmitted && (
+                    <Box
                       sx={{
-                        px: 7,
-                        py: 1.6,
-
-                        borderRadius: "18px",
-
-                        textTransform: "none",
-
-                        fontWeight: 700,
-                        fontSize: "15px",
-
-                        background:
-                          "linear-gradient(135deg,#021C54,#0A2F88)",
-
-                        boxShadow:
-                          "0px 10px 25px rgba(2,28,84,0.25)",
-
-                        transition: "all 0.25s ease",
-
-                        "&:hover": {
-                          transform: "translateY(-2px)",
-
-                          background:
-                            "linear-gradient(135deg,#021C54,#0A2F88)",
-
-                          boxShadow:
-                            "0px 15px 30px rgba(2,28,84,0.35)",
+                        animation: "fadeSlideIn 0.7s ease",
+                        "@keyframes fadeSlideIn": {
+                          from: { opacity: 0, transform: "translateY(25px)" },
+                          to: { opacity: 1, transform: "translateY(0)" },
                         },
                       }}
                     >
-                      Next
-                    </Button>
-                  </Box>
-                )}
-              </>
-            )}
+                      {/* Visitor type banner */}
+                      <Box
+                        sx={{
+                          mb: 4, p: 3, width: "100%", boxSizing: "border-box",
+                          borderRadius: "24px", background: selectedColor, color: "#fff",
+                          boxShadow: "0 15px 35px rgba(0,0,0,0.15)",
+                          display: "flex", justifyContent: "space-between", alignItems: "center",
+                        }}
+                      >
+                        <Box>
+                          <Typography sx={{ fontSize: "18px", fontWeight: 600, color: "#fff" }}>
+                            Visitor Category: {formik.values.visitorType}
+                          </Typography>
+                        </Box>
+                        <Button
+                          type="button"
+                          onClick={() => setShowForm(false)}
+                          sx={{
+                            borderRadius: "14px", px: 2.5, py: 1,
+                            color: "#fff", background: "rgba(255,255,255,0.15)",
+                            textTransform: "none", fontWeight: 600,
+                            "&:hover": { background: "rgba(255,255,255,0.25)" },
+                          }}
+                        >
+                          Change Visitor Type
+                        </Button>
+                      </Box>
 
-              {showForm && !requestSubmitted && (
-                <Box
-                  sx={{
-                    animation: "fadeSlideIn 0.7s ease",
+                      <RequesterDetailsSection formik={formik} />
+                      <VisitDetailsSection formik={formik} />
+                      <SupportingDocumentsSection
+                        values={formik.values}
+                        setFieldValue={formik.setFieldValue}
+                      />
 
-                    "@keyframes fadeSlideIn": {
-                      from: {
-                        opacity: 0,
-                        transform: "translateY(25px)",
-                      },
-                      to: {
-                        opacity: 1,
-                        transform: "translateY(0)",
-                      },
-                    },
-                    
-                  }}
-                  >
+                      {/* Share Form button */}
+                      <Box sx={{ display: "flex", justifyContent: "center", mt: 4, mb: 2 }}>
+                        <Button
+                          variant="contained" type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            if (onShareForm) onShareForm({ ...formik.values });
+                          }}
+                          sx={{
+                            px: 6, py: 1.5, borderRadius: "18px",
+                            textTransform: "none", fontWeight: 700, fontSize: "15px",
+                            background: "#0d1b35",
+                            boxShadow: "0px 10px 25px rgba(13,27,53,0.25)",
+                            "&:hover": { background: "#1a3566" },
+                          }}
+                        >
+                          Share Form
+                        </Button>
+                      </Box>
 
-                <Box
-                  sx={{
-                    mb: 4,
-                      p: 3,
-                      width: "100%",
-                      boxSizing: "border-box",
-                      borderRadius: "24px",
+                      <Box sx={{ mt: 5, display: "flex", justifyContent: "flex-end", gap: 2 }}>
+                        <Button
+                          variant="contained" type="button"
+                          onClick={() => handleFormReset(formik)}
+                          sx={{
+                            borderRadius: "16px", px: 4, py: 1.4,
+                            textTransform: "none", fontWeight: 600, fontSize: "14px",
+                            background: "#F1F5F9", color: "#475569",
+                            boxShadow: "none",
+                            "&:hover": { background: "#E2E8F0", boxShadow: "none" },
+                          }}
+                        >
+                          Reset
+                        </Button>
 
-                    background: selectedColor,
+                        <Button
+                          type="submit" variant="contained"
+                          sx={{
+                            borderRadius: "16px", px: 5, py: 1.4,
+                            textTransform: "none", fontWeight: 700, fontSize: "14px",
+                            background: "linear-gradient(135deg,#021C54,#0A2F88)",
+                            boxShadow: "0px 10px 25px rgba(2,28,84,0.25)",
+                            transition: "all 0.25s ease",
+                            "&:hover": {
+                              transform: "translateY(-2px)",
+                              background: "linear-gradient(135deg,#021C54,#0A2F88)",
+                              boxShadow: "0px 15px 30px rgba(2,28,84,0.35)",
+                            },
+                          }}
+                        >
+                          Submit Request
+                        </Button>
+                      </Box>
+                    </Box>
+                  )}
 
-                    color: "#fff",
-
-                    boxShadow:
-                      "0 15px 35px rgba(0,0,0,0.15)",
-
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                  }}
-                >
-                  <Box>
-                    <Typography
-                      sx={{
-                        fontSize: "18px",
-                        fontWeight: 600,
-                        color: "#fff",
+                  {requestSubmitted && (
+                    <RequestSuccess
+                      onCreateAnother={() => {
+                        handleFormReset(formik);
+                        setRequestSubmitted(false);
+                        setShowForm(false);
                       }}
-                    >
-                      Visitor Category: {formik.values.visitorType}
-                    </Typography>
-                  </Box>
+                    />
+                  )}
 
-                  <Button
-                    onClick={() => setShowForm(false)}
-                    sx={{
-                      borderRadius: "14px",
-                      px: 2.5,
-                      py: 1,
-
-                      color: "#fff",
-
-                      background: "rgba(255,255,255,0.15)",
-
-                      textTransform: "none",
-                      fontWeight: 600,
-
-                      "&:hover": {
-                        background: "rgba(255,255,255,0.25)",
-                      },
-                    }}
-                  >
-                    Change Visitor Type
-                  </Button>
                 </Box>
 
-                <RequesterDetailsSection
-                  formik={formik}
-                />
-
-                <VisitDetailsSection
-                  formik={formik}
-                />
-
-                <SupportingDocumentsSection
-                  values={formik.values}
-                  setFieldValue={formik.setFieldValue}
-                />
-
-                <Box
-                  sx={{
-                    mt: 5,
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    gap: 2,
-                  }}
+                {/* Duplicate warning dialog */}
+                <Dialog
+                  open={showDuplicateWarning}
+                  onClose={() => setShowDuplicateWarning(false)}
+                  maxWidth="md" fullWidth
+                  PaperProps={{ sx: { borderRadius: "24px", maxWidth: "700px" } }}
                 >
-                  <Button
-                    variant="contained"
-                    onClick={() => handleFormReset(formik)}
-                    sx={{
-                      borderRadius: "16px",
-                      px: 4,
-                      py: 1.4,
-
-                      textTransform: "none",
-
-                      fontWeight: 600,
-                      fontSize: "14px",
-
-                      background: "#F1F5F9",
-                      color: "#475569",
-
-                      boxShadow: "none",
-
-                      "&:hover": {
-                        background: "#E2E8F0",
-                        boxShadow: "none",
-                      },
-                    }}
-                  >
-                    Reset
-                  </Button>
-
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    sx={{
-                      borderRadius: "16px",
-
-                      px: 5,
-                      py: 1.4,
-
-                      textTransform: "none",
-
-                      fontWeight: 700,
-                      fontSize: "14px",
-
-                      background:
-                        "linear-gradient(135deg,#021C54,#0A2F88)",
-
-                      boxShadow:
-                        "0px 10px 25px rgba(2,28,84,0.25)",
-
-                      transition: "all 0.25s ease",
-
-                      "&:hover": {
-                        transform: "translateY(-2px)",
-
-                        background:
-                          "linear-gradient(135deg,#021C54,#0A2F88)",
-
-                        boxShadow:
-                          "0px 15px 30px rgba(2,28,84,0.35)",
-                      },
-                    }}
-                  >
-                    Submit Request
-                  </Button>
-                </Box>
-              </Box>
-              )}
-
-             {requestSubmitted && (
-              <RequestSuccess
-                onCreateAnother={() => {
-                  handleFormReset(formik);
-                  setRequestSubmitted(false);
-                  setShowForm(false);
-                }}
-              />
-            )}
-              
-              </Box>
-              <Dialog
-                open={showDuplicateWarning}
-                onClose={() => setShowDuplicateWarning(false)}
-                maxWidth="md"
-                fullWidth
-                PaperProps={{
-                  sx: {
-                    borderRadius: "24px",
-                    maxWidth: "700px",
-                  },
-                }}
-              >
-                <DialogContent
-                  sx={{
-                    p: 0,
-                    overflow: "hidden",
-                    borderRadius: "24px",
-                  }}
-                >
-                  <Box
-                    sx={{
-                      position: "relative",
-                      p: 5,
-                      textAlign: "center",
-                      background: "#FFFFFF",
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        width: 95,
-                        height: 95,
-                        margin: "0 auto 24px",
-                        borderRadius: "50%",
-                        background: "#FFF5E6",
+                  <DialogContent sx={{ p: 0, overflow: "hidden", borderRadius: "24px" }}>
+                    <Box sx={{ position: "relative", p: 5, textAlign: "center", background: "#FFFFFF" }}>
+                      <Box sx={{
+                        width: 95, height: 95, margin: "0 auto 24px",
+                        borderRadius: "50%", background: "#FFF5E6",
                         border: "2px solid #F5C26B",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
+                        display: "flex", alignItems: "center", justifyContent: "center",
                         fontSize: "42px",
-                      }}
-                    >
-                      ⚠️
-                    </Box>
+                      }}>⚠️</Box>
 
-                    <Typography
-                      sx={{
-                        fontSize: "34px",
-                        fontWeight: 700,
-                        color: "#E89B17",
-                        mb: 3,
-                      }}
-                    >
-                      Duplicate Visitor Request Detected
-                    </Typography>
-
-                    <Typography
-                      sx={{
-                        fontSize: "18px",
-                        fontWeight: 700,
-                        color: "#4B5563",
-                        mb: 1,
-                      }}
-                    >
-                      PREVIOUS REQUEST CODE:
-                      {" "}
-                      {duplicateVisitorData.requestCode}
-                    </Typography>
-
-                    <Typography
-                      sx={{
-                        fontSize: "16px",
-                        color: "#6B7280",
-                        mb: 1,
-                      }}
-                    >
-                      NIC: {duplicateVisitorData.nic}
-                    </Typography>
-
-                    <Typography
-                      sx={{
-                        fontSize: "16px",
-                        fontWeight: 600,
-                        color: "#374151",
-                        mb: 4,
-                      }}
-                    >
-                      VISITOR NAME: {duplicateVisitorData.visitorName}
-                    </Typography>
-
-                    <Paper
-                      elevation={0}
-                      sx={{
-                        p: 4,
-                        mb: 4,
-                        borderRadius: "18px",
-                        background: "#FFF9EE",
-                        border: "1px solid #F3C15A",
-                      }}
-                    >
-                      <Typography
-                        sx={{
-                          fontSize: "15px",
-                          lineHeight: 1.8,
-                          color: "#5B6470",
-                        }}
-                      >
-                        An approved visitor request already exists for this visitor on the selected date.
-                        The entered NIC matches an existing approved visitor request.
-                        Please review the existing request before proceeding.
-                        Multiple visitor requests for the same visitor on the same date are not permitted.
+                      <Typography sx={{ fontSize: "34px", fontWeight: 700, color: "#E89B17", mb: 3 }}>
+                        Duplicate Visitor Request Detected
                       </Typography>
-                    </Paper>
+                      <Typography sx={{ fontSize: "18px", fontWeight: 700, color: "#4B5563", mb: 1 }}>
+                        PREVIOUS REQUEST CODE: {duplicateVisitorData.requestCode}
+                      </Typography>
+                      <Typography sx={{ fontSize: "16px", color: "#6B7280", mb: 1 }}>
+                        NIC: {duplicateVisitorData.nic}
+                      </Typography>
+                      <Typography sx={{ fontSize: "16px", fontWeight: 600, color: "#374151", mb: 4 }}>
+                        VISITOR NAME: {duplicateVisitorData.visitorName}
+                      </Typography>
 
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "center",
-                        gap: 2,
-                      }}
-                    >
-                      <Button
-                        variant="outlined"
-                        onClick={() =>
-                          setShowDuplicateWarning(false)
-                        }
-                        sx={{
-                          borderRadius: "14px",
-                          px: 4,
-                          py: 1.2,
-                          textTransform: "none",
-                          fontWeight: 600,
-                        }}
-                      >
-                        Return to Form
-                      </Button>
+                      <Paper elevation={0} sx={{ p: 4, mb: 4, borderRadius: "18px", background: "#FFF9EE", border: "1px solid #F3C15A" }}>
+                        <Typography sx={{ fontSize: "15px", lineHeight: 1.8, color: "#5B6470" }}>
+                          An approved visitor request already exists for this visitor on the selected date.
+                          The entered NIC matches an existing approved visitor request.
+                          Please review the existing request before proceeding.
+                          Multiple visitor requests for the same visitor on the same date are not permitted.
+                        </Typography>
+                      </Paper>
 
-                      <Button
-                        variant="contained"
-                        sx={{
-                          borderRadius: "14px",
-                          px: 4,
-                          py: 1.2,
-                          textTransform: "none",
-                          fontWeight: 600,
-                          background:
-                            "linear-gradient(135deg,#021C54,#0A2F88)",
-
-                          "&:hover": {
-                            background:
-                              "linear-gradient(135deg,#021C54,#0A2F88)",
-                          },
-                        }}
-                      >
-                        View Existing Request
-                      </Button>
+                      <Box sx={{ display: "flex", justifyContent: "center", gap: 2 }}>
+                        <Button
+                          variant="outlined" type="button"
+                          onClick={() => setShowDuplicateWarning(false)}
+                          sx={{ borderRadius: "14px", px: 4, py: 1.2, textTransform: "none", fontWeight: 600 }}
+                        >
+                          Return to Form
+                        </Button>
+                        <Button
+                          variant="contained" type="button"
+                          sx={{
+                            borderRadius: "14px", px: 4, py: 1.2,
+                            textTransform: "none", fontWeight: 600,
+                            background: "linear-gradient(135deg,#021C54,#0A2F88)",
+                            "&:hover": { background: "linear-gradient(135deg,#021C54,#0A2F88)" },
+                          }}
+                        >
+                          View Existing Request
+                        </Button>
+                      </Box>
                     </Box>
-                  </Box>
-                </DialogContent>
-              </Dialog>
-            </Form>
-            )
+                  </DialogContent>
+                </Dialog>
+              </Form>
+            );
           }}
         </Formik>
       </Paper>
