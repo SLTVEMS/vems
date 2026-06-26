@@ -155,7 +155,11 @@ const menuProps = {
   },
 };
 
-function VisitDetailsSection({ formik }) {
+function VisitDetailsSection({
+  formik,
+  title = "Visit Details",
+  headerActions = null,
+}) {
   const visitRequiredFields = [
   formik.values.visitorName,
   formik.values.visitorEmail,
@@ -229,9 +233,24 @@ if (formik.values.visitorType !== "Emp. Child") {
      <SectionHeader>
       <GreenBar />
 
-      <HeaderText>Visit Details</HeaderText>
+      <HeaderText>{title}</HeaderText>
 
       <Divider />
+
+      {headerActions && (
+        <Box
+          sx={{
+            ml: 2,
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+            flexWrap: "wrap",
+            justifyContent: "flex-end",
+          }}
+        >
+          {headerActions}
+        </Box>
+      )}
 
       <StatusIconWrapper>
         <Typography

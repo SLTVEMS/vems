@@ -19,7 +19,81 @@ import FormProgressTracker from "../components/FormProgressTracker";
 import VisitorCreateRequestForm from "../components/VisitorCreateRequestForm";
 import VisitorSuccessScreen from "../components/VisitorSuccessScreen";
 
+const visitorValidationSchema = Yup.object({
+  visitorName: Yup.string().required(),
+
+  visitorEmail: Yup.string()
+    .email("Invalid Email")
+    .required(),
+
+  passType: Yup.string().required(),
+
+  entryStartDate: Yup.string().required(),
+
+  entryEndDate: Yup.string().when("passType", {
+    is: "More Than One Day",
+    then: (schema) => schema.required(),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+
+  entryStartTime: Yup.string().when("passType", {
+    is: "One Day",
+    then: (schema) => schema.required(),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+
+  entryEndTime: Yup.string().when("passType", {
+    is: "One Day",
+    then: (schema) => schema.required(),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+
+  reason: Yup.string().required(),
+
+  nightWorkRequired: Yup.string().when("$visitorType", {
+    is: (val) => val !== "Emp. Child",
+    then: (schema) => schema.required(),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+
+  nightWorkStartTime: Yup.string().when("nightWorkRequired", {
+    is: "Yes",
+    then: (schema) => schema.required(),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+
+  nightWorkEndTime: Yup.string().when("nightWorkRequired", {
+    is: "Yes",
+    then: (schema) => schema.required(),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+
+  vehicleNumber: Yup.string().when("vehicleParking", {
+    is: "Yes",
+    then: (schema) => schema.required(),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+
+  telephoneNumber: Yup.string().matches(
+    /^(?:\+94|0)(70|71|72|74|75|76|77|78)\d{7}$/,
+    {
+      message: "Enter a valid Sri Lankan mobile number",
+      excludeEmptyString: true,
+    }
+  ),
+
+  laptopSerialNumber: Yup.string().when("$visitorType", {
+    is: "Trainee",
+    then: (schema) => schema.required(),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+
+  attachments: Yup.array().notRequired(),
+});
+
 const validationSchema = Yup.object({
+  visitorType: Yup.string().required(),
+
   requestDate: Yup.string().required(),
 
   requesterName: Yup.string().required(),
@@ -33,125 +107,31 @@ const validationSchema = Yup.object({
   requesterDesignation: Yup.string().required(),
 
   requesterContactNo: Yup.string()
-  .matches(
-    /^(?:\+94|0)(70|71|72|74|75|76|77|78)\d{7}$/,
-    "Enter a valid Sri Lankan mobile number"
-  )
-  .required(),
+    .matches(
+      /^(?:\+94|0)(70|71|72|74|75|76|77|78)\d{7}$/,
+      "Enter a valid Sri Lankan mobile number"
+    )
+    .required(),
 
   costCenterCode: Yup.string().required(),
 
   costCenterName: Yup.string().required(),
 
-  visitorName: Yup.string().required(),
-
-  visitorEmail: Yup.string()
-    .email("Invalid Email")
+  visitors: Yup.array()
+    .of(visitorValidationSchema)
+    .min(1)
     .required(),
 
-  passType: Yup.string().required(),
-
-  entryStartDate: Yup.string().required(),
-
-  entryEndDate: Yup.string().required(),
-
-  entryStartTime: Yup.string().when(
-  ["entryStartDate", "entryEndDate"],
-  {
-    is: (start, end) =>
-      start &&
-      end &&
-      start === end,
-    then: (schema) => schema.required(),
-    otherwise: (schema) => schema.notRequired(),
-  }
-  ),
-
-  entryEndTime: Yup.string().when(
-    ["entryStartDate", "entryEndDate"],
-    {
-      is: (start, end) =>
-        start &&
-        end &&
-        start === end,
-      then: (schema) => schema.required(),
-      otherwise: (schema) => schema.notRequired(),
-    }
-  ),
-
-  reason: Yup.string().required(),
-
-  nightWorkRequired: Yup.string().when(
-  "visitorType",
-  {
-    is: (val) => val !== "Emp. Child",
-    then: (schema) => schema.required(),
-    otherwise: (schema) => schema.notRequired(),
-  }
-),
-
-nightWorkStartTime: Yup.string().when(
-  "nightWorkRequired",
-  {
-    is: "Yes",
-    then: (schema) => schema.required(),
-    otherwise: (schema) => schema.notRequired(),
-  }
-  ),
-
-  nightWorkEndTime: Yup.string().when(
-    "nightWorkRequired",
-    {
-      is: "Yes",
-      then: (schema) => schema.required(),
-      otherwise: (schema) => schema.notRequired(),
-    }
-  ),
-
-  vehicleNumber: Yup.string().when(
-    "vehicleParking",
-    {
-      is: "Yes",
-      then: (schema) => schema.required(),
-      otherwise: (schema) => schema.notRequired(),
-    }
-  ),
-
-  vehicleNumber: Yup.string().when(
-    "vehicleParking",
-    {
-      is: "Yes",
-      then: (schema) => schema.required(),
-      otherwise: (schema) => schema.notRequired(),
-    }
-  ),
-  telephoneNumber: Yup.string().matches(
-  /^(?:\+94|0)(70|71|72|74|75|76|77|78)\d{7}$/,
-  "Enter a valid Sri Lankan mobile number"
-  ),
-  laptopSerialNumber: Yup.string().when(
-  "visitorType",
-  {
-    is: "Trainee",
-    then: (schema) => schema.required(),
-    otherwise: (schema) => schema.notRequired(),
-  }
-  ),
+  officerSvcNo: Yup.string(),
+  officerName: Yup.string(),
+  officerEmail: Yup.string(),
+  officerContactNo: Yup.string(),
+  recommendationStatus: Yup.string(),
+  recommendedOn: Yup.string(),
+  recommendationRemarks: Yup.string(),
 });
 
-const initialValues = {
-  visitorType: "",
-
-  requestDate: "",
-
-  requesterName: "",
-  requesterEmail: "",
-  requesterServiceNo: "",
-  requesterDesignation: "",
-  requesterContactNo: "",
-  costCenterCode: "",
-  costCenterName: "",
-
+const visitorDetailInitialValues = {
   passType: "One Day",
   entryStartDate: "",
   entryEndDate: "",
@@ -168,7 +148,35 @@ const initialValues = {
   telephoneNumber: "",
   companyName: "",
   laptopSerialNumber: "",
+  visitorName: "",
+  visitorEmail: "",
   reason: "",
+  attachments: [],
+};
+
+const buildVisitorDetailValues = (visitor = {}) => ({
+  ...visitorDetailInitialValues,
+  ...visitor,
+  attachments: [...(visitor.attachments || [])],
+});
+
+const initialValues = {
+  visitorType: "",
+
+  requestDate: "",
+
+  requesterName: "",
+  requesterEmail: "",
+  requesterServiceNo: "",
+  requesterDesignation: "",
+  requesterContactNo: "",
+  costCenterCode: "",
+  costCenterName: "",
+
+  ...visitorDetailInitialValues,
+
+
+  visitors: [buildVisitorDetailValues()],
 
   officerSvcNo: "",
   officerName: "",
@@ -177,8 +185,60 @@ const initialValues = {
   recommendationStatus: "",
   recommendedOn: "",
   recommendationRemarks: "",
+};
+const createVisitorFormik = (formik, index) => {
+  const visitorValues =
+    formik.values.visitors[index] || buildVisitorDetailValues();
 
-  attachments: [],
+  const visitorErrors =
+    Array.isArray(formik.errors.visitors) &&
+    formik.errors.visitors[index]
+      ? formik.errors.visitors[index]
+      : {};
+
+  const visitorTouched =
+    Array.isArray(formik.touched.visitors) &&
+    formik.touched.visitors[index]
+      ? formik.touched.visitors[index]
+      : {};
+
+  return {
+    ...formik,
+
+    values: {
+      ...visitorValues,
+      visitorType: formik.values.visitorType,
+    },
+
+    errors: visitorErrors,
+    touched: visitorTouched,
+
+    setFieldValue: (field, value, shouldValidate) =>
+      formik.setFieldValue(
+        `visitors.${index}.${field}`,
+        value,
+        shouldValidate
+      ),
+
+    setFieldTouched: (field, touched, shouldValidate) =>
+      formik.setFieldTouched(
+        `visitors.${index}.${field}`,
+        touched,
+        shouldValidate
+      ),
+
+    handleChange: (event) => {
+      const { name, value } = event.target;
+
+      formik.setFieldValue(`visitors.${index}.${name}`, value);
+    },
+
+    handleBlur: (event) => {
+      const { name } = event.target;
+
+      formik.setFieldTouched(`visitors.${index}.${name}`, true);
+    },
+  };
 };
 
 function CreateRequestForm({ onClose, onRequestCreated } = {}) {
@@ -199,29 +259,65 @@ function CreateRequestForm({ onClose, onRequestCreated } = {}) {
   const [visitorRequestSubmitted, setVisitorRequestSubmitted] =
   useState(false);
   const [sharedFormValues, setSharedFormValues] = useState(null);
+  const [mainFormValues, setMainFormValues] = useState(null);
 
   const duplicateVisitorData = {
-    requestCode: "VE20260615-90",
-    nic: "200534009821",
-    visitorName: "Kasun Perera",
+  requestCode: "VE20260615-90",
+  nic: "200534009821",
+  visitorName: "Kasun Perera",
+  };
+
+  const handleDuplicateVisitor = (formik, index) => {
+  const currentVisitor =
+    formik.values.visitors[index] || buildVisitorDetailValues();
+
+  const duplicatedVisitor = buildVisitorDetailValues(currentVisitor);
+
+  const updatedVisitors = [
+    ...formik.values.visitors.slice(0, index + 1),
+    duplicatedVisitor,
+    ...formik.values.visitors.slice(index + 1),
+  ];
+
+  formik.setFieldValue("visitors", updatedVisitors);
+};
+
+const handleRemoveVisitor = (formik, index) => {
+  if (formik.values.visitors.length === 1) return;
+
+  const updatedVisitors = formik.values.visitors.filter(
+    (_, visitorIndex) => visitorIndex !== index
+  );
+
+  formik.setFieldValue("visitors", updatedVisitors);
+};
+
+
+
+  const handleFormReset = (formik) => {
+    formik.setValues({
+      ...initialValues,
+      visitorType: formik.values.visitorType,
+      visitors: [buildVisitorDetailValues()],
+    });
   };
 
   const handleSubmit = (values) => {
-    console.log(values);
+    const firstVisitor = values.visitors?.[0] || {};
+
+    const payload = {
+      ...values,
+      ...firstVisitor,
+      visitors: values.visitors,
+    };
+
+    console.log(payload);
 
     setRequestSubmitted(true);
 
     if (onRequestCreated) {
-      onRequestCreated(values);
+      onRequestCreated(payload);
     }
-  };
-  const handleFormReset = (formik) => {
-    formik.setValues({
-      ...initialValues,
-
-      visitorType:
-        formik.values.visitorType,
-    });
   };
 
   // ── Visitor success screen ──
@@ -233,6 +329,7 @@ function CreateRequestForm({ onClose, onRequestCreated } = {}) {
           setVisitorRequestSubmitted(false);
           setShareFormOpen(false);
           setSharedFormValues(null);
+          setMainFormValues(null);
         }}
       />
     );
@@ -244,7 +341,9 @@ function CreateRequestForm({ onClose, onRequestCreated } = {}) {
     return (
       <VisitorCreateRequestForm
         sharedValues={sharedFormValues || {}}
-        onBack={() => setShareFormOpen(false)}
+        onBack={() => {
+          setShareFormOpen(false);
+        }}
         onSubmitted={() => setVisitorRequestSubmitted(true)}
       />
     );
@@ -306,7 +405,8 @@ function CreateRequestForm({ onClose, onRequestCreated } = {}) {
         </Box>
 
         <Formik
-          initialValues={initialValues}
+          initialValues={mainFormValues || initialValues}
+          enableReinitialize
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
         >
@@ -422,64 +522,130 @@ function CreateRequestForm({ onClose, onRequestCreated } = {}) {
                   </Button>
                 </Box>
 
-                <RequesterDetailsSection
-                  formik={formik}
-                />
-
-                <VisitDetailsSection
-                  formik={formik}
-                />
-
-                <SupportingDocumentsSection
-                  values={formik.values}
-                  setFieldValue={formik.setFieldValue}
-                />
-
-                <Box
-                  sx={{
-                    mt: 5,
-                    display: "flex",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Button
-                    variant="contained"
-                    onClick={() => {
-                      setSharedFormValues(formik.values);
-                      setShareFormOpen(true);
-                    }}
-                    sx={{
-                      borderRadius: "16px",
-                      px: 5,
-                      py: 1.4,
-
-                      textTransform: "none",
-
-                      fontWeight: 700,
-                      fontSize: "14px",
-
-                      background:
-                        "linear-gradient(135deg,#021C54,#0A2F88)",
-
-                      boxShadow:
-                        "0px 10px 25px rgba(2,28,84,0.25)",
-
-                      transition: "all 0.25s ease",
-
-                      "&:hover": {
-                        transform: "translateY(-2px)",
-
-                        background:
-                          "linear-gradient(135deg,#021C54,#0A2F88)",
-
-                        boxShadow:
-                          "0px 15px 30px rgba(2,28,84,0.35)",
-                      },
-                    }}
-                  >
-                    Share Form
-                  </Button>
+                <Box sx={{ mb: 5 }}>
+                  <RequesterDetailsSection
+                    formik={formik}
+                  />
                 </Box>
+
+                {formik.values.visitors.map((visitor, index) => {
+                  const visitorFormik = createVisitorFormik(formik, index);
+
+                  return (
+                    <Paper
+                      key={`visitor-section-${index}`}
+                      elevation={0}
+                      sx={{
+                        mt: 2,
+                        mb: 4,
+                        p: 3,
+                        borderRadius: "24px",
+                        border: "1px solid #E2E8F0",
+                        background: "#FFFFFF",
+                      }}
+                    >
+                      <VisitDetailsSection
+                        formik={visitorFormik}
+                        title={`Visit Details ${
+                          formik.values.visitors.length > 1 ? index + 1 : ""
+                        }`}
+                        headerActions={
+                          <>
+                            <Button
+                              size="small"
+                              variant="contained"
+                              onClick={() => {
+                                setMainFormValues(formik.values);
+
+                                setSharedFormValues({
+                                  ...formik.values,
+                                  ...formik.values.visitors[index],
+                                  selectedVisitorIndex: index,
+                                });
+
+                                setShareFormOpen(true);
+                              }}
+                              sx={{
+                                borderRadius: "12px",
+                                px: 2.2,
+                                py: 0.8,
+                                textTransform: "none",
+                                fontWeight: 700,
+                                fontSize: "12px",
+                                background:
+                                  "linear-gradient(135deg,#021C54,#0A2F88)",
+                                boxShadow:
+                                  "0px 8px 18px rgba(2,28,84,0.18)",
+
+                                "&:hover": {
+                                  background:
+                                    "linear-gradient(135deg,#021C54,#0A2F88)",
+                                },
+                              }}
+                            >
+                              Share Form
+                            </Button>
+
+                            <Button
+                              size="small"
+                              variant="outlined"
+                              onClick={() => handleDuplicateVisitor(formik, index)}
+                              sx={{
+                                borderRadius: "12px",
+                                px: 2.2,
+                                py: 0.8,
+                                textTransform: "none",
+                                fontWeight: 700,
+                                fontSize: "12px",
+                                borderColor: "#22C55E",
+                                color: "#16A34A",
+                                background: "#F0FDF4",
+
+                                "&:hover": {
+                                  borderColor: "#16A34A",
+                                  background: "#DCFCE7",
+                                },
+                              }}
+                            >
+                              + Visitor
+                            </Button>
+
+                            {formik.values.visitors.length > 1 && (
+                              <Button
+                                size="small"
+                                variant="outlined"
+                                onClick={() => handleRemoveVisitor(formik, index)}
+                                sx={{
+                                  borderRadius: "12px",
+                                  px: 2,
+                                  py: 0.8,
+                                  textTransform: "none",
+                                  fontWeight: 700,
+                                  fontSize: "12px",
+                                  borderColor: "#FCA5A5",
+                                  color: "#DC2626",
+                                  background: "#FEF2F2",
+
+                                  "&:hover": {
+                                    borderColor: "#EF4444",
+                                    background: "#FEE2E2",
+                                  },
+                                }}
+                              >
+                                Remove
+                              </Button>
+                            )}
+                          </>
+                        }
+                      />
+
+                      <SupportingDocumentsSection
+                        values={visitorFormik.values}
+                        setFieldValue={visitorFormik.setFieldValue}
+                      />
+                    </Paper>
+                  );
+                })}
 
                 <Box
                   sx={{
@@ -551,7 +717,6 @@ function CreateRequestForm({ onClose, onRequestCreated } = {}) {
                       variant="contained"
                       sx={{
                         borderRadius: "16px",
-
                         px: 5,
                         py: 1.4,
 
@@ -560,20 +725,22 @@ function CreateRequestForm({ onClose, onRequestCreated } = {}) {
                         fontWeight: 700,
                         fontSize: "14px",
 
-                        background: "#22C55E",
+                        background:
+                          "linear-gradient(135deg,#021C54,#0A2F88)",
 
                         boxShadow:
-                          "0px 10px 25px rgba(34,197,94,0.25)",
+                          "0px 10px 25px rgba(2,28,84,0.25)",
 
                         transition: "all 0.25s ease",
 
                         "&:hover": {
                           transform: "translateY(-2px)",
 
-                          background: "#1EA94F",
+                          background:
+                            "linear-gradient(135deg,#021C54,#0A2F88)",
 
                           boxShadow:
-                            "0px 15px 30px rgba(34,197,94,0.35)",
+                            "0px 15px 30px rgba(2,28,84,0.35)",
                         },
                       }}
                     >
@@ -696,6 +863,7 @@ function CreateRequestForm({ onClose, onRequestCreated } = {}) {
                     variant="contained"
                     onClick={() => {
                       handleFormReset(formik);
+                      setMainFormValues(null);
                       setRequestSubmitted(false);
                       setShowForm(false);
                     }}
