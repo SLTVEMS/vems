@@ -86,21 +86,22 @@ const inputStyle = {
   },
 };
 
-function RequesterDetailsSection({ formik }) {
+function RequesterDetailsSection({ formik, headerActions = null }) {
   const requesterRequiredFields = [
-  formik.values.requestDate,
-  formik.values.requesterName,
-  formik.values.requesterEmail,
-  formik.values.requesterServiceNo,
-  formik.values.requesterDesignation,
-  formik.values.requesterContactNo,
-  formik.values.costCenterCode,
-  formik.values.costCenterName,
-];
-const requesterCompletedCount =
-  requesterRequiredFields.filter(Boolean).length;
+    formik.values.requestDate,
+    formik.values.requesterName,
+    formik.values.requesterEmail,
+    formik.values.requesterServiceNo,
+    formik.values.requesterDesignation,
+    formik.values.requesterContactNo,
+    formik.values.costCenterCode,
+    formik.values.costCenterName,
+  ];
 
-const requesterTotalCount = requesterRequiredFields.length;
+  const requesterCompletedCount =
+    requesterRequiredFields.filter(Boolean).length;
+
+  const requesterTotalCount = requesterRequiredFields.length;
 
   return (
     <SectionWrapper>
@@ -110,6 +111,21 @@ const requesterTotalCount = requesterRequiredFields.length;
         <HeaderText>Requester Details</HeaderText>
 
         <Divider />
+
+        {headerActions && (
+          <Box
+            sx={{
+              ml: 2,
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+              flexWrap: "wrap",
+              justifyContent: "flex-end",
+            }}
+          >
+            {headerActions}
+          </Box>
+        )}
 
         <StatusIconWrapper>
           <Typography
@@ -135,7 +151,6 @@ const requesterTotalCount = requesterRequiredFields.length;
           margin: 0,
         }}
       >
-
         <Grid item xs={12} sm={6}>
           <Label>
             Request Date <Required>*</Required>
@@ -213,8 +228,6 @@ const requesterTotalCount = requesterRequiredFields.length;
           />
         </Grid>
 
-        {/* Row 2 */}
-
         <Grid item xs={12} sm={6}>
           <Label>Requester Designation</Label>
 
@@ -254,18 +267,18 @@ const requesterTotalCount = requesterRequiredFields.length;
         <Grid item xs={12} sm={6}>
           <Label>Cost Center Code</Label>
 
-         <TextField
-          fullWidth
-          placeholder="CC-XXXX"
-          name="costCenterCode"
-          value={formik.values.costCenterCode}
-          onChange={formik.handleChange}
-          error={
-            formik.submitCount > 0 &&
-            !formik.values.costCenterCode
-          }
-          sx={inputStyle}
-        />
+          <TextField
+            fullWidth
+            placeholder="CC-XXXX"
+            name="costCenterCode"
+            value={formik.values.costCenterCode}
+            onChange={formik.handleChange}
+            error={
+              formik.submitCount > 0 &&
+              !formik.values.costCenterCode
+            }
+            sx={inputStyle}
+          />
         </Grid>
 
         <Grid item xs={12} sm={6}>
