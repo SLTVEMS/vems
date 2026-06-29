@@ -660,6 +660,17 @@ Thank you.`;
                   )
                 : null;
 
+            const totalVisitorsForSubmit =
+              (formik.values.addedVisitors?.length || 0) +
+              (hasMeaningfulVisitorData(formik.values.currentVisitor)
+                ? 1
+                : 0);
+
+            const submitButtonText =
+              totalVisitorsForSubmit > 1
+                ? "Submit Requests"
+                : "Submit Request";
+
             return (
               <Form>
                 <Box
@@ -991,7 +1002,7 @@ Thank you.`;
                                 },
                               }}
                             >
-                              Submit Request
+                              {submitButtonText}
                             </Button>
                           </Box>
                         </Box>
@@ -1040,7 +1051,9 @@ Thank you.`;
                           mb: 1,
                         }}
                       >
-                        Request Submitted Successfully!
+                        {totalVisitorsForSubmit > 1
+                          ? "Requests Submitted Successfully!"
+                          : "Request Submitted Successfully!"}
                       </Typography>
 
                       <Typography
@@ -1050,8 +1063,9 @@ Thank you.`;
                           mb: 4,
                         }}
                       >
-                        Your visitor request has been sent for
-                        supervisor approval.
+                        {totalVisitorsForSubmit > 1
+                          ? "Your visitor requests have been sent for supervisor approval."
+                          : "Your visitor request has been sent for supervisor approval."}
                       </Typography>
                     </Paper>
                   )}
