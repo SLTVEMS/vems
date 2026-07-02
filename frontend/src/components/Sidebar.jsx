@@ -15,7 +15,6 @@ const navSections = [
       { label: "Approval Requests", icon: "check" },
       { label: "Pending Requests", icon: "clock" },
       { label: "Rejected Requests", icon: "xCircle" },
-      { label: "Supervisor Request", icon: "supervisor" },
     ],
   },
   {
@@ -72,14 +71,6 @@ function Icon({ name }) {
         <circle cx="12" cy="12" r="9" />
         <path d="m9.5 9.5 5 5" />
         <path d="m14.5 9.5-5 5" />
-      </>
-    ),
-    supervisor: (
-      <>
-        <circle cx="9" cy="7" r="3" />
-        <path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" />
-        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-        <path d="M21 21v-2a4 4 0 0 0-3-3.85" />
       </>
     ),
     pin: (
@@ -204,6 +195,7 @@ function Sidebar({ activeItem, isOpen, onItemChange, onLogout, onToggle }) {
               <span>Vehicle entry desk</span>
             </div>
           </div>
+
         </div>
 
         <div className="nav-body" ref={navBodyRef}>
