@@ -11,16 +11,22 @@ const Badge = styled.span`
   border: 1px solid ${({ $tone }) => {
     if ($tone === 'blue') return '#b9dcff'
     if ($tone === 'yellow') return '#ead08a'
+    if ($tone === 'red') return '#ff9a9f'
+    if ($tone === 'dark') return '#d1d5db'
     return '#e2e8f0'
   }};
   background: ${({ $tone }) => {
     if ($tone === 'blue') return '#dff0ff'
     if ($tone === 'yellow') return '#fff3cf'
+    if ($tone === 'red') return '#ffe6e8'
+    if ($tone === 'dark') return '#e5e7eb'
     return '#f1f5f9'
   }};
   color: ${({ $tone }) => {
     if ($tone === 'blue') return '#1473d1'
     if ($tone === 'yellow') return '#7a5207'
+    if ($tone === 'red') return '#e60012'
+    if ($tone === 'dark') return '#111827'
     return '#64748b'
   }};
   font-size: 9px;
@@ -34,7 +40,12 @@ const Dot = styled.span`
   height: 5px;
   margin-right: 5px;
   border-radius: 50%;
-  background: ${({ $tone }) => ($tone === 'yellow' ? '#d69a0b' : '#1f8fff')};
+  background: ${({ $tone }) => {
+    if ($tone === 'yellow') return '#d69a0b'
+    if ($tone === 'red') return '#ff2738'
+    if ($tone === 'dark') return '#111827'
+    return '#1f8fff'
+  }};
 `
 
 function StatusBadge({ children, tone = 'gray', dot = false }) {

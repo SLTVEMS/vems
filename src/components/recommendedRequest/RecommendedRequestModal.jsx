@@ -78,8 +78,8 @@ const approvalRows = [
     icon: CheckIcon,
     label: 'Supervisor Recommendation',
     badge: (
-      <StatusBadge tone="blue" dot>
-        Recommended
+      <StatusBadge tone="red" dot>
+        Rejected
       </StatusBadge>
     ),
   },
@@ -96,8 +96,8 @@ const approvalRows = [
     icon: PendingIcon,
     label: 'Current Status',
     badge: (
-      <StatusBadge tone="yellow" dot>
-        Pending
+      <StatusBadge tone="red" dot>
+        Rejected
       </StatusBadge>
     ),
   },
@@ -105,8 +105,8 @@ const approvalRows = [
     icon: CheckIcon,
     label: 'Duty Officer Status',
     badge: (
-      <StatusBadge tone="yellow" dot>
-        Pending
+      <StatusBadge tone="dark" dot>
+        Not Applicable
       </StatusBadge>
     ),
   },
@@ -280,8 +280,8 @@ function RecommendedRequestModal() {
             </HeaderText>
             <HeaderActions>
               <RequestIdBadge>VE20260522-003</RequestIdBadge>
-              <StatusBadge tone="blue" dot>
-                Recommended
+              <StatusBadge tone="red" dot>
+                Rejected
               </StatusBadge>
               <CloseButton aria-label="Close request details">
                 <CloseIcon />
