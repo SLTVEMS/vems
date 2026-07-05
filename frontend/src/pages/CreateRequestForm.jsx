@@ -3,24 +3,33 @@ import { useMemo, useState } from "react";
 import * as Yup from "yup";
 
 import {
+  Alert,
   Box,
   Button,
-  Paper,
-  Typography,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
   Chip,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Paper,
+  Snackbar,
+  TextField,
+  Typography,
 } from "@mui/material";
+
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 import VisitorTypeSection from "../components/VisitorTypeSection";
 import RequesterDetailsSection from "../components/RequesterDetailsSection";
 import VisitDetailsSection from "../components/VisitDetailsSection";
-import SupportingDocumentsSection from "../components/SupportingDocumentsSection";
 import FormProgressTracker from "../components/FormProgressTracker";
 import AddedVisitorsPreview from "../components/AddedVisitorsPreview";
+import VisitorSuccessScreen from "../components/VisitorSuccessScreen";
+import AnimatedStatusDialog from "../components/AnimatedStatusDialog";
+
+const sriLankanMobileNumber =
+  /^(?:\+94|0)(70|71|72|74|75|76|77|78)\d{7}$/;
 
 const visitorValidationSchema = Yup.object({
   visitorName: Yup.string(),
@@ -36,13 +45,10 @@ const visitorValidationSchema = Yup.object({
   nightWorkEndTime: Yup.string(),
   vehicleParking: Yup.string(),
   vehicleNumber: Yup.string(),
-  telephoneNumber: Yup.string().matches(
-    /^(?:\+94|0)(70|71|72|74|75|76|77|78)\d{7}$/,
-    {
-      message: "Enter a valid Sri Lankan mobile number",
-      excludeEmptyString: true,
-    }
-  ),
+  telephoneNumber: Yup.string().matches(sriLankanMobileNumber, {
+    message: "Enter a valid Sri Lankan mobile number",
+    excludeEmptyString: true,
+  }),
   laptopSerialNumber: Yup.string(),
   attachments: Yup.array().notRequired(),
 });
@@ -54,9 +60,7 @@ const validationSchema = Yup.object({
 
   requesterName: Yup.string().required(),
 
-  requesterEmail: Yup.string()
-    .email("Invalid Email")
-    .required(),
+  requesterEmail: Yup.string().email("Invalid Email").required(),
 
   requesterServiceNo: Yup.string().required(),
 
@@ -64,7 +68,7 @@ const validationSchema = Yup.object({
 
   requesterContactNo: Yup.string()
     .matches(
-      /^(?:\+94|0)(70|71|72|74|75|76|77|78)\d{7}$/,
+      sriLankanMobileNumber,
       "Enter a valid Sri Lankan mobile number"
     )
     .required(),
@@ -75,9 +79,7 @@ const validationSchema = Yup.object({
 
   currentVisitor: visitorValidationSchema.notRequired(),
 
-  addedVisitors: Yup.array()
-    .of(visitorValidationSchema)
-    .notRequired(),
+  addedVisitors: Yup.array().of(visitorValidationSchema).notRequired(),
 
   officerSvcNo: Yup.string(),
   officerName: Yup.string(),
@@ -141,6 +143,25 @@ const initialValues = {
   recommendationRemarks: "",
 };
 
+const visitorTypeColors = {
+  Guest: "#2F80ED",
+  Contractor: "#FF7F22",
+  Canteen: "#30C28E",
+  Trainee: "#AF52DE",
+  "Emp. Child": "#2DB7D9",
+};
+
+const requesterRequiredFields = [
+  { field: "requestDate", label: "Request Date" },
+  { field: "requesterName", label: "Requester Name" },
+  { field: "requesterEmail", label: "Requester Email" },
+  { field: "requesterServiceNo", label: "Requester Service No" },
+  { field: "requesterDesignation", label: "Requester Designation" },
+  { field: "requesterContactNo", label: "Requester Contact No" },
+  { field: "costCenterCode", label: "Cost Center Code" },
+  { field: "costCenterName", label: "Cost Center Name" },
+];
+
 const createNestedVisitorFormik = (formik, path) => {
   const visitorValues =
     getIn(formik.values, path) || buildVisitorDetailValues();
@@ -160,18 +181,10 @@ const createNestedVisitorFormik = (formik, path) => {
     touched: visitorTouched,
 
     setFieldValue: (field, value, shouldValidate) =>
-      formik.setFieldValue(
-        `${path}.${field}`,
-        value,
-        shouldValidate
-      ),
+      formik.setFieldValue(`${path}.${field}`, value, shouldValidate),
 
     setFieldTouched: (field, touched, shouldValidate) =>
-      formik.setFieldTouched(
-        `${path}.${field}`,
-        touched,
-        shouldValidate
-      ),
+      formik.setFieldTouched(`${path}.${field}`, touched, shouldValidate),
 
     handleChange: (event) => {
       const { name, value } = event.target;
@@ -290,11 +303,20 @@ const sanitizeVisitorForShare = (visitor) => ({
 
 const encodeSharedFormData = (values) => {
   const safeValues = {
-    ...values,
-    currentVisitor: sanitizeVisitorForShare(values.currentVisitor),
-    addedVisitors: (values.addedVisitors || []).map(
-      sanitizeVisitorForShare
+    ...initialValues,
+    visitorType: values.visitorType,
+    requestDate: values.requestDate,
+    requesterName: values.requesterName,
+    requesterEmail: values.requesterEmail,
+    requesterServiceNo: values.requesterServiceNo,
+    requesterDesignation: values.requesterDesignation,
+    requesterContactNo: values.requesterContactNo,
+    costCenterCode: values.costCenterCode,
+    costCenterName: values.costCenterName,
+    currentVisitor: sanitizeVisitorForShare(
+      values.currentVisitor || {}
     ),
+    addedVisitors: [],
   };
 
   const json = JSON.stringify(safeValues);
@@ -317,12 +339,7 @@ const decodeSharedFormData = () => {
       currentVisitor: buildVisitorDetailValues(
         parsedValues.currentVisitor || {}
       ),
-      addedVisitors:
-        parsedValues.addedVisitors?.length > 0
-          ? parsedValues.addedVisitors.map((visitor) =>
-              buildVisitorDetailValues(visitor)
-            )
-          : [],
+      addedVisitors: [],
     };
   } catch (error) {
     console.error("Invalid shared form link", error);
@@ -330,28 +347,42 @@ const decodeSharedFormData = () => {
   }
 };
 
-function CreateRequestForm({ onClose, onRequestCreated } = {}) {
-  const visitorTypeColors = {
-    Guest: "#2F80ED",
-    Contractor: "#FF7F22",
-    Canteen: "#30C28E",
-    Trainee: "#AF52DE",
-    "Emp. Child": "#2DB7D9",
-    Employee: "#e7b900",
-  };
+const scrollToFormTop = () => {
+  window.setTimeout(() => {
+    window.scrollTo({
+      top: 250,
+      behavior: "smooth",
+    });
+  }, 80);
+};
 
+function CreateRequestForm({ onClose, onRequestCreated } = {}) {
   const sharedInitialValues = useMemo(() => decodeSharedFormData(), []);
   const isSharedFormView = Boolean(sharedInitialValues);
 
   const [showForm, setShowForm] = useState(isSharedFormView);
+  const [showVisitorDetails, setShowVisitorDetails] =
+    useState(isSharedFormView);
   const [requestSubmitted, setRequestSubmitted] = useState(false);
 
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [shareEmail, setShareEmail] = useState("");
   const [shareEmailError, setShareEmailError] = useState("");
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
+  const [isSubmittingRequest, setIsSubmittingRequest] = useState(false);
 
-  const [addVisitorConfirmOpen, setAddVisitorConfirmOpen] =
-    useState(false);
+  const [statusDialog, setStatusDialog] = useState({
+    open: false,
+    type: "success",
+    title: "",
+    message: "",
+  });
+
+  const [toast, setToast] = useState({
+    open: false,
+    severity: "success",
+    message: "",
+  });
 
   const [validationDialogOpen, setValidationDialogOpen] =
     useState(false);
@@ -361,33 +392,19 @@ function CreateRequestForm({ onClose, onRequestCreated } = {}) {
   const [selectedAddedVisitorIndex, setSelectedAddedVisitorIndex] =
     useState(null);
 
-  const getCurrentVisitorSummary = (visitor) => [
-    {
-      label: "Visitor Name",
-      value: visitor.visitorName || "-",
-    },
-    {
-      label: "Visitor Email",
-      value: visitor.visitorEmail || "-",
-    },
-    {
-      label: "Pass Type",
-      value: visitor.passType || "-",
-    },
-    {
-      label: "Entry Date",
-      value:
-        visitor.passType === "More Than One Day"
-          ? `${visitor.entryStartDate || "-"} to ${
-              visitor.entryEndDate || "-"
-            }`
-          : visitor.entryStartDate || "-",
-    },
-    {
-      label: "Reason",
-      value: visitor.reason || "-",
-    },
-  ];
+  const showToast = (message, severity = "success") => {
+    setToast({
+      open: true,
+      severity,
+      message,
+    });
+  };
+
+  const markRequesterTouched = (formik, fields) => {
+    fields.forEach(({ field }) => {
+      formik.setFieldTouched(field, true, false);
+    });
+  };
 
   const markCurrentVisitorTouched = (formik, fields) => {
     fields.forEach(({ field }) => {
@@ -395,10 +412,62 @@ function CreateRequestForm({ onClose, onRequestCreated } = {}) {
     });
   };
 
-  const handleOpenAddVisitorConfirm = (formik) => {
-    const currentVisitor = formik.values.currentVisitor;
+  const getRequesterMissingFields = (values, errors = {}) => {
+    const missingFields = [];
+
+    requesterRequiredFields.forEach(({ field, label }) => {
+      if (
+        values[field] === "" ||
+        values[field] === null ||
+        values[field] === undefined
+      ) {
+        missingFields.push({ field, label });
+      }
+    });
+
+    if (values.requesterEmail && errors.requesterEmail) {
+      missingFields.push({
+        field: "requesterEmail",
+        label: "Valid Requester Email",
+      });
+    }
+
+    if (values.requesterContactNo && errors.requesterContactNo) {
+      missingFields.push({
+        field: "requesterContactNo",
+        label: "Valid Requester Contact No",
+      });
+    }
+
+    return missingFields;
+  };
+
+  const validateRequesterDetails = async (formik, actionName) => {
+    const errors = await formik.validateForm();
+    const missingFields = getRequesterMissingFields(
+      formik.values,
+      errors
+    );
+
+    if (missingFields.length > 0) {
+      markRequesterTouched(formik, missingFields);
+
+      setValidationMessage(
+        `Please complete requester details before ${actionName}: ${missingFields
+          .map((item) => item.label)
+          .join(", ")}.`
+      );
+
+      setValidationDialogOpen(true);
+      return false;
+    }
+
+    return true;
+  };
+
+  const validateCurrentVisitorDetails = (formik, actionName) => {
     const missingFields = getVisitorMissingFields(
-      currentVisitor,
+      formik.values.currentVisitor,
       formik.values.visitorType
     );
 
@@ -406,19 +475,31 @@ function CreateRequestForm({ onClose, onRequestCreated } = {}) {
       markCurrentVisitorTouched(formik, missingFields);
 
       setValidationMessage(
-        `Please complete these required fields before adding the visitor: ${missingFields
+        `Please complete visitor details before ${actionName}: ${missingFields
           .map((item) => item.label)
           .join(", ")}.`
       );
 
       setValidationDialogOpen(true);
-      return;
+      return false;
     }
 
-    setAddVisitorConfirmOpen(true);
+    return true;
   };
 
-  const handleConfirmAddVisitor = (formik) => {
+  const resetCurrentVisitor = (formik) => {
+    formik.setFieldValue(
+      "currentVisitor",
+      buildVisitorDetailValues(),
+      false
+    );
+
+    const nextTouched = { ...formik.touched };
+    delete nextTouched.currentVisitor;
+    formik.setTouched(nextTouched, false);
+  };
+
+  const addCurrentVisitorToPreview = (formik) => {
     const currentVisitor = buildVisitorDetailValues(
       formik.values.currentVisitor
     );
@@ -428,13 +509,48 @@ function CreateRequestForm({ onClose, onRequestCreated } = {}) {
       currentVisitor,
     ];
 
-    formik.setFieldValue("addedVisitors", updatedVisitors);
-    formik.setFieldValue(
-      "currentVisitor",
-      buildVisitorDetailValues()
+    formik.setFieldValue("addedVisitors", updatedVisitors, false);
+
+    return updatedVisitors;
+  };
+
+  const handleRevealVisitorDetails = async (formik) => {
+    const requesterValid = await validateRequesterDetails(
+      formik,
+      "entering visitor details"
     );
 
-    setAddVisitorConfirmOpen(false);
+    if (!requesterValid) return;
+
+    setShowVisitorDetails(true);
+    scrollToFormTop();
+  };
+
+  const handleSubmitAndAddVisitor = (formik) => {
+    if (!validateCurrentVisitorDetails(formik, "adding the visitor")) {
+      return;
+    }
+
+    addCurrentVisitorToPreview(formik);
+    resetCurrentVisitor(formik);
+    setShowVisitorDetails(true);
+
+    showToast(
+      "Visitor added successfully. You can enter the next visitor now."
+    );
+  };
+
+  const handleSubmitCurrentVisitorAndReturn = (formik) => {
+    if (!validateCurrentVisitorDetails(formik, "submitting the visitor")) {
+      return;
+    }
+
+    addCurrentVisitorToPreview(formik);
+    resetCurrentVisitor(formik);
+    setShowVisitorDetails(false);
+
+    showToast("Visitor details submitted to the preview table.");
+    scrollToFormTop();
   };
 
   const handleRemoveAddedVisitor = (formik, index) => {
@@ -442,17 +558,28 @@ function CreateRequestForm({ onClose, onRequestCreated } = {}) {
       (_, visitorIndex) => visitorIndex !== index
     );
 
-    formik.setFieldValue("addedVisitors", updatedVisitors);
+    formik.setFieldValue("addedVisitors", updatedVisitors, false);
     setSelectedAddedVisitorIndex(null);
+
+    showToast("Visitor removed from preview table.", "info");
   };
 
-  const handleOpenShareDialog = () => {
+  const handleOpenShareDialog = async (formik) => {
+    const requesterValid = await validateRequesterDetails(
+      formik,
+      "sending the form link"
+    );
+
+    if (!requesterValid) return;
+
     setShareEmail("");
     setShareEmailError("");
     setShareDialogOpen(true);
   };
 
   const handleCloseShareDialog = () => {
+    if (isSendingEmail) return;
+
     setShareDialogOpen(false);
     setShareEmail("");
     setShareEmailError("");
@@ -478,6 +605,8 @@ function CreateRequestForm({ onClose, onRequestCreated } = {}) {
       return;
     }
 
+    setIsSendingEmail(true);
+
     const formViewLink = buildShareableFormLink(formik.values);
 
     const subject = `Visitor Entry Request Form Link - ${
@@ -498,8 +627,23 @@ Thank you.`;
       subject
     )}&body=${encodeURIComponent(body)}`;
 
-    window.location.href = mailtoLink;
-    handleCloseShareDialog();
+    window.setTimeout(() => {
+      window.location.href = mailtoLink;
+
+      setIsSendingEmail(false);
+      setShareDialogOpen(false);
+      setShareEmail("");
+      setShareEmailError("");
+      setShowVisitorDetails(false);
+
+      setStatusDialog({
+        open: true,
+        type: "email",
+        title: "Email Link Prepared Successfully",
+        message:
+          "The visitor invitation link has been prepared in your email application.",
+      });
+    }, 650);
   };
 
   const handleFormReset = (formik) => {
@@ -509,70 +653,87 @@ Thank you.`;
       currentVisitor: buildVisitorDetailValues(),
       addedVisitors: [],
     });
+
+    setShowVisitorDetails(false);
+
+    showToast("Form cleared. Visitor type has been kept.", "info");
   };
 
-  const getAllVisitorsForSubmit = (values) => {
-    const visitors = [...(values.addedVisitors || [])];
-
-    if (hasMeaningfulVisitorData(values.currentVisitor)) {
-      visitors.push(values.currentVisitor);
-    }
-
-    return visitors;
-  };
-
-  const handleSubmit = (values) => {
-    const currentVisitorHasData = hasMeaningfulVisitorData(
-      values.currentVisitor
-    );
-
-    if (currentVisitorHasData) {
-      const missingFields = getVisitorMissingFields(
-        values.currentVisitor,
-        values.visitorType
-      );
-
-      if (missingFields.length > 0) {
-        setValidationMessage(
-          `Please complete the current visitor details or add the visitor to the preview table first. Missing fields: ${missingFields
-            .map((item) => item.label)
-            .join(", ")}.`
-        );
-
-        setValidationDialogOpen(true);
-        return;
-      }
-    }
-
-    const finalVisitors = getAllVisitorsForSubmit(values);
-
-    if (finalVisitors.length === 0) {
-      setValidationMessage(
-        "Please add at least one visitor before submitting the request."
-      );
-
-      setValidationDialogOpen(true);
-      return;
-    }
-
+  const buildPayload = (values, visitors) => {
     const {
       currentVisitor,
       addedVisitors,
       ...requesterAndFormValues
     } = values;
 
-    const payload = {
+    return {
       ...requesterAndFormValues,
-      visitors: finalVisitors,
+      visitors,
     };
+  };
 
-    console.log(payload);
+  const handleFinalSubmit = async (formik) => {
+    const requesterValid = await validateRequesterDetails(
+      formik,
+      "submitting the request"
+    );
 
-    setRequestSubmitted(true);
+    if (!requesterValid) return;
 
-    if (onRequestCreated) {
-      onRequestCreated(payload);
+    let finalVisitors = [...(formik.values.addedVisitors || [])];
+
+    if (isSharedFormView) {
+      if (
+        !validateCurrentVisitorDetails(
+          formik,
+          "submitting the shared form"
+        )
+      ) {
+        return;
+      }
+
+      finalVisitors = [
+        buildVisitorDetailValues(formik.values.currentVisitor),
+      ];
+    } else if (hasMeaningfulVisitorData(formik.values.currentVisitor)) {
+      setValidationMessage(
+        "Please press Submit or Add Visitor and Submit to move the current visitor details to the preview table before final submission."
+      );
+
+      setValidationDialogOpen(true);
+      return;
     }
+
+    if (finalVisitors.length === 0) {
+      setValidationMessage(
+        "Please add at least one visitor to the preview table before submitting the request."
+      );
+
+      setValidationDialogOpen(true);
+      return;
+    }
+
+    const payload = buildPayload(formik.values, finalVisitors);
+
+    setIsSubmittingRequest(true);
+
+    window.setTimeout(() => {
+      console.log(payload);
+
+      setIsSubmittingRequest(false);
+      setRequestSubmitted(true);
+
+      setStatusDialog({
+        open: true,
+        type: "submit",
+        title: "Request Submitted Successfully",
+        message: "Your visitor request has been sent for approval.",
+      });
+
+      if (onRequestCreated) {
+        onRequestCreated(payload);
+      }
+    }, 750);
   };
 
   return (
@@ -625,7 +786,7 @@ Thank you.`;
             }}
           >
             {isSharedFormView
-              ? "Shared visitor form view."
+              ? "Shared visitor form view. Complete the visitor details below."
               : "Fill in the details below to register a visitor entry request."}
           </Typography>
         </Box>
@@ -634,18 +795,14 @@ Thank you.`;
           initialValues={sharedInitialValues || initialValues}
           enableReinitialize
           validationSchema={validationSchema}
-          onSubmit={handleSubmit}
+          onSubmit={() => {}}
         >
           {(formik) => {
             const selectedColor =
               visitorTypeColors[formik.values.visitorType] ||
               "#071B52";
 
-            const activeStep = requestSubmitted
-              ? 2
-              : showForm
-              ? 1
-              : 0;
+            const activeStep = requestSubmitted ? 2 : showForm ? 1 : 0;
 
             const currentVisitorFormik = createNestedVisitorFormik(
               formik,
@@ -660,14 +817,8 @@ Thank you.`;
                   )
                 : null;
 
-            const totalVisitorsForSubmit =
-              (formik.values.addedVisitors?.length || 0) +
-              (hasMeaningfulVisitorData(formik.values.currentVisitor)
-                ? 1
-                : 0);
-
-            const submitButtonText =
-              totalVisitorsForSubmit > 1
+            const finalSubmitText =
+              formik.values.addedVisitors?.length > 1
                 ? "Submit Requests"
                 : "Submit Request";
 
@@ -682,16 +833,21 @@ Thank you.`;
                     boxSizing: "border-box",
                   }}
                 >
-                  <FormProgressTracker
-                    activeStep={activeStep}
-                    activeColor={selectedColor}
-                  />
+                  {!requestSubmitted && (
+                    <FormProgressTracker
+                      activeStep={activeStep}
+                      activeColor={selectedColor}
+                    />
+                  )}
 
-                  {!showForm && (
+                  {!showForm && !requestSubmitted && (
                     <Box sx={{ mb: 6 }}>
                       <VisitorTypeSection
                         formik={formik}
-                        onAutoNext={() => setShowForm(true)}
+                        onAutoNext={() => {
+                          setShowForm(true);
+                          setShowVisitorDetails(false);
+                        }}
                       />
                     </Box>
                   )}
@@ -742,6 +898,9 @@ Thank you.`;
                             }}
                           >
                             This form was opened from a shared link.
+                            Requester details are included and the
+                            visitor can complete the visit details,
+                            reason, and supporting documents.
                           </Typography>
                         </Paper>
                       )}
@@ -760,6 +919,8 @@ Thank you.`;
                           display: "flex",
                           justifyContent: "space-between",
                           alignItems: "center",
+                          gap: 2,
+                          flexWrap: "wrap",
                         }}
                       >
                         <Typography
@@ -769,14 +930,16 @@ Thank you.`;
                             color: "#fff",
                           }}
                         >
-                          Visitor Category:{" "}
-                          {formik.values.visitorType}
+                          Visitor Category: {formik.values.visitorType}
                         </Typography>
 
                         {!isSharedFormView && (
                           <Button
                             type="button"
-                            onClick={() => setShowForm(false)}
+                            onClick={() => {
+                              setShowForm(false);
+                              setShowVisitorDetails(false);
+                            }}
                             sx={{
                               borderRadius: "14px",
                               px: 2.5,
@@ -798,276 +961,630 @@ Thank you.`;
                         )}
                       </Box>
 
-                      <Box sx={{ mb: 5 }}>
-                        <RequesterDetailsSection
-                          formik={formik}
-                          headerActions={
-                            !isSharedFormView ? (
-                              <Button
-                                type="button"
-                                size="small"
-                                variant="contained"
-                                onClick={handleOpenShareDialog}
-                                sx={{
-                                  borderRadius: "12px",
-                                  px: 2.2,
-                                  py: 0.8,
-                                  textTransform: "none",
-                                  fontWeight: 700,
-                                  fontSize: "12px",
-                                  background:
-                                    "linear-gradient(135deg,#021C54,#0A2F88)",
-                                  boxShadow:
-                                    "0px 8px 18px rgba(2,28,84,0.18)",
-
-                                  "&:hover": {
-                                    background:
-                                      "linear-gradient(135deg,#021C54,#0A2F88)",
-                                  },
-                                }}
-                              >
-                                Share Form
-                              </Button>
-                            ) : null
-                          }
-                        />
+                      <Box sx={{ mb: 0 }}>
+                        <RequesterDetailsSection formik={formik} />
                       </Box>
 
-                      <Paper
-                        elevation={0}
-                        sx={{
-                          mt: 2,
-                          mb: 4,
-                          p: 3,
-                          borderRadius: "24px",
-                          border: "1px solid #E2E8F0",
-                          background: "#FFFFFF",
-                        }}
-                      >
-                        <VisitDetailsSection
-                          formik={currentVisitorFormik}
-                          title="Visit Details"
-                        />
+                      {!isSharedFormView && !showVisitorDetails && (
+                        <Paper
+                          elevation={0}
+                          sx={{
+                            mt: 3,
+                            mb: 4,
+                            px: {
+                              xs: 2,
+                              md: 2.5,
+                            },
+                            py: {
+                              xs: 2,
+                              md: 2,
+                            },
+                            borderRadius: "18px",
+                            border: "1px solid #DDE6F3",
+                            background:
+                              "linear-gradient(135deg,#F8FAFC 0%,#FFFFFF 100%)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            gap: 2,
+                            flexWrap: {
+                              xs: "wrap",
+                              md: "nowrap",
+                            },
+                            textAlign: "left",
+                            boxShadow:
+                              "0 10px 26px rgba(15,23,42,0.05)",
+                            animation:
+                              "nextStepActionBarReveal 0.35s ease",
 
-                        <SupportingDocumentsSection
-                          values={currentVisitorFormik.values}
-                          setFieldValue={
-                            currentVisitorFormik.setFieldValue
-                          }
-                        />
-
-                        {!isSharedFormView && (
+                            "@keyframes nextStepActionBarReveal": {
+                              from: {
+                                opacity: 0,
+                                transform: "translateY(10px)",
+                              },
+                              to: {
+                                opacity: 1,
+                                transform: "translateY(0)",
+                              },
+                            },
+                          }}
+                        >
                           <Box
                             sx={{
-                              mt: 3,
+                              flex: "1 1 auto",
+                              minWidth: 0,
                               display: "flex",
-                              justifyContent: "flex-end",
                               alignItems: "center",
-                              gap: 2,
-                              flexWrap: "wrap",
+                              justifyContent: "flex-start",
+                              gap: 1.3,
+                              textAlign: "left",
                             }}
                           >
+                            <Box
+                              sx={{
+                                width: 10,
+                                height: 10,
+                                borderRadius: "50%",
+                                background: "#22C55E",
+                                flexShrink: 0,
+                                position: "relative",
+                                boxShadow:
+                                  "0 0 0 4px rgba(34,197,94,0.12)",
+                                animation:
+                                  "nextStepPointGlow 1.4s ease-in-out infinite",
+
+                                "@keyframes nextStepPointGlow": {
+                                  "0%": {
+                                    boxShadow:
+                                      "0 0 0 4px rgba(34,197,94,0.12)",
+                                  },
+                                  "50%": {
+                                    boxShadow:
+                                      "0 0 0 8px rgba(34,197,94,0.05)",
+                                  },
+                                  "100%": {
+                                    boxShadow:
+                                      "0 0 0 4px rgba(34,197,94,0.12)",
+                                  },
+                                },
+
+                                "&::after": {
+                                  content: '""',
+                                  position: "absolute",
+                                  inset: -5,
+                                  borderRadius: "50%",
+                                  border:
+                                    "1px solid rgba(34,197,94,0.35)",
+                                  animation:
+                                    "nextStepPointPulse 1.4s ease-in-out infinite",
+                                },
+
+                                "@keyframes nextStepPointPulse": {
+                                  "0%": {
+                                    transform: "scale(0.8)",
+                                    opacity: 0.8,
+                                  },
+                                  "70%": {
+                                    transform: "scale(1.8)",
+                                    opacity: 0,
+                                  },
+                                  "100%": {
+                                    transform: "scale(0.8)",
+                                    opacity: 0,
+                                  },
+                                },
+                              }}
+                            />
+
                             <Typography
                               sx={{
                                 fontSize: "13px",
                                 color: "#64748B",
-                                fontWeight: 500,
+                                lineHeight: 1.6,
+                                textAlign: "left",
+                                whiteSpace: {
+                                  xs: "normal",
+                                  md: "nowrap",
+                                },
+                                overflow: {
+                                  xs: "visible",
+                                  md: "hidden",
+                                },
+                                textOverflow: {
+                                  xs: "clip",
+                                  md: "ellipsis",
+                                },
                               }}
                             >
-                              Confirm current visitor details before
-                              adding another visitor.
+                              <Box
+                                component="span"
+                                sx={{
+                                  fontSize: "14px",
+                                  fontWeight: 900,
+                                  color: "#071B52",
+                                  textTransform: "uppercase",
+                                  letterSpacing: "0.04em",
+                                  mr: 1,
+                                }}
+                              >
+                                Next Step
+                              </Box>
+                              Enter the visitor details yourself or send a
+                              secure form link for the visitor to complete.
                             </Typography>
+                          </Box>
 
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: {
+                                xs: "flex-start",
+                                md: "flex-end",
+                              },
+                              gap: 1.4,
+                              flexWrap: "wrap",
+                              flexShrink: 0,
+                            }}
+                          >
                             <Button
                               type="button"
                               variant="contained"
+                              startIcon={
+                                <Box
+                                  component="span"
+                                  sx={{
+                                    width: 22,
+                                    height: 22,
+                                    borderRadius: "50%",
+                                    background: "rgba(255,255,255,0.18)",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    fontWeight: 900,
+                                    fontSize: 16,
+                                  }}
+                                >
+                                  +
+                                </Box>
+                              }
                               onClick={() =>
-                                handleOpenAddVisitorConfirm(formik)
+                                handleRevealVisitorDetails(formik)
                               }
                               sx={{
                                 borderRadius: "14px",
-                                px: 3,
-                                py: 1.1,
+                                px: 2.8,
+                                py: 1.15,
                                 textTransform: "none",
                                 fontWeight: 800,
                                 fontSize: "14px",
                                 background:
                                   "linear-gradient(135deg,#16A34A,#22C55E)",
                                 boxShadow:
-                                  "0px 10px 22px rgba(34,197,94,0.22)",
-
-                                "&:hover": {
-                                  background:
-                                    "linear-gradient(135deg,#15803D,#16A34A)",
-                                },
-                              }}
-                            >
-                              + Visitor
-                            </Button>
-                          </Box>
-                        )}
-                      </Paper>
-
-                      <AddedVisitorsPreview
-                        visitors={formik.values.addedVisitors}
-                        onViewMore={(index) =>
-                          setSelectedAddedVisitorIndex(index)
-                        }
-                      />
-
-                      {!isSharedFormView && (
-                        <Box
-                          sx={{
-                            mt: 4,
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            gap: 2,
-                          }}
-                        >
-                          <Button
-                            type="button"
-                            variant="outlined"
-                            onClick={() => {
-                              if (onClose) {
-                                onClose();
-                              } else {
-                                setShowForm(false);
-                              }
-                            }}
-                            sx={{
-                              borderRadius: "16px",
-                              px: 4,
-                              py: 1.4,
-                              textTransform: "none",
-                              fontWeight: 600,
-                              fontSize: "14px",
-                              borderColor: "#E2E8F0",
-                              color: "#475569",
-
-                              "&:hover": {
-                                borderColor: "#CBD5E1",
-                                background: "#F8FAFC",
-                              },
-                            }}
-                          >
-                            ← Back
-                          </Button>
-
-                          <Box
-                            sx={{
-                              display: "flex",
-                              gap: 2,
-                            }}
-                          >
-                            <Button
-                              type="button"
-                              variant="text"
-                              onClick={() => handleFormReset(formik)}
-                              sx={{
-                                borderRadius: "16px",
-                                px: 3,
-                                py: 1.4,
-                                textTransform: "none",
-                                fontWeight: 600,
-                                fontSize: "14px",
-                                color: "#64748B",
-                              }}
-                            >
-                              Clear
-                            </Button>
-
-                            <Button
-                              type="submit"
-                              variant="contained"
-                              sx={{
-                                borderRadius: "16px",
-                                px: 5,
-                                py: 1.4,
-                                textTransform: "none",
-                                fontWeight: 700,
-                                fontSize: "14px",
-                                background:
-                                  "linear-gradient(135deg,#021C54,#0A2F88)",
-                                boxShadow:
-                                  "0px 10px 25px rgba(2,28,84,0.25)",
+                                  "0px 9px 20px rgba(34,197,94,0.20)",
                                 transition: "all 0.25s ease",
 
                                 "&:hover": {
                                   transform: "translateY(-2px)",
                                   background:
-                                    "linear-gradient(135deg,#021C54,#0A2F88)",
+                                    "linear-gradient(135deg,#15803D,#16A34A)",
                                   boxShadow:
-                                    "0px 15px 30px rgba(2,28,84,0.35)",
+                                    "0px 13px 26px rgba(34,197,94,0.28)",
                                 },
                               }}
                             >
-                              {submitButtonText}
+                              Enter Visitor Details
+                            </Button>
+
+                            <Button
+                              type="button"
+                              variant="outlined"
+                              startIcon={
+                                <Box
+                                  component="span"
+                                  sx={{
+                                    fontSize: 16,
+                                    lineHeight: 1,
+                                  }}
+                                >
+                                  ✉
+                                </Box>
+                              }
+                              onClick={() => handleOpenShareDialog(formik)}
+                              sx={{
+                                borderRadius: "14px",
+                                px: 2.8,
+                                py: 1.1,
+                                textTransform: "none",
+                                fontWeight: 800,
+                                fontSize: "14px",
+                                borderColor: "#BFD0EA",
+                                color: "#071B52",
+                                background: "#FFFFFF",
+                                transition: "all 0.25s ease",
+
+                                "&:hover": {
+                                  transform: "translateY(-2px)",
+                                  borderColor: "#0A2F88",
+                                  background: "#EFF6FF",
+                                  boxShadow:
+                                    "0px 10px 22px rgba(10,47,136,0.12)",
+                                },
+                              }}
+                            >
+                              Send Form Link
                             </Button>
                           </Box>
-                        </Box>
+                        </Paper>
+                      )}
+
+                      {showVisitorDetails && (
+                        <Paper
+                          elevation={0}
+                          sx={{
+                            mt: 2,
+                            mb: 4,
+                            p: 3,
+                            borderRadius: "24px",
+                            border: "1px solid #E2E8F0",
+                            background: "#FFFFFF",
+                            animation:
+                              "visitorSectionReveal 0.45s ease",
+
+                            "@keyframes visitorSectionReveal": {
+                              from: {
+                                opacity: 0,
+                                transform:
+                                  "translateY(18px) scale(0.99)",
+                              },
+                              to: {
+                                opacity: 1,
+                                transform: "translateY(0) scale(1)",
+                              },
+                            },
+                          }}
+                        >
+                          <VisitDetailsSection
+                            formik={currentVisitorFormik}
+                            title="Visit Details"
+                          />
+
+                          {!isSharedFormView ? (
+                            <Box
+                              sx={{
+                                mt: 3,
+                                display: "flex",
+                                justifyContent: "flex-end",
+                                alignItems: "center",
+                                gap: 2,
+                                flexWrap: "wrap",
+                              }}
+                            >
+                              <Typography
+                                sx={{
+                                  fontSize: "13px",
+                                  color: "#64748B",
+                                  fontWeight: 500,
+                                  mr: "auto",
+                                }}
+                              >
+                                Submit moves the visitor to the preview
+                                table. Add Visitor and Submit keeps this
+                                section open for the next visitor.
+                              </Typography>
+
+                              <Button
+                                type="button"
+                                variant="outlined"
+                                startIcon={<CheckCircleIcon />}
+                                onClick={() =>
+                                  handleSubmitCurrentVisitorAndReturn(
+                                    formik
+                                  )
+                                }
+                                sx={{
+                                  borderRadius: "14px",
+                                  px: 3,
+                                  py: 1.2,
+                                  textTransform: "none",
+                                  fontWeight: 800,
+                                  fontSize: "14px",
+                                  borderColor: "#0A2F88",
+                                  color: "#0A2F88",
+
+                                  "&:hover": {
+                                    borderColor: "#021C54",
+                                    background: "#EFF6FF",
+                                  },
+                                }}
+                              >
+                                Submit
+                              </Button>
+
+                              <Button
+                                type="button"
+                                variant="contained"
+                                startIcon={
+                                  <Box
+                                    component="span"
+                                    sx={{
+                                      fontWeight: 900,
+                                      fontSize: 18,
+                                    }}
+                                  >
+                                    +
+                                  </Box>
+                                }
+                                onClick={() =>
+                                  handleSubmitAndAddVisitor(formik)
+                                }
+                                sx={{
+                                  borderRadius: "14px",
+                                  px: 3,
+                                  py: 1.2,
+                                  textTransform: "none",
+                                  fontWeight: 800,
+                                  fontSize: "14px",
+                                  background:
+                                    "linear-gradient(135deg,#16A34A,#22C55E)",
+                                  boxShadow:
+                                    "0px 10px 22px rgba(34,197,94,0.22)",
+
+                                  "&:hover": {
+                                    background:
+                                      "linear-gradient(135deg,#15803D,#16A34A)",
+                                  },
+                                }}
+                              >
+                                Add Visitor and Submit
+                              </Button>
+                            </Box>
+                          ) : (
+                            <Box
+                              sx={{
+                                mt: 3,
+                                display: "flex",
+                                justifyContent: "flex-end",
+                              }}
+                            >
+                              <Button
+                                type="button"
+                                variant="contained"
+                                disabled={isSubmittingRequest}
+                                startIcon={
+                                  isSubmittingRequest ? (
+                                    <CircularProgress
+                                      size={18}
+                                      color="inherit"
+                                    />
+                                  ) : (
+                                    <Box
+                                      component="span"
+                                      sx={{ fontSize: 16 }}
+                                    >
+                                      ➤
+                                    </Box>
+                                  )
+                                }
+                                onClick={() => handleFinalSubmit(formik)}
+                                sx={{
+                                  borderRadius: "16px",
+                                  px: 5,
+                                  py: 1.4,
+                                  textTransform: "none",
+                                  fontWeight: 800,
+                                  fontSize: "14px",
+                                  background:
+                                    "linear-gradient(135deg,#021C54,#0A2F88)",
+                                  boxShadow:
+                                    "0px 10px 25px rgba(2,28,84,0.25)",
+                                  transition: "all 0.25s ease",
+
+                                  "&:hover": {
+                                    transform: "translateY(-2px)",
+                                    background:
+                                      "linear-gradient(135deg,#021C54,#0A2F88)",
+                                    boxShadow:
+                                      "0px 15px 30px rgba(2,28,84,0.35)",
+                                  },
+                                }}
+                              >
+                                {isSubmittingRequest
+                                  ? "Submitting Form..."
+                                  : "Submit Shared Form"}
+                              </Button>
+                            </Box>
+                          )}
+                        </Paper>
+                      )}
+
+                      {!isSharedFormView && (
+                        <>
+                          <AddedVisitorsPreview
+                            visitors={formik.values.addedVisitors}
+                            onViewMore={(index) =>
+                              setSelectedAddedVisitorIndex(index)
+                            }
+                          />
+
+                          {formik.values.addedVisitors?.length > 0 && (
+                            <Paper
+                              elevation={0}
+                              sx={{
+                                mt: 4,
+                                p: 2.5,
+                                borderRadius: "22px",
+                                border: "1px solid #E2E8F0",
+                                background:
+                                  "linear-gradient(135deg,#F8FAFC 0%,#FFFFFF 100%)",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                gap: 2,
+                                flexWrap: "wrap",
+                              }}
+                            >
+                              <Box>
+                                <Typography
+                                  sx={{
+                                    color: "#071B52",
+                                    fontWeight: 900,
+                                    fontSize: "16px",
+                                  }}
+                                >
+                                  Ready for Final Submission
+                                </Typography>
+
+                                <Typography
+                                  sx={{
+                                    color: "#64748B",
+                                    fontSize: "13px",
+                                    mt: 0.5,
+                                  }}
+                                >
+                                  Review the preview table and submit the
+                                  final visitor request for approval.
+                                </Typography>
+                              </Box>
+
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  gap: 2,
+                                  flexWrap: "wrap",
+                                  justifyContent: "flex-end",
+                                }}
+                              >
+                                <Button
+                                  type="button"
+                                  variant="text"
+                                  onClick={() => handleFormReset(formik)}
+                                  sx={{
+                                    borderRadius: "16px",
+                                    px: 3,
+                                    py: 1.4,
+                                    textTransform: "none",
+                                    fontWeight: 700,
+                                    fontSize: "14px",
+                                    color: "#64748B",
+                                  }}
+                                >
+                                  Clear
+                                </Button>
+
+                                <Button
+                                  type="button"
+                                  variant="contained"
+                                  disabled={isSubmittingRequest}
+                                  startIcon={
+                                    isSubmittingRequest ? (
+                                      <CircularProgress
+                                        size={18}
+                                        color="inherit"
+                                      />
+                                    ) : (
+                                      <Box
+                                        component="span"
+                                        sx={{ fontSize: 16 }}
+                                      >
+                                        ➤
+                                      </Box>
+                                    )
+                                  }
+                                  onClick={() => handleFinalSubmit(formik)}
+                                  sx={{
+                                    borderRadius: "16px",
+                                    px: 5,
+                                    py: 1.4,
+                                    textTransform: "none",
+                                    fontWeight: 800,
+                                    fontSize: "14px",
+                                    background:
+                                      "linear-gradient(135deg,#021C54,#0A2F88)",
+                                    boxShadow:
+                                      "0px 10px 25px rgba(2,28,84,0.25)",
+                                    transition: "all 0.25s ease",
+
+                                    "&:hover": {
+                                      transform: "translateY(-2px)",
+                                      background:
+                                        "linear-gradient(135deg,#021C54,#0A2F88)",
+                                      boxShadow:
+                                        "0px 15px 30px rgba(2,28,84,0.35)",
+                                    },
+                                  }}
+                                >
+                                  {isSubmittingRequest
+                                    ? "Submitting Form..."
+                                    : finalSubmitText}
+                                </Button>
+                              </Box>
+                            </Paper>
+                          )}
+
+                          <Box
+                            sx={{
+                              mt: 4,
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                              gap: 2,
+                              flexWrap: "wrap",
+                            }}
+                          >
+                            <Button
+                              type="button"
+                              variant="outlined"
+                              onClick={() => {
+                                if (onClose) {
+                                  onClose();
+                                } else {
+                                  setShowForm(false);
+                                  setShowVisitorDetails(false);
+                                }
+                              }}
+                              sx={{
+                                borderRadius: "16px",
+                                px: 4,
+                                py: 1.4,
+                                textTransform: "none",
+                                fontWeight: 600,
+                                fontSize: "14px",
+                                borderColor: "#E2E8F0",
+                                color: "#475569",
+
+                                "&:hover": {
+                                  borderColor: "#CBD5E1",
+                                  background: "#F8FAFC",
+                                },
+                              }}
+                            >
+                              ← Back
+                            </Button>
+                          </Box>
+                        </>
                       )}
                     </Box>
                   )}
 
                   {requestSubmitted && (
-                    <Paper
-                      elevation={0}
-                      sx={{
-                        maxWidth: "620px",
-                        margin: "40px auto",
-                        padding: "50px",
-                        borderRadius: "24px",
-                        textAlign: "center",
-                        border: "1px solid #E5E7EB",
-                        background: "#FFFFFF",
+                    <VisitorSuccessScreen
+                      onCreateAnother={() => {
+                        window.history.replaceState(
+                          null,
+                          "",
+                          window.location.pathname
+                        );
+
+                        formik.resetForm({
+                          values: initialValues,
+                        });
+
+                        setRequestSubmitted(false);
+                        setShowForm(false);
+                        setShowVisitorDetails(false);
                       }}
-                    >
-                      <Box
-                        sx={{
-                          width: 100,
-                          height: 100,
-                          borderRadius: "50%",
-                          background: "#22C55E",
-                          color: "#FFFFFF",
-                          fontSize: "48px",
-                          fontWeight: 700,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          margin: "0 auto 24px",
-                          boxShadow:
-                            "0 10px 25px rgba(34,197,94,0.25)",
-                        }}
-                      >
-                        ✓
-                      </Box>
-
-                      <Typography
-                        sx={{
-                          fontSize: "32px",
-                          fontWeight: 700,
-                          color: "#021C54",
-                          mb: 1,
-                        }}
-                      >
-                        {totalVisitorsForSubmit > 1
-                          ? "Requests Submitted Successfully!"
-                          : "Request Submitted Successfully!"}
-                      </Typography>
-
-                      <Typography
-                        sx={{
-                          color: "#64748B",
-                          fontSize: "15px",
-                          mb: 4,
-                        }}
-                      >
-                        {totalVisitorsForSubmit > 1
-                          ? "Your visitor requests have been sent for supervisor approval."
-                          : "Your visitor request has been sent for supervisor approval."}
-                      </Typography>
-                    </Paper>
+                    />
                   )}
                 </Box>
 
@@ -1089,7 +1606,7 @@ Thank you.`;
                       pb: 1,
                     }}
                   >
-                    Share Form View Link
+                    Send Form Link
                   </DialogTitle>
 
                   <DialogContent>
@@ -1100,15 +1617,16 @@ Thank you.`;
                         mb: 2,
                       }}
                     >
-                      Enter the email address. The email will contain
-                      only a link to open this full form view.
+                      Enter the visitor email address. The link will open
+                      the selected visitor type form with requester
+                      details included.
                     </Typography>
 
                     <TextField
                       autoFocus
                       fullWidth
-                      label="Recipient Email"
-                      placeholder="example@gmail.com"
+                      label="Visitor Email"
+                      placeholder="visitor@example.com"
                       value={shareEmail}
                       onChange={(event) => {
                         setShareEmail(event.target.value);
@@ -1135,6 +1653,7 @@ Thank you.`;
                     <Button
                       type="button"
                       onClick={handleCloseShareDialog}
+                      disabled={isSendingEmail}
                       sx={{
                         borderRadius: "12px",
                         textTransform: "none",
@@ -1147,9 +1666,20 @@ Thank you.`;
                     <Button
                       type="button"
                       variant="contained"
-                      onClick={() =>
-                        handleShareFormLinkToEmail(formik)
+                      disabled={isSendingEmail}
+                      startIcon={
+                        isSendingEmail ? (
+                          <CircularProgress
+                            size={18}
+                            color="inherit"
+                          />
+                        ) : (
+                          <Box component="span" sx={{ fontSize: 16 }}>
+                            ➤
+                          </Box>
+                        )
                       }
+                      onClick={() => handleShareFormLinkToEmail(formik)}
                       sx={{
                         borderRadius: "12px",
                         px: 3,
@@ -1164,133 +1694,7 @@ Thank you.`;
                         },
                       }}
                     >
-                      Send Link
-                    </Button>
-                  </DialogActions>
-                </Dialog>
-
-                <Dialog
-                  open={addVisitorConfirmOpen}
-                  onClose={() => setAddVisitorConfirmOpen(false)}
-                  maxWidth="sm"
-                  fullWidth
-                  PaperProps={{
-                    sx: {
-                      borderRadius: "24px",
-                    },
-                  }}
-                >
-                  <DialogTitle
-                    sx={{
-                      fontWeight: 900,
-                      color: "#071B52",
-                      pb: 1,
-                    }}
-                  >
-                    Confirm Visitor Details
-                  </DialogTitle>
-
-                  <DialogContent>
-                    <Typography
-                      sx={{
-                        fontSize: "14px",
-                        color: "#64748B",
-                        mb: 2.5,
-                      }}
-                    >
-                      Please confirm the current visitor details. After
-                      confirmation, the visitor fields will be cleared
-                      and requester details will remain unchanged.
-                    </Typography>
-
-                    <Box
-                      sx={{
-                        display: "grid",
-                        gridTemplateColumns: {
-                          xs: "1fr",
-                          sm: "1fr 1fr",
-                        },
-                        gap: 1.5,
-                      }}
-                    >
-                      {getCurrentVisitorSummary(
-                        formik.values.currentVisitor
-                      ).map((item) => (
-                        <Paper
-                          key={item.label}
-                          elevation={0}
-                          sx={{
-                            p: 1.8,
-                            borderRadius: "16px",
-                            border: "1px solid #E2E8F0",
-                            background: "#F8FAFC",
-                          }}
-                        >
-                          <Typography
-                            sx={{
-                              fontSize: "11px",
-                              textTransform: "uppercase",
-                              letterSpacing: "0.08em",
-                              color: "#64748B",
-                              fontWeight: 800,
-                              mb: 0.5,
-                            }}
-                          >
-                            {item.label}
-                          </Typography>
-
-                          <Typography
-                            sx={{
-                              fontSize: "14px",
-                              color: "#0F172A",
-                              fontWeight: 700,
-                              wordBreak: "break-word",
-                            }}
-                          >
-                            {item.value}
-                          </Typography>
-                        </Paper>
-                      ))}
-                    </Box>
-                  </DialogContent>
-
-                  <DialogActions
-                    sx={{
-                      px: 3,
-                      pb: 3,
-                    }}
-                  >
-                    <Button
-                      type="button"
-                      onClick={() => setAddVisitorConfirmOpen(false)}
-                      sx={{
-                        borderRadius: "12px",
-                        textTransform: "none",
-                        fontWeight: 700,
-                      }}
-                    >
-                      Cancel
-                    </Button>
-
-                    <Button
-                      type="button"
-                      variant="contained"
-                      onClick={() => handleConfirmAddVisitor(formik)}
-                      sx={{
-                        borderRadius: "12px",
-                        px: 3,
-                        textTransform: "none",
-                        fontWeight: 800,
-                        background:
-                          "linear-gradient(135deg,#16A34A,#22C55E)",
-
-                        "&:hover": {
-                          background:
-                            "linear-gradient(135deg,#15803D,#16A34A)",
-                        },
-                      }}
-                    >
-                      Confirm & Add
+                      {isSendingEmail ? "Preparing Email..." : "Send Link"}
                     </Button>
                   </DialogActions>
                 </Dialog>
@@ -1413,25 +1817,12 @@ Thank you.`;
                     )}
                   </DialogTitle>
 
-                  <DialogContent
-                    sx={{
-                      pt: 1,
-                    }}
-                  >
+                  <DialogContent sx={{ pt: 1 }}>
                     {selectedAddedVisitorFormik && (
-                      <>
-                        <VisitDetailsSection
-                          formik={selectedAddedVisitorFormik}
-                          title="Editable Visitor Details"
-                        />
-
-                        <SupportingDocumentsSection
-                          values={selectedAddedVisitorFormik.values}
-                          setFieldValue={
-                            selectedAddedVisitorFormik.setFieldValue
-                          }
-                        />
-                      </>
+                      <VisitDetailsSection
+                        formik={selectedAddedVisitorFormik}
+                        title="Editable Visitor Details"
+                      />
                     )}
                   </DialogContent>
 
@@ -1456,7 +1847,15 @@ Thank you.`;
                     <Button
                       type="button"
                       variant="contained"
-                      onClick={() => setSelectedAddedVisitorIndex(null)}
+                      startIcon={
+                        <Box component="span" sx={{ fontSize: 16 }}>
+                          👁
+                        </Box>
+                      }
+                      onClick={() => {
+                        setSelectedAddedVisitorIndex(null);
+                        showToast("Visitor details updated successfully.");
+                      }}
                       sx={{
                         borderRadius: "12px",
                         px: 3,
@@ -1475,6 +1874,53 @@ Thank you.`;
                     </Button>
                   </DialogActions>
                 </Dialog>
+
+                <AnimatedStatusDialog
+                  open={statusDialog.open}
+                  type={statusDialog.type}
+                  title={statusDialog.title}
+                  message={statusDialog.message}
+                  onClose={() =>
+                    setStatusDialog((previous) => ({
+                      ...previous,
+                      open: false,
+                    }))
+                  }
+                />
+
+                <Snackbar
+                  open={toast.open}
+                  autoHideDuration={2600}
+                  onClose={() =>
+                    setToast((previous) => ({
+                      ...previous,
+                      open: false,
+                    }))
+                  }
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                >
+                  <Alert
+                    severity={toast.severity}
+                    variant="filled"
+                    onClose={() =>
+                      setToast((previous) => ({
+                        ...previous,
+                        open: false,
+                      }))
+                    }
+                    sx={{
+                      borderRadius: "14px",
+                      fontWeight: 700,
+                      boxShadow:
+                        "0 18px 35px rgba(15,23,42,0.18)",
+                    }}
+                  >
+                    {toast.message}
+                  </Alert>
+                </Snackbar>
               </Form>
             );
           }}

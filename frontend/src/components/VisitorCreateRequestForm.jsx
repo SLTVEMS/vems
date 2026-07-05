@@ -14,7 +14,6 @@ import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import EngineeringOutlinedIcon from "@mui/icons-material/EngineeringOutlined";
 import RestaurantOutlinedIcon from "@mui/icons-material/RestaurantOutlined";
 import ChildCareOutlinedIcon from "@mui/icons-material/ChildCareOutlined";
-import BadgeOutlinedIcon from "@mui/icons-material/BadgeOutlined";
 
 import SupportingDocumentsSection from "./SupportingDocumentsSection";
 
@@ -22,7 +21,6 @@ import SupportingDocumentsSection from "./SupportingDocumentsSection";
 // Visitor type → color / icon (kept in sync with VisitorTypeSection)
 // ─────────────────────────────────────────────────────────────
 const visitorTypeMeta = {
-  Employee: { color: "#e7b900", icon: <BadgeOutlinedIcon /> },
   Guest: { color: "#2F80ED", icon: <PersonOutlinedIcon /> },
   Contractor: { color: "#FF7F22", icon: <EngineeringOutlinedIcon /> },
   Canteen: { color: "#30C28E", icon: <RestaurantOutlinedIcon /> },

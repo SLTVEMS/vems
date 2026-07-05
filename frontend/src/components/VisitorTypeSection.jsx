@@ -6,17 +6,9 @@ import EngineeringOutlinedIcon from "@mui/icons-material/EngineeringOutlined";
 import RestaurantOutlinedIcon from "@mui/icons-material/RestaurantOutlined";
 import SchoolOutlinedIcon from "@mui/icons-material/SchoolOutlined";
 import ChildCareOutlinedIcon from "@mui/icons-material/ChildCareOutlined";
-import BadgeOutlinedIcon from "@mui/icons-material/BadgeOutlined";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 const visitorTypes = [
-  {
-    label: "Employee",
-    description: "SLT internal employee visit",
-    color: "#E7B900",
-    tint: "#FFF8D6",
-    icon: <BadgeOutlinedIcon />,
-  },
   {
     label: "Guest",
     description: "External guest visitor",

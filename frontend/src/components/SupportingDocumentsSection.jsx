@@ -6,6 +6,7 @@ import {
 } from "@mui/material";
 import CloudUploadOutlinedIcon from "@mui/icons-material/CloudUploadOutlined";
 import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 const SectionWrapper = styled(Box)`
   margin-top: 30px;
@@ -67,6 +68,19 @@ const FileItem = styled(Box)`
   border-radius: 12px;
   padding: 12px 15px;
   margin-bottom: 10px;
+  animation: filePopIn 0.28s ease;
+
+  @keyframes filePopIn {
+    from {
+      opacity: 0;
+      transform: translateY(8px) scale(0.98);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
 `;
 
 function SupportingDocumentsSection({
@@ -82,9 +96,11 @@ function SupportingDocumentsSection({
     <SectionWrapper>
       <SectionHeader>
         <GreenBar />
+
         <HeaderText>
           Supporting Documents
         </HeaderText>
+
         <Divider />
       </SectionHeader>
 
@@ -187,27 +203,53 @@ function SupportingDocumentsSection({
               {values.attachments.length})
             </Typography>
 
-            {values.attachments.map(
-              (file, index) => (
-                <FileItem key={index}>
-                  <InsertDriveFileOutlinedIcon
-                    sx={{
-                      color: "#071B52",
-                    }}
-                  />
+            {values.attachments.map((file, index) => (
+              <FileItem key={index}>
+                <InsertDriveFileOutlinedIcon
+                  sx={{
+                    color: "#071B52",
+                  }}
+                />
 
-                  <Typography
-                    sx={{
-                      fontSize: "13px",
-                      color: "#374151",
-                      fontWeight: 500,
-                    }}
-                  >
-                    {file.name}
-                  </Typography>
-                </FileItem>
-              )
-            )}
+                <Typography
+                  sx={{
+                    fontSize: "13px",
+                    color: "#374151",
+                    fontWeight: 500,
+                    flex: 1,
+                    wordBreak: "break-word",
+                  }}
+                >
+                  {file.name}
+                </Typography>
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 0.6,
+                    color: "#16A34A",
+                    fontSize: "12px",
+                    fontWeight: 800,
+                    animation: "uploadTick 0.35s ease",
+
+                    "@keyframes uploadTick": {
+                      from: {
+                        opacity: 0,
+                        transform: "scale(0.7)",
+                      },
+                      to: {
+                        opacity: 1,
+                        transform: "scale(1)",
+                      },
+                    },
+                  }}
+                >
+                  <CheckCircleIcon sx={{ fontSize: 18 }} />
+                  Uploaded
+                </Box>
+              </FileItem>
+            ))}
           </Box>
         )}
       </UploadContainer>

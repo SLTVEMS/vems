@@ -12,6 +12,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import dayjs from "dayjs";
+import SupportingDocumentsSection from "./SupportingDocumentsSection";
 
 const SectionWrapper = styled(Box)`
   margin-top: 30px;
@@ -159,6 +160,7 @@ function VisitDetailsSection({
   formik,
   title = "Visit Details",
   headerActions = null,
+  showSupportingDocuments = true,
 }) {
   const visitRequiredFields = [
   formik.values.visitorName,
@@ -713,6 +715,13 @@ if (formik.values.visitorType !== "Emp. Child") {
           />
         </Box>
       </Grid>
+
+      {showSupportingDocuments && (
+        <SupportingDocumentsSection
+          values={formik.values}
+          setFieldValue={formik.setFieldValue}
+        />
+      )}
     </SectionWrapper>
   );
 }
