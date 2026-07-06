@@ -16,3 +16,170 @@
 [2m15:52:10[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/dashboard/SummaryCard.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
 [2m15:52:10[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/dashboard/WeeklyVisitorTrendChart.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
 [2m15:52:10[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/pages/DashboardPage.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m15:55:26[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/recommendedRequest/CommentBox.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m15:55:26[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/recommendedRequest/InfoCard.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m15:55:26[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/recommendedRequest/CommentBox.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m15:55:26[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/recommendedRequest/InfoCard.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m15:55:26[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/recommendedRequest/InfoRow.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m15:55:26[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/recommendedRequest/StatusBadge.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m15:55:26[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/recommendedRequest/RecommendedRequestModal.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m15:55:26[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/pages/RecommendedRequestPage.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m15:55:26[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/recommendedRequest/InfoRow.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m15:55:26[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/recommendedRequest/StatusBadge.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m15:55:26[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/recommendedRequest/RecommendedRequestModal.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m15:55:26[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/pages/RecommendedRequestPage.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m16:01:08[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "./pages/DashboardPage" from "src/App.jsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/sheha/OneDrive/vems/src/App.jsx[39m:1:26
+[33m  1  |  import DashboardPage from "./pages/DashboardPage";
+     |                             ^
+  2  |  var _jsxFileName = "C:/Users/sheha/OneDrive/vems/src/App.jsx";
+  3  |  import { jsxDEV as _jsxDEV } from "react/jsx-dev-runtime";[39m
+      at TransformPluginContext._formatLog (file:///C:/Users/sheha/OneDrive/vems/node_modules/vite/dist/node/chunks/node.js:29960:39)
+      at TransformPluginContext.error (file:///C:/Users/sheha/OneDrive/vems/node_modules/vite/dist/node/chunks/node.js:29957:14)
+      at normalizeUrl (file:///C:/Users/sheha/OneDrive/vems/node_modules/vite/dist/node/chunks/node.js:26993:18)
+      at async file:///C:/Users/sheha/OneDrive/vems/node_modules/vite/dist/node/chunks/node.js:27056:30
+      at async Promise.all (index 0)
+      at async TransformPluginContext.transform (file:///C:/Users/sheha/OneDrive/vems/node_modules/vite/dist/node/chunks/node.js:27024:4)
+      at async EnvironmentPluginContainer.transform (file:///C:/Users/sheha/OneDrive/vems/node_modules/vite/dist/node/chunks/node.js:29745:14)
+      at async loadAndTransform (file:///C:/Users/sheha/OneDrive/vems/node_modules/vite/dist/node/chunks/node.js:19729:26)
+[2m16:01:08[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "./pages/DashboardPage" from "src/App.jsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/sheha/OneDrive/vems/src/App.jsx[39m:1:26
+[33m  1  |  import DashboardPage from "./pages/DashboardPage";
+     |                             ^
+  2  |  var _jsxFileName = "C:/Users/sheha/OneDrive/vems/src/App.jsx";
+  3  |  import { jsxDEV as _jsxDEV } from "react/jsx-dev-runtime";[39m
+      at TransformPluginContext._formatLog (file:///C:/Users/sheha/OneDrive/vems/node_modules/vite/dist/node/chunks/node.js:29960:39)
+      at TransformPluginContext.error (file:///C:/Users/sheha/OneDrive/vems/node_modules/vite/dist/node/chunks/node.js:29957:14)
+      at normalizeUrl (file:///C:/Users/sheha/OneDrive/vems/node_modules/vite/dist/node/chunks/node.js:26993:18)
+      at async file:///C:/Users/sheha/OneDrive/vems/node_modules/vite/dist/node/chunks/node.js:27056:30
+      at async Promise.all (index 0)
+      at async TransformPluginContext.transform (file:///C:/Users/sheha/OneDrive/vems/node_modules/vite/dist/node/chunks/node.js:27024:4)
+      at async EnvironmentPluginContainer.transform (file:///C:/Users/sheha/OneDrive/vems/node_modules/vite/dist/node/chunks/node.js:29745:14)
+      at async loadAndTransform (file:///C:/Users/sheha/OneDrive/vems/node_modules/vite/dist/node/chunks/node.js:19729:26)
+[2m16:01:08[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/App.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m16:01:08[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/App.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m16:01:08[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/requestDetails/DecisionBox.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m16:01:08[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/requestDetails/InfoCard.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m16:01:08[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/requestDetails/RejectConfirmationModal.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m16:01:08[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/requestDetails/RequestDetailsModal.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m16:01:08[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/requestDetails/InfoRow.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m16:01:08[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/requestDetails/RejectConfirmationModal.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m16:01:08[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/requestDetails/RequestDetailsModal.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m16:01:08[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/requestDetails/StatusBadge.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m16:01:08[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/requestDetails/SummaryRow.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m16:01:09[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/pages/RequestDetailsPage.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m16:01:28[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "./pages/RequestDetailsPage" from "src/App.jsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/sheha/OneDrive/vems/src/App.jsx[39m:1:31
+[33m  1  |  import RequestDetailsPage from "./pages/RequestDetailsPage";
+     |                                  ^
+  2  |  var _jsxFileName = "C:/Users/sheha/OneDrive/vems/src/App.jsx";
+  3  |  import { jsxDEV as _jsxDEV } from "react/jsx-dev-runtime";[39m
+      at TransformPluginContext._formatLog (file:///C:/Users/sheha/OneDrive/vems/node_modules/vite/dist/node/chunks/node.js:29960:39)
+      at TransformPluginContext.error (file:///C:/Users/sheha/OneDrive/vems/node_modules/vite/dist/node/chunks/node.js:29957:14)
+      at normalizeUrl (file:///C:/Users/sheha/OneDrive/vems/node_modules/vite/dist/node/chunks/node.js:26993:18)
+      at async file:///C:/Users/sheha/OneDrive/vems/node_modules/vite/dist/node/chunks/node.js:27056:30
+      at async Promise.all (index 0)
+      at async TransformPluginContext.transform (file:///C:/Users/sheha/OneDrive/vems/node_modules/vite/dist/node/chunks/node.js:27024:4)
+      at async EnvironmentPluginContainer.transform (file:///C:/Users/sheha/OneDrive/vems/node_modules/vite/dist/node/chunks/node.js:29745:14)
+      at async loadAndTransform (file:///C:/Users/sheha/OneDrive/vems/node_modules/vite/dist/node/chunks/node.js:19729:26)
+[2m16:01:28[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "./pages/RequestDetailsPage" from "src/App.jsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/sheha/OneDrive/vems/src/App.jsx[39m:1:31
+[33m  1  |  import RequestDetailsPage from "./pages/RequestDetailsPage";
+     |                                  ^
+  2  |  var _jsxFileName = "C:/Users/sheha/OneDrive/vems/src/App.jsx";
+  3  |  import { jsxDEV as _jsxDEV } from "react/jsx-dev-runtime";[39m
+      at TransformPluginContext._formatLog (file:///C:/Users/sheha/OneDrive/vems/node_modules/vite/dist/node/chunks/node.js:29960:39)
+      at TransformPluginContext.error (file:///C:/Users/sheha/OneDrive/vems/node_modules/vite/dist/node/chunks/node.js:29957:14)
+      at normalizeUrl (file:///C:/Users/sheha/OneDrive/vems/node_modules/vite/dist/node/chunks/node.js:26993:18)
+      at async file:///C:/Users/sheha/OneDrive/vems/node_modules/vite/dist/node/chunks/node.js:27056:30
+      at async Promise.all (index 0)
+      at async TransformPluginContext.transform (file:///C:/Users/sheha/OneDrive/vems/node_modules/vite/dist/node/chunks/node.js:27024:4)
+      at async EnvironmentPluginContainer.transform (file:///C:/Users/sheha/OneDrive/vems/node_modules/vite/dist/node/chunks/node.js:29745:14)
+      at async loadAndTransform (file:///C:/Users/sheha/OneDrive/vems/node_modules/vite/dist/node/chunks/node.js:19729:26)
+[2m16:01:28[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/App.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m16:01:28[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/App.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m16:01:28[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to resolve import "./pages/RequestDetailsPage" from "src/App.jsx". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/sheha/OneDrive/vems/src/App.jsx[39m:1:31
+[33m  1  |  import RequestDetailsPage from "./pages/RequestDetailsPage";
+     |                                  ^
+  2  |  var _jsxFileName = "C:/Users/sheha/OneDrive/vems/src/App.jsx";
+  3  |  import { jsxDEV as _jsxDEV } from "react/jsx-dev-runtime";[39m
+[2m16:01:28[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to resolve import "./pages/RequestDetailsPage" from "src/App.jsx". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/sheha/OneDrive/vems/src/App.jsx[39m:1:31
+[33m  1  |  import RequestDetailsPage from "./pages/RequestDetailsPage";
+     |                                  ^
+  2  |  var _jsxFileName = "C:/Users/sheha/OneDrive/vems/src/App.jsx";
+  3  |  import { jsxDEV as _jsxDEV } from "react/jsx-dev-runtime";[39m
+[2m16:01:28[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to resolve import "./pages/RequestDetailsPage" from "src/App.jsx". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/sheha/OneDrive/vems/src/App.jsx[39m:1:31
+[33m  1  |  import RequestDetailsPage from "./pages/RequestDetailsPage";
+     |                                  ^
+  2  |  var _jsxFileName = "C:/Users/sheha/OneDrive/vems/src/App.jsx";
+  3  |  import { jsxDEV as _jsxDEV } from "react/jsx-dev-runtime";[39m
+[2m16:01:28[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/dashboard/ApprovalStatusChart.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m16:01:28[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/dashboard/ChartCard.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m16:01:28[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/dashboard/DashboardFooter.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m16:01:28[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/dashboard/DashboardLayout.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m16:01:28[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/dashboard/DepartmentSplitChart.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m16:01:28[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/dashboard/SummaryCard.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m16:01:28[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/dashboard/WeeklyVisitorTrendChart.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m16:01:28[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/pages/DashboardPage.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m16:02:13[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "./RequestDetailsPage" from "src/pages/RecommendedRequestPage.jsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/sheha/OneDrive/vems/src/pages/RecommendedRequestPage.jsx[39m:1:24
+[33m  1  |  export { default } from "./RequestDetailsPage";
+     |                           ^
+  2  |  [39m
+      at TransformPluginContext._formatLog (file:///C:/Users/sheha/OneDrive/vems/node_modules/vite/dist/node/chunks/node.js:29960:39)
+      at TransformPluginContext.error (file:///C:/Users/sheha/OneDrive/vems/node_modules/vite/dist/node/chunks/node.js:29957:14)
+      at normalizeUrl (file:///C:/Users/sheha/OneDrive/vems/node_modules/vite/dist/node/chunks/node.js:26993:18)
+      at async file:///C:/Users/sheha/OneDrive/vems/node_modules/vite/dist/node/chunks/node.js:27056:30
+      at async Promise.all (index 0)
+      at async TransformPluginContext.transform (file:///C:/Users/sheha/OneDrive/vems/node_modules/vite/dist/node/chunks/node.js:27024:4)
+      at async EnvironmentPluginContainer.transform (file:///C:/Users/sheha/OneDrive/vems/node_modules/vite/dist/node/chunks/node.js:29745:14)
+      at async loadAndTransform (file:///C:/Users/sheha/OneDrive/vems/node_modules/vite/dist/node/chunks/node.js:19729:26)
+[2m16:02:13[22m [31m[1m[vite][22m[39m [31mInternal server error: Failed to resolve import "./RequestDetailsPage" from "src/pages/RecommendedRequestPage.jsx". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/sheha/OneDrive/vems/src/pages/RecommendedRequestPage.jsx[39m:1:24
+[33m  1  |  export { default } from "./RequestDetailsPage";
+     |                           ^
+  2  |  [39m
+      at TransformPluginContext._formatLog (file:///C:/Users/sheha/OneDrive/vems/node_modules/vite/dist/node/chunks/node.js:29960:39)
+      at TransformPluginContext.error (file:///C:/Users/sheha/OneDrive/vems/node_modules/vite/dist/node/chunks/node.js:29957:14)
+      at normalizeUrl (file:///C:/Users/sheha/OneDrive/vems/node_modules/vite/dist/node/chunks/node.js:26993:18)
+      at async file:///C:/Users/sheha/OneDrive/vems/node_modules/vite/dist/node/chunks/node.js:27056:30
+      at async Promise.all (index 0)
+      at async TransformPluginContext.transform (file:///C:/Users/sheha/OneDrive/vems/node_modules/vite/dist/node/chunks/node.js:27024:4)
+      at async EnvironmentPluginContainer.transform (file:///C:/Users/sheha/OneDrive/vems/node_modules/vite/dist/node/chunks/node.js:29745:14)
+      at async loadAndTransform (file:///C:/Users/sheha/OneDrive/vems/node_modules/vite/dist/node/chunks/node.js:19729:26)
+[2m16:02:13[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Failed to resolve import "./RequestDetailsPage" from "src/pages/RecommendedRequestPage.jsx". Does the file exist?
+  Plugin: [35mvite:import-analysis[39m
+  File: [36mC:/Users/sheha/OneDrive/vems/src/pages/RecommendedRequestPage.jsx[39m:1:24
+[33m  1  |  export { default } from "./RequestDetailsPage";
+     |                           ^
+  2  |  [39m
+[2m16:02:13[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/App.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m16:02:13[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/App.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m16:02:13[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/requestDetails/DecisionBox.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m16:02:13[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/requestDetails/DecisionBox.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m16:02:13[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/requestDetails/RejectConfirmationModal.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m16:02:13[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/requestDetails/InfoCard.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m16:02:13[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/requestDetails/RejectConfirmationModal.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m16:02:13[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/requestDetails/InfoRow.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m16:02:13[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/requestDetails/InfoCard.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m16:02:13[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/requestDetails/RequestDetailsModal.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m16:02:13[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/requestDetails/InfoRow.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m16:02:13[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/requestDetails/StatusBadge.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m16:02:13[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/requestDetails/RequestDetailsModal.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m16:02:13[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/requestDetails/SummaryRow.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m16:02:13[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/requestDetails/StatusBadge.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m16:02:13[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/pages/RequestDetailsPage.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m16:02:13[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/requestDetails/SummaryRow.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m16:02:13[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/pages/RequestDetailsPage.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
