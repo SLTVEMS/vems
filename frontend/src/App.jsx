@@ -9,6 +9,7 @@ import {
   markNotificationReadRequested,
 } from "./features/notifications/notifications.actions.js";
 import SupervisorRequest from "./pages/SupervisorRequest";
+import PopupTestPage from "./pages/PopupTestPage"; // TEMP — remove when done testing
 import "./App.css";
 
 const metrics = [
@@ -45,6 +46,10 @@ function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
+
+  // TEMP — dev-only popup test overlay. Remove this line and the
+  // button/overlay block below once popup testing is done.
+  const [showPopupTest, setShowPopupTest] = useState(false);
 
   useEffect(() => {
     dispatch(bootstrapAuthRequested());
@@ -156,6 +161,60 @@ function App() {
         notifications={notifications}
         onMarkRead={(id) => dispatch(markNotificationReadRequested(id))}
       />
+
+      {/* TEMP — dev-only floating button to test the 4 popup components.
+          Remove this button and the overlay block below when done. */}
+      <button
+        type="button"
+        onClick={() => setShowPopupTest(true)}
+        style={{
+          position: "fixed",
+          bottom: 20,
+          right: 20,
+          zIndex: 40,
+          padding: "10px 16px",
+          borderRadius: 8,
+          border: "none",
+          background: "#0B1B33",
+          color: "#fff",
+          fontWeight: 600,
+          cursor: "pointer",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
+        }}
+      >
+        Test Popups
+      </button>
+
+      {showPopupTest && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 50,
+            background: "#fff",
+            overflow: "auto",
+          }}
+        >
+          <button
+            type="button"
+            onClick={() => setShowPopupTest(false)}
+            style={{
+              position: "fixed",
+              top: 16,
+              right: 16,
+              zIndex: 60,
+              padding: "8px 14px",
+              borderRadius: 8,
+              border: "1px solid #ccc",
+              background: "#fff",
+              cursor: "pointer",
+            }}
+          >
+            Close Test
+          </button>
+          <PopupTestPage />
+        </div>
+      )}
     </div>
   );
 }
