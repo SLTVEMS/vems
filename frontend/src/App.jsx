@@ -26,12 +26,12 @@ const requests = [
 ];
 
 // Tab map — sidebar items that belong to SupervisorRequest
+// Renamed to avoid collision with existing "Pending Requests" / "Rejected Requests" labels
 const SUPERVISOR_TABS = {
-  "Supervisor Request": "All",
-  "Pending Requests": "Pending",
-  "Recommended Requests": "Recommended",
-  "Rejected Requests": "Rejected",
-  "Approval Requests": "All",
+  "Supervisor Requests": "All",
+  "Supervisor Pending": "Pending",
+  "Supervisor Recommended": "Recommended",
+  "Supervisor Rejected": "Rejected",
 };
 
 function App() {

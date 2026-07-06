@@ -4,7 +4,7 @@ import { useState } from "react";
 // MOCK DATA — Remove this import and replace with real API
 // calls once the backend database is connected.
 // ============================================================
-import { mockRequests, mockStats, statusConfig, priorityConfig } from "./mockData";
+import { mockRequests, mockStats, statusConfig, priorityConfig, isNightWorkGrade } from "./mockData";
 
 const ROWS_PER_PAGE = 6;
 const TABS = ["All", "Pending", "Recommended", "Rejected"];
@@ -79,12 +79,6 @@ function QueueTable({ activeTab = "All", lockedTab = false, onTabChange, headers
 
   const currentTab = lockedTab ? activeTab : tab;
 
-  // Hide the PRIORITY column specifically while viewing the Rejected
-  // tab, regardless of which headers array was passed in by the parent.
-  const effectiveHeaders = currentTab === "Rejected"
-    ? headers.filter((h) => h !== "PRIORITY")
-    : headers;
-
   const filtered = mockRequests.filter((r) => {
     const matchTab = currentTab === "All" || r.status === currentTab;
     const q = tableSearch.toLowerCase().trim();
@@ -103,7 +97,10 @@ function QueueTable({ activeTab = "All", lockedTab = false, onTabChange, headers
 
   const queueTitle = { All:"Requests Queue", Pending:"Pending Queue", Recommended:"Recommended Queue", Rejected:"Rejected Queue" }[currentTab];
 
-  const showPriority = effectiveHeaders.includes("PRIORITY");
+  const showPriority = headers.includes("PRIORITY");
+  // DGM-only column: Night Work is derived from gradeName (A.1 / A.2 / A.3).
+  // Any other grade renders an empty cell, it is never shown as "No".
+  const showNightWork = headers.includes("NIGHT WORK");
 
   return (
     <div style={{ fontFamily:"Inter,-apple-system,sans-serif" }}>
@@ -165,7 +162,7 @@ function QueueTable({ activeTab = "All", lockedTab = false, onTabChange, headers
           <table style={{ width:"100%", borderCollapse:"collapse", minWidth:900 }}>
             <thead>
               <tr style={{ background:"#f9fafb" }}>
-                {effectiveHeaders.map((h) => (
+                {headers.map((h) => (
                   <th key={h} style={{ padding:"12px 16px", textAlign:"left", fontSize:11, fontWeight:700, color:"#6b7280", letterSpacing:0.5, borderBottom:"1px solid #f3f4f6", whiteSpace:"nowrap" }}>{h}</th>
                 ))}
               </tr>
@@ -174,6 +171,7 @@ function QueueTable({ activeTab = "All", lockedTab = false, onTabChange, headers
               {paged.map((row, i) => {
                 const sCfg = statusConfig[row.status];
                 const pCfg = priorityConfig[row.priority];
+                const isNightWork = isNightWorkGrade(row.gradeName);
                 return (
                   <tr key={row.id} style={{ borderBottom:i===paged.length-1?"none":"1px solid #f3f4f6" }}
                     onMouseEnter={(e) => e.currentTarget.style.background="#fafafa"}
@@ -201,6 +199,16 @@ function QueueTable({ activeTab = "All", lockedTab = false, onTabChange, headers
                     <td style={{ padding:"14px 16px" }}>
                       <div style={{ fontSize:13, color:"#374151" }}>{row.purpose}</div>
                     </td>
+                    {showNightWork && (
+                      <td style={{ padding:"14px 16px" }}>
+                        {isNightWork ? (
+                          <span style={{ background:"#111827", color:"#fff", fontWeight:600, fontSize:11, padding:"4px 10px", borderRadius:20, whiteSpace:"nowrap", display:"inline-flex", alignItems:"center", gap:5 }}>
+                            <span style={{ width:6, height:6, borderRadius:"50%", background:"#fff", display:"inline-block", flexShrink:0 }} />
+                            Yes
+                          </span>
+                        ) : null}
+                      </td>
+                    )}
                     <td style={{ padding:"14px 16px" }}>
                       <span style={{ background:sCfg.bg, color:sCfg.color, fontWeight:600, fontSize:12, padding:"4px 12px", borderRadius:20, whiteSpace:"nowrap", display:"inline-flex", alignItems:"center", gap:5 }}>
                         <span style={{ width:6, height:6, borderRadius:"50%", background:sCfg.color, display:"inline-block", flexShrink:0 }} />
@@ -226,7 +234,7 @@ function QueueTable({ activeTab = "All", lockedTab = false, onTabChange, headers
                 );
               })}
               {paged.length === 0 && (
-                <tr><td colSpan={effectiveHeaders.length} style={{ textAlign:"center", padding:48, color:"#9ca3af", fontSize:14 }}>No records found</td></tr>
+                <tr><td colSpan={headers.length} style={{ textAlign:"center", padding:48, color:"#9ca3af", fontSize:14 }}>No records found</td></tr>
               )}
             </tbody>
           </table>

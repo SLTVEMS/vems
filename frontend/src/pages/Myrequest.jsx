@@ -30,6 +30,7 @@ import RequestsTable from "../components/RequestsTable";
 import RequestDetailModal from "../components/RequestDetaipopup";
 import requestData from "../mocks/requestData";
 import PopupTestPage from "./PopupTestPage"; // TEMP — remove when done testing
+import SupervisorRequest from "./SupervisorRequest";
 import "../App.css";
 
 // ─────────────────────────────────────────────────────────────
@@ -38,6 +39,16 @@ import "../App.css";
 const HEADER_HEIGHT = 72;
 const HEADER_HEIGHT_SM = 76;
 const SIDEBAR_WIDTH = 304;
+
+// Sidebar labels that should route to the SupervisorRequest page,
+// mapped to which tab of that page should be active.
+const SUPERVISOR_TABS = {
+  "Supervisor Request": "All",
+  "Pending Requests": "Pending",
+  "Recommended Requests": "Recommended",
+  "Rejected Requests": "Rejected",
+  "Approval Requests": "All",
+};
 
 // ─────────────────────────────────────────────────────────────
 // Styled components
@@ -579,6 +590,10 @@ const MyRequestsPage = () => {
   const [newModalOpen, setNewModalOpen] = useState(false);
   const [showPopupTest, setShowPopupTest] = useState(false); // TEMP — remove when done testing
 
+  // Tracks which sidebar item is currently selected. Starts on
+  // "My Requests" since that's this page's own default view.
+  const [currentView, setCurrentView] = useState("My Requests");
+
   // Filter pipeline
   const byDate = filterByDate(requests, dateRange);
   const byStatus =
@@ -624,8 +639,13 @@ const MyRequestsPage = () => {
   const handleSidebarItemChange = (item) => {
     if (item === "Create Request" || item === "Tracking Details") {
       setNewModalOpen(true);
+      return;
     }
+    setCurrentView(item);
   };
+
+  const isSupervisorView = Object.keys(SUPERVISOR_TABS).includes(currentView);
+  const supervisorTab = SUPERVISOR_TABS[currentView] || "All";
 
   return (
     <PageWrapper className={`app-shell${sidebarOpen ? " sidebar-open" : ""}`}>
@@ -639,160 +659,166 @@ const MyRequestsPage = () => {
 
       <Sidebar
         isOpen={sidebarOpen}
-        activeItem="My Requests"
+        activeItem={currentView}
         onItemChange={handleSidebarItemChange}
         onLogout={() => {}}
         onToggle={() => setSidebarOpen((o) => !o)}
       />
 
       <MainContent $sidebarOpen={sidebarOpen}>
-        <StaticSection>
-          {/* ── Page header ── */}
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "flex-start",
-              gap: 2,
-              flexWrap: "wrap",
-            }}
-          >
-            {/* LEFT — breadcrumb + title row (title + pills inline) + subtitle */}
-            <Box>
-              <Breadcrumb>Visitor Management</Breadcrumb>
-
+        {isSupervisorView ? (
+          <SupervisorRequest activeTab={supervisorTab} />
+        ) : (
+          <>
+            <StaticSection>
+              {/* ── Page header ── */}
               <Box
                 sx={{
                   display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
+                  justifyContent: "space-between",
+                  alignItems: "flex-start",
+                  gap: 2,
                   flexWrap: "wrap",
                 }}
               >
-                <Typography
-                  sx={{
-                    fontSize: "1.75rem",
-                    fontWeight: 700,
-                    color: "#0f2042",
-                    lineHeight: 1.2,
-                    whiteSpace: "nowrap",
+                {/* LEFT — breadcrumb + title row (title + pills inline) + subtitle */}
+                <Box>
+                  <Breadcrumb>Visitor Management</Breadcrumb>
+
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "10px",
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        fontSize: "1.75rem",
+                        fontWeight: 700,
+                        color: "#0f2042",
+                        lineHeight: 1.2,
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      Requests
+                    </Typography>
+
+                    <Box sx={{ width: "160px", flexShrink: 0 }} />
+
+                    <PillSelect
+                      value={status}
+                      onChange={(e) => setStatus(e.target.value)}
+                      displayEmpty
+                      input={<OutlinedInput />}
+                      sx={{ minWidth: 128 }}
+                    >
+                      {STATUS_OPTIONS.map((opt) => (
+                        <MenuItem
+                          key={opt.value}
+                          value={opt.value}
+                          sx={{ fontSize: "0.82rem" }}
+                        >
+                          {opt.label}
+                        </MenuItem>
+                      ))}
+                    </PillSelect>
+
+                    <PillSelect
+                      value={dateRange}
+                      onChange={(e) => setDateRange(e.target.value)}
+                      input={<OutlinedInput />}
+                      sx={{ minWidth: 128 }}
+                    >
+                      {DATE_OPTIONS.map((opt) => (
+                        <MenuItem
+                          key={opt.value}
+                          value={opt.value}
+                          sx={{ fontSize: "0.82rem" }}
+                        >
+                          {opt.label}
+                        </MenuItem>
+                      ))}
+                    </PillSelect>
+                  </Box>
+
+                  <PageSubtitle>
+                    All visitor entry requests approved by supervisors and security.
+                  </PageSubtitle>
+                </Box>
+
+                {/* RIGHT — New Request button alone on far right */}
+                <NewRequestBtn
+                  startIcon={<AddIcon />}
+                  onClick={() => setNewModalOpen(true)}
+                >
+                  New Request
+                </NewRequestBtn>
+              </Box>
+
+              {/* ── Stat cards ── */}
+              <StatsRow>
+                <StatCard>
+                  <StatLabel>All Requests</StatLabel>
+                  <StatValue $color="#0f2042">{allCount}</StatValue>
+                </StatCard>
+                <StatCard>
+                  <StatLabel>Approved</StatLabel>
+                  <StatValue $color="#2e7d32">{approvedCount}</StatValue>
+                </StatCard>
+                <StatCard>
+                  <StatLabel>Pending</StatLabel>
+                  <StatValue $color="#f57f17">{pendingCount}</StatValue>
+                </StatCard>
+                <StatCard>
+                  <StatLabel>Rejected</StatLabel>
+                  <StatValue $color="#c62828">{rejectedCount}</StatValue>
+                </StatCard>
+              </StatsRow>
+            </StaticSection>
+
+            {/* ── Table card ── */}
+            <CardPanel>
+              <CardTopBar>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <Typography
+                    sx={{ fontSize: "0.88rem", fontWeight: 700, color: "#1a2332" }}
+                  >
+                    {activeLabel}
+                  </Typography>
+                  <Box
+                    sx={{
+                      background: "#0f2042",
+                      color: "#fff",
+                      borderRadius: "999px",
+                      fontSize: "0.72rem",
+                      fontWeight: 700,
+                      px: 1,
+                      py: 0.3,
+                      lineHeight: 1.4,
+                      minWidth: 24,
+                      textAlign: "center",
+                    }}
+                  >
+                    {filteredRows.length}
+                  </Box>
+                </Box>
+              </CardTopBar>
+
+              <Box sx={{ flex: 1, overflow: "auto", minHeight: 0 }}>
+                <RequestsTable
+                  rows={filteredRows}
+                  stickyHeader
+                  onView={(row) => {
+                    setSelectedRow(row);
+                    setModalOpen(true);
                   }}
-                >
-                  Requests
-                </Typography>
-
-                <Box sx={{ width: "160px", flexShrink: 0 }} />
-
-                <PillSelect
-                  value={status}
-                  onChange={(e) => setStatus(e.target.value)}
-                  displayEmpty
-                  input={<OutlinedInput />}
-                  sx={{ minWidth: 128 }}
-                >
-                  {STATUS_OPTIONS.map((opt) => (
-                    <MenuItem
-                      key={opt.value}
-                      value={opt.value}
-                      sx={{ fontSize: "0.82rem" }}
-                    >
-                      {opt.label}
-                    </MenuItem>
-                  ))}
-                </PillSelect>
-
-                <PillSelect
-                  value={dateRange}
-                  onChange={(e) => setDateRange(e.target.value)}
-                  input={<OutlinedInput />}
-                  sx={{ minWidth: 128 }}
-                >
-                  {DATE_OPTIONS.map((opt) => (
-                    <MenuItem
-                      key={opt.value}
-                      value={opt.value}
-                      sx={{ fontSize: "0.82rem" }}
-                    >
-                      {opt.label}
-                    </MenuItem>
-                  ))}
-                </PillSelect>
+                />
               </Box>
-
-              <PageSubtitle>
-                All visitor entry requests approved by supervisors and security.
-              </PageSubtitle>
-            </Box>
-
-            {/* RIGHT — New Request button alone on far right */}
-            <NewRequestBtn
-              startIcon={<AddIcon />}
-              onClick={() => setNewModalOpen(true)}
-            >
-              New Request
-            </NewRequestBtn>
-          </Box>
-
-          {/* ── Stat cards ── */}
-          <StatsRow>
-            <StatCard>
-              <StatLabel>All Requests</StatLabel>
-              <StatValue $color="#0f2042">{allCount}</StatValue>
-            </StatCard>
-            <StatCard>
-              <StatLabel>Approved</StatLabel>
-              <StatValue $color="#2e7d32">{approvedCount}</StatValue>
-            </StatCard>
-            <StatCard>
-              <StatLabel>Pending</StatLabel>
-              <StatValue $color="#f57f17">{pendingCount}</StatValue>
-            </StatCard>
-            <StatCard>
-              <StatLabel>Rejected</StatLabel>
-              <StatValue $color="#c62828">{rejectedCount}</StatValue>
-            </StatCard>
-          </StatsRow>
-        </StaticSection>
-
-        {/* ── Table card ── */}
-        <CardPanel>
-          <CardTopBar>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <Typography
-                sx={{ fontSize: "0.88rem", fontWeight: 700, color: "#1a2332" }}
-              >
-                {activeLabel}
-              </Typography>
-              <Box
-                sx={{
-                  background: "#0f2042",
-                  color: "#fff",
-                  borderRadius: "999px",
-                  fontSize: "0.72rem",
-                  fontWeight: 700,
-                  px: 1,
-                  py: 0.3,
-                  lineHeight: 1.4,
-                  minWidth: 24,
-                  textAlign: "center",
-                }}
-              >
-                {filteredRows.length}
-              </Box>
-            </Box>
-          </CardTopBar>
-
-          <Box sx={{ flex: 1, overflow: "auto", minHeight: 0 }}>
-            <RequestsTable
-              rows={filteredRows}
-              stickyHeader
-              onView={(row) => {
-                setSelectedRow(row);
-                setModalOpen(true);
-              }}
-            />
-          </Box>
-        </CardPanel>
+            </CardPanel>
+          </>
+        )}
       </MainContent>
 
       {/* ── Modals ── */}

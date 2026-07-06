@@ -12,8 +12,10 @@ const navSections = [
   {
     title: "Approvals",
     items: [
+      { label: "Supervisor Request", icon: "check" },
       { label: "Approval Requests", icon: "check" },
       { label: "Pending Requests", icon: "clock" },
+      { label: "Recommended Requests", icon: "check" },
       { label: "Rejected Requests", icon: "xCircle" },
     ],
   },

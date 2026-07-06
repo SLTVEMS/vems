@@ -1,22 +1,19 @@
 import { useState } from "react";
-import Header from "../components/Header";
-import Sidebar from "../components/Sidebar";
 import QueueTable from "./supervisorRequest/QueueTable";
 
-function SupervisorRequest() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [searchValue, setSearchValue] = useState("");
-  const [activeTab, setActiveTab] = useState("All");
+const headers = ["ENTRY CODE","SUBMITTED BY","VISITOR","DATE","COMPANY / ADDRESS","PURPOSE","STATUS","PRIORITY","ACTIONS"];
+
+function SupervisorRequest({ activeTab: initialTab = "All" }) {
+  const [activeTab, setActiveTab] = useState(initialTab);
 
   return (
-    <div className={`app-shell${isSidebarOpen ? " sidebar-open" : ""}`}>
-      <Header user={{ name: "Administrator", department: "IT Division" }} unreadCount={0} searchValue={searchValue} onSearchChange={setSearchValue} onOpenNotifications={() => {}} onLogout={() => {}} />
-      <Sidebar activeItem="Supervisor Request" isOpen={isSidebarOpen} onItemChange={() => {}} onLogout={() => {}} onToggle={() => setIsSidebarOpen((o) => !o)} />
-      <main className="main-content">
-        <div style={{ padding: 24 }}>
-          <QueueTable activeTab={activeTab} lockedTab={false} onTabChange={(t) => setActiveTab(t)} />
-        </div>
-      </main>
+    <div style={{ padding: 24, overflowY: "auto", height: "100%" }}>
+      <QueueTable
+        activeTab={activeTab}
+        lockedTab={false}
+        onTabChange={(t) => setActiveTab(t)}
+        headers={headers}
+      />
     </div>
   );
 }
