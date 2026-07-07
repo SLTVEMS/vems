@@ -10,12 +10,12 @@ import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined
 import RadioButtonUncheckedOutlinedIcon from '@mui/icons-material/RadioButtonUncheckedOutlined'
 import WorkOutlineOutlinedIcon from '@mui/icons-material/WorkOutlineOutlined'
 import { Box, IconButton, Typography } from '@mui/material'
-import { createGlobalStyle } from 'styled-components'
-import styled from 'styled-components'
+import styled, { createGlobalStyle } from 'styled-components'
 import CommentBox from './CommentBox'
 import InfoCard from './InfoCard'
 import StatusBadge from './StatusBadge'
 
+// Keeps MUI icon imports resilient across bundler interop shapes.
 function muiIcon(iconModule) {
   return iconModule?.default?.default || iconModule?.default || iconModule
 }
@@ -32,6 +32,7 @@ const PersonIcon = muiIcon(PersonOutlineOutlinedIcon)
 const PendingIcon = muiIcon(RadioButtonUncheckedOutlinedIcon)
 const RequestTypeIcon = muiIcon(WorkOutlineOutlinedIcon)
 
+// Global modal styles are scoped here because this screen owns the full viewport.
 const GlobalStyle = createGlobalStyle`
   * {
     box-sizing: border-box;
@@ -55,7 +56,8 @@ const GlobalStyle = createGlobalStyle`
   }
 `
 
-const requestRows = [
+// Static request details displayed in the left information card.
+const REQUEST_ROWS = [
   { icon: PersonIcon, label: 'Employee Name', value: 'Nimal Silva' },
   { icon: MaintenanceIcon, label: 'Employee Service No:', value: '011931' },
   { icon: PersonIcon, label: 'Visitor / Requestor', value: 'Nimal Silva' },
@@ -71,7 +73,8 @@ const requestRows = [
   { icon: LocationIcon, label: 'Location / Site', value: 'Data Center Room A' },
 ]
 
-const approvalRows = [
+// Static recommendation details displayed in the right information card.
+const APPROVAL_ROWS = [
   { icon: PersonIcon, label: 'Recommended By', value: 'Dilani Karunaratne' },
   { icon: CalendarIcon, label: 'Recommendation Date', value: 'May 15, 2025' },
   {
@@ -113,6 +116,7 @@ const approvalRows = [
   { icon: ClockIcon, label: 'Night Shift Required', badge: <StatusBadge>No</StatusBadge> },
 ]
 
+// Full-page centered shell for the recommended request dialog.
 const Page = styled(Box)`
   width: 100%;
   height: 100dvh;
@@ -124,6 +128,7 @@ const Page = styled(Box)`
   background: #d7e4f5;
 `
 
+// Dialog container matches the supplied compact modal layout.
 const Modal = styled(Box)`
   width: min(94vw, 940px);
   max-height: calc(100dvh - 24px);
@@ -134,6 +139,7 @@ const Modal = styled(Box)`
   box-shadow: 0 18px 46px rgba(15, 23, 42, 0.14);
 `
 
+// Header keeps the title, request id, status, and close button aligned.
 const Header = styled(Box)`
   display: flex;
   align-items: center;
@@ -230,6 +236,7 @@ const Body = styled(Box)`
   }
 `
 
+// Main two-card section; stacks on small screens.
 const CardGrid = styled(Box)`
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -241,6 +248,7 @@ const CardGrid = styled(Box)`
   }
 `
 
+// Full-width comment panel below the two summary cards.
 const CommentsCard = styled(Box)`
   margin-top: 20px;
   padding: 21px 20px 20px;
@@ -267,6 +275,7 @@ const CardTitle = styled(Typography)`
   }
 `
 
+// Shows complete details for a request that has been supervisor-recommended.
 function RecommendedRequestModal() {
   return (
     <>
@@ -291,8 +300,8 @@ function RecommendedRequestModal() {
 
           <Body>
             <CardGrid>
-              <InfoCard title="Request Information" rows={requestRows} />
-              <InfoCard title="Approval & Recommendation" rows={approvalRows} />
+              <InfoCard title="Request Information" rows={REQUEST_ROWS} />
+              <InfoCard title="Approval & Recommendation" rows={APPROVAL_ROWS} />
             </CardGrid>
 
             <CommentsCard>

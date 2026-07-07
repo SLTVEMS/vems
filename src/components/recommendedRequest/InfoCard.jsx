@@ -2,6 +2,7 @@ import { Box, Typography } from '@mui/material'
 import styled from 'styled-components'
 import InfoRow from './InfoRow'
 
+// Card container for a related group of request information rows.
 const Card = styled(Box)`
   height: 100%;
   padding: 21px 20px 18px;
@@ -27,6 +28,7 @@ const Title = styled(Typography)`
   }
 `
 
+// Groups rows under a compact section heading.
 function InfoCard({ title, rows }) {
   return (
     <Card>

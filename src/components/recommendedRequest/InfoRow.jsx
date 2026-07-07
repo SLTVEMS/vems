@@ -1,6 +1,7 @@
 import { Box, Typography } from '@mui/material'
 import styled from 'styled-components'
 
+// Responsive row for icon, label, and either a value, badge, or comment block.
 const Row = styled(Box)`
   display: grid;
   grid-template-columns: 15px minmax(96px, 1fr) minmax(118px, auto);
@@ -72,6 +73,7 @@ const CommentValue = styled.div`
   }
 `
 
+// Renders one information item inside a recommended request card.
 function InfoRow({ icon: Icon, label, value, badge, comment }) {
   return (
     <Row $comment={Boolean(comment)}>
