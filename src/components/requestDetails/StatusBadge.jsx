@@ -1,5 +1,6 @@
 import styled from 'styled-components'
 
+// Tone and dot props keep the badge flexible without separate components.
 const Badge = styled.span`
   display: inline-flex;
   align-items: center;
@@ -28,6 +29,7 @@ const Badge = styled.span`
   }
 `
 
+// Small status pill with optional green tone and leading dot.
 function StatusBadge({ children, tone = 'light', dot = false }) {
   return (
     <Badge $tone={tone} $dot={dot}>

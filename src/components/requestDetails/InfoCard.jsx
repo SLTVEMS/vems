@@ -6,6 +6,7 @@ import { muiIcon } from './iconUtils'
 
 const CheckCircleIcon = muiIcon(CheckCircleOutlineIcon)
 
+// Card frame for a group of related request detail rows.
 const Card = styled(Box)`
   overflow: hidden;
   border: 1px solid rgba(207, 217, 231, 0.92);
@@ -62,6 +63,7 @@ const HeaderIcon = styled.span`
   }
 `
 
+// Groups related request details under one titled card.
 function InfoCard({ title, subtitle, rows }) {
   return (
     <Card>
