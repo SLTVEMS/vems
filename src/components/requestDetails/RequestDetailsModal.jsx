@@ -14,7 +14,7 @@ import styled, { createGlobalStyle } from 'styled-components'
 import DecisionBox from './DecisionBox'
 import InfoCard from './InfoCard'
 import StatusBadge from './StatusBadge'
-import { muiIcon } from './iconUtils'
+import { muiIcon } from './iconUtils.js'
 
 const BadgeIcon = muiIcon(BadgeOutlinedIcon)
 const BusinessIcon = muiIcon(BusinessOutlinedIcon)

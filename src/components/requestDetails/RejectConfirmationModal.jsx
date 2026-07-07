@@ -8,7 +8,7 @@ import ScheduleOutlinedIcon from '@mui/icons-material/ScheduleOutlined'
 import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded'
 import { Box, Button, IconButton, Typography } from '@mui/material'
 import styled from 'styled-components'
-import { muiIcon } from './iconUtils'
+import { muiIcon } from './iconUtils.js'
 import SummaryRow from './SummaryRow'
 
 const CalendarIcon = muiIcon(CalendarTodayOutlinedIcon)

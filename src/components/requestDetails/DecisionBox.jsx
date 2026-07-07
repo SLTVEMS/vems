@@ -1,7 +1,7 @@
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline'
 import { Box, Button, TextField, Typography } from '@mui/material'
 import styled from 'styled-components'
-import { muiIcon } from './iconUtils'
+import { muiIcon } from './iconUtils.js'
 
 const CheckCircleIcon = muiIcon(CheckCircleOutlineIcon)
 
