@@ -10,8 +10,7 @@ import PhoneOutlinedIcon from '@mui/icons-material/PhoneOutlined'
 import ScheduleOutlinedIcon from '@mui/icons-material/ScheduleOutlined'
 import WorkOutlineOutlinedIcon from '@mui/icons-material/WorkOutlineOutlined'
 import { Box, Typography } from '@mui/material'
-import { createGlobalStyle } from 'styled-components'
-import styled from 'styled-components'
+import styled, { createGlobalStyle } from 'styled-components'
 import DecisionBox from './DecisionBox'
 import InfoCard from './InfoCard'
 import StatusBadge from './StatusBadge'
@@ -29,6 +28,7 @@ const PhoneIcon = muiIcon(PhoneOutlinedIcon)
 const ScheduleIcon = muiIcon(ScheduleOutlinedIcon)
 const WorkIcon = muiIcon(WorkOutlineOutlinedIcon)
 
+// Global modal styles are scoped here because this screen renders as a full-page dialog.
 const GlobalStyle = createGlobalStyle`
   * {
     box-sizing: border-box;
@@ -52,7 +52,8 @@ const GlobalStyle = createGlobalStyle`
   }
 `
 
-const requestRows = [
+// Static request and visitor details shown in the two information cards.
+const REQUEST_ROWS = [
   { icon: GridIcon, label: 'Request ID', value: 'VE20260515-002' },
   { icon: CalendarIcon, label: 'Submitted On', value: 'May 14, 2026 · 09:42 AM' },
   { icon: CalendarIcon, label: 'Visit Date', value: 'May 18, 2026' },
@@ -67,7 +68,7 @@ const requestRows = [
   },
 ]
 
-const visitorRows = [
+const VISITOR_ROWS = [
   { icon: PersonIcon, label: 'Full Name', value: 'Daniel Fernando Perera' },
   { icon: BadgeIcon, label: 'NIC / Passport', value: '199245601827' },
   { icon: BusinessIcon, label: 'Company', value: 'Northbridge Audit Partners' },
@@ -78,6 +79,7 @@ const visitorRows = [
   { icon: GroupsIcon, label: 'Visitor Type', value: 'External · Pre-cleared' },
 ]
 
+// Outer modal shell keeps the dialog centered while allowing internal scroll.
 const Overlay = styled(Box)`
   height: 100vh;
   height: 100dvh;
@@ -190,6 +192,7 @@ const BadgeGroup = styled(Box)`
   }
 `
 
+// Two-column details area; cards collapse tighter on narrower screens.
 const CardGrid = styled(Box)`
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -211,6 +214,7 @@ const Footer = styled(Typography)`
   }
 `
 
+// Main request review dialog shown on the request details page.
 function RequestDetailsModal({ onRejectClick }) {
   return (
     <>
@@ -235,12 +239,12 @@ function RequestDetailsModal({ onRejectClick }) {
               <InfoCard
                 title="Request Information"
                 subtitle="Visit and scheduling details"
-                rows={requestRows}
+                rows={REQUEST_ROWS}
               />
               <InfoCard
                 title="Visitor Information"
                 subtitle="Identity and contact details"
-                rows={visitorRows}
+                rows={VISITOR_ROWS}
               />
             </CardGrid>
 

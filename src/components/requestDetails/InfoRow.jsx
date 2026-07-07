@@ -1,6 +1,7 @@
 import { Box, Typography } from '@mui/material'
 import styled from 'styled-components'
 
+// Responsive row layout for icon, label, and value columns.
 const Row = styled(Box)`
   display: grid;
   grid-template-columns: 18px minmax(110px, 0.52fr) minmax(0, 1fr);
@@ -61,6 +62,7 @@ const Value = styled(Typography)`
   }
 `
 
+// One icon/label/value row used inside request information cards.
 function InfoRow({ icon: Icon, label, value }) {
   return (
     <Row>

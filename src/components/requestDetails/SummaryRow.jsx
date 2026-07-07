@@ -1,6 +1,7 @@
 import { Box, Typography } from '@mui/material'
 import styled from 'styled-components'
 
+// Compact row layout used in the confirmation summary card.
 const Row = styled(Box)`
   display: grid;
   grid-template-columns: 20px minmax(120px, 1fr) minmax(160px, auto);
@@ -58,6 +59,7 @@ const Value = styled(Typography)`
   }
 `
 
+// Dense summary row used in the rejection confirmation modal.
 function SummaryRow({ icon: Icon, label, value }) {
   return (
     <Row>

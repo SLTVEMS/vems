@@ -20,7 +20,8 @@ const PersonIcon = muiIcon(PersonOutlineOutlinedIcon)
 const ScheduleIcon = muiIcon(ScheduleOutlinedIcon)
 const WarningIcon = muiIcon(WarningAmberRoundedIcon)
 
-const summaryRows = [
+// Compact summary repeated inside the final rejection confirmation step.
+const SUMMARY_ROWS = [
   { icon: GridIcon, label: 'Request ID', value: 'VE20260515-002' },
   { icon: PersonIcon, label: 'Visitor Name', value: 'Daniel Fernando Perera' },
   { icon: CalendarIcon, label: 'Visit Date', value: 'May 18, 2026' },
@@ -29,6 +30,7 @@ const summaryRows = [
   { icon: PersonIcon, label: 'Host Employee', value: 'Ayesha Karunaratne' },
 ]
 
+// Fixed overlay blocks the page while the final reject confirmation is open.
 const Overlay = styled(Box)`
   position: fixed;
   inset: 0;
@@ -119,6 +121,7 @@ const Subtitle = styled(Typography)`
   }
 `
 
+// Read-only summary lets the reviewer confirm they are rejecting the right request.
 const SummaryCard = styled(Box)`
   overflow: hidden;
   border: 1px solid #dbe4f0;
@@ -138,6 +141,7 @@ const SummaryHeader = styled(Typography)`
   }
 `
 
+// High-emphasis warning separates irreversible action copy from neutral details.
 const WarningBox = styled(Box)`
   display: grid;
   grid-template-columns: 22px 1fr;
@@ -210,6 +214,7 @@ const NoteText = styled(Typography)`
   }
 `
 
+// Action row keeps cancel and confirm controls grouped at the bottom.
 const Footer = styled(Box)`
   display: flex;
   justify-content: flex-end;
@@ -264,6 +269,7 @@ const RejectButton = styled(Button)`
   }
 `
 
+// Final confirmation dialog shown before a reject decision is submitted.
 function RejectConfirmationModal({ open, onClose, onConfirm }) {
   if (!open) {
     return null
@@ -288,7 +294,7 @@ function RejectConfirmationModal({ open, onClose, onConfirm }) {
 
           <SummaryCard>
             <SummaryHeader>Request Summary</SummaryHeader>
-            {summaryRows.map((row) => (
+            {SUMMARY_ROWS.map((row) => (
               <SummaryRow key={row.label} {...row} />
             ))}
           </SummaryCard>

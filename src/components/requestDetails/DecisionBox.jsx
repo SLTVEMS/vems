@@ -5,6 +5,26 @@ import { muiIcon } from './iconUtils'
 
 const CheckCircleIcon = muiIcon(CheckCircleOutlineIcon)
 
+// Button variants are centralized so reject/recommend colors stay consistent.
+const ACTION_BUTTON_STYLES = {
+  recommend: {
+    background: '#00a651',
+    hoverBackground: '#009349',
+    shadow: 'rgba(0, 166, 81, 0.24)',
+    hoverShadow: 'rgba(0, 166, 81, 0.3)',
+  },
+  reject: {
+    background: '#ef233c',
+    hoverBackground: '#d91f36',
+    shadow: 'rgba(239, 35, 60, 0.24)',
+    hoverShadow: 'rgba(239, 35, 60, 0.3)',
+  },
+}
+
+const getActionButtonStyle = (variant) =>
+  ACTION_BUTTON_STYLES[variant] || ACTION_BUTTON_STYLES.recommend
+
+// Main decision panel layout and controls.
 const Panel = styled(Box)`
   overflow: hidden;
   border: 1px solid rgba(207, 217, 231, 0.95);
@@ -124,10 +144,8 @@ const ActionButton = styled(Button)`
     padding: 0 16px;
     border-radius: 999px;
     color: #ffffff;
-    background: ${({ $variant }) => ($variant === 'reject' ? '#ef233c' : '#00a651')};
-    box-shadow: 0 10px 18px
-      ${({ $variant }) =>
-        $variant === 'reject' ? 'rgba(239, 35, 60, 0.24)' : 'rgba(0, 166, 81, 0.24)'};
+    background: ${({ $variant }) => getActionButtonStyle($variant).background};
+    box-shadow: 0 10px 18px ${({ $variant }) => getActionButtonStyle($variant).shadow};
     font-size: 10px;
     font-weight: 800;
     line-height: 1;
@@ -135,10 +153,8 @@ const ActionButton = styled(Button)`
   }
 
   &&:hover {
-    background: ${({ $variant }) => ($variant === 'reject' ? '#d91f36' : '#009349')};
-    box-shadow: 0 12px 20px
-      ${({ $variant }) =>
-        $variant === 'reject' ? 'rgba(239, 35, 60, 0.3)' : 'rgba(0, 166, 81, 0.3)'};
+    background: ${({ $variant }) => getActionButtonStyle($variant).hoverBackground};
+    box-shadow: 0 12px 20px ${({ $variant }) => getActionButtonStyle($variant).hoverShadow};
   }
 
   && .MuiButton-startIcon {
@@ -152,6 +168,7 @@ const ActionButton = styled(Button)`
   }
 `
 
+// Collects reviewer remarks and exposes the recommend/reject actions.
 function DecisionBox({ onRejectClick }) {
   return (
     <Panel>
