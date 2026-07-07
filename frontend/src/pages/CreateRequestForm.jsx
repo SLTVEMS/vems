@@ -1275,34 +1275,6 @@ Thank you.`;
 
                               <Button
                                 type="button"
-                                variant="outlined"
-                                startIcon={<CheckCircleIcon />}
-                                onClick={() =>
-                                  handleSubmitCurrentVisitorAndReturn(
-                                    formik
-                                  )
-                                }
-                                sx={{
-                                  borderRadius: "14px",
-                                  px: 3,
-                                  py: 1.2,
-                                  textTransform: "none",
-                                  fontWeight: 800,
-                                  fontSize: "14px",
-                                  borderColor: "#0A2F88",
-                                  color: "#0A2F88",
-
-                                  "&:hover": {
-                                    borderColor: "#021C54",
-                                    background: "#EFF6FF",
-                                  },
-                                }}
-                              >
-                                Submit
-                              </Button>
-
-                              <Button
-                                type="button"
                                 variant="contained"
                                 startIcon={
                                   <Box
@@ -1337,6 +1309,34 @@ Thank you.`;
                                 }}
                               >
                                 Add Visitor and Submit
+                              </Button>
+
+                              <Button
+                                type="button"
+                                variant="outlined"
+                                startIcon={<CheckCircleIcon />}
+                                onClick={() =>
+                                  handleSubmitCurrentVisitorAndReturn(
+                                    formik
+                                  )
+                                }
+                                sx={{
+                                  borderRadius: "14px",
+                                  px: 3,
+                                  py: 1.2,
+                                  textTransform: "none",
+                                  fontWeight: 800,
+                                  fontSize: "14px",
+                                  borderColor: "#0A2F88",
+                                  color: "#0A2F88",
+
+                                  "&:hover": {
+                                    borderColor: "#021C54",
+                                    background: "#EFF6FF",
+                                  },
+                                }}
+                              >
+                                Submit
                               </Button>
                             </Box>
                           ) : (
