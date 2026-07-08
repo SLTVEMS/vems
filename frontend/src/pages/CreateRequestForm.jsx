@@ -301,41 +301,87 @@ const sanitizeVisitorForShare = (visitor) => ({
   })),
 });
 
+const buildSharedRequesterValues = (values = {}) => ({
+  visitorType: values.visitorType || "",
+  requestDate: values.requestDate || "",
+  requesterName: values.requesterName || "",
+  requesterEmail: values.requesterEmail || "",
+  requesterServiceNo: values.requesterServiceNo || "",
+  requesterDesignation: values.requesterDesignation || "",
+  requesterContactNo: values.requesterContactNo || "",
+  costCenterCode: values.costCenterCode || "",
+  costCenterName: values.costCenterName || "",
+});
+
+const encodeBase64Url = (value) => {
+  const utf8Bytes = encodeURIComponent(value).replace(
+    /%([0-9A-F]{2})/g,
+    (_, hex) => String.fromCharCode(Number.parseInt(hex, 16))
+  );
+
+  return btoa(utf8Bytes)
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/g, "");
+};
+
+const decodeBase64Url = (value) => {
+  const normalizedValue = value.replace(/-/g, "+").replace(/_/g, "/");
+  const paddedValue =
+    normalizedValue +
+    "=".repeat((4 - (normalizedValue.length % 4)) % 4);
+
+  const binaryValue = atob(paddedValue);
+  const percentEncodedValue = Array.from(binaryValue)
+    .map((character) =>
+      `%${character.charCodeAt(0).toString(16).padStart(2, "0")}`
+    )
+    .join("");
+
+  return decodeURIComponent(percentEncodedValue);
+};
+
+const decodeLegacySharedFormValue = (value) => {
+  return decodeURIComponent(escape(atob(value)));
+};
+
 const encodeSharedFormData = (values) => {
   const safeValues = {
     ...initialValues,
-    visitorType: values.visitorType,
-    requestDate: values.requestDate,
-    requesterName: values.requesterName,
-    requesterEmail: values.requesterEmail,
-    requesterServiceNo: values.requesterServiceNo,
-    requesterDesignation: values.requesterDesignation,
-    requesterContactNo: values.requesterContactNo,
-    costCenterCode: values.costCenterCode,
-    costCenterName: values.costCenterName,
+    ...buildSharedRequesterValues(values),
     currentVisitor: sanitizeVisitorForShare(
-      values.currentVisitor || {}
+      values.currentVisitor || buildVisitorDetailValues()
     ),
     addedVisitors: [],
+    sharedFormMode: true,
   };
 
   const json = JSON.stringify(safeValues);
-  return btoa(unescape(encodeURIComponent(json)));
+  return encodeBase64Url(json);
 };
 
 const decodeSharedFormData = () => {
   try {
+    if (typeof window === "undefined") return null;
+
     const params = new URLSearchParams(window.location.search);
     const sharedForm = params.get("sharedForm");
 
     if (!sharedForm) return null;
 
-    const json = decodeURIComponent(escape(atob(sharedForm)));
+    let json = "";
+
+    try {
+      json = decodeBase64Url(sharedForm);
+    } catch {
+      json = decodeLegacySharedFormValue(sharedForm);
+    }
+
     const parsedValues = JSON.parse(json);
 
     return {
       ...initialValues,
-      ...parsedValues,
+      ...buildSharedRequesterValues(parsedValues),
       currentVisitor: buildVisitorDetailValues(
         parsedValues.currentVisitor || {}
       ),
@@ -898,9 +944,10 @@ Thank you.`;
                             }}
                           >
                             This form was opened from a shared link.
-                            Requester details are included and the
-                            visitor can complete the visit details,
-                            reason, and supporting documents.
+                            Requester details are automatically filled
+                            from the original request. The visitor only
+                            needs to complete the visit details, reason,
+                            and supporting documents.
                           </Typography>
                         </Paper>
                       )}
