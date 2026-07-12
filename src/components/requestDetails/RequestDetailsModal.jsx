@@ -28,6 +28,14 @@ const PhoneIcon = muiIcon(PhoneOutlinedIcon)
 const ScheduleIcon = muiIcon(ScheduleOutlinedIcon)
 const WorkIcon = muiIcon(WorkOutlineOutlinedIcon)
 
+const NIGHT_WORK_GRADES = ['A.1', 'A.2', 'A.3']
+
+function isNightWorkGrade(gradeName) {
+  if (!gradeName) return false
+  const normalized = gradeName.trim().replace(/\.$/, '')
+  return NIGHT_WORK_GRADES.includes(normalized)
+}
+
 // Global modal styles are scoped here because this screen renders as a full-page dialog.
 const GlobalStyle = createGlobalStyle`
   * {
@@ -78,6 +86,21 @@ const VISITOR_ROWS = [
   { icon: GridIcon, label: 'Vehicle Number', value: 'CBL-7842' },
   { icon: GroupsIcon, label: 'Visitor Type', value: 'External · Pre-cleared' },
 ]
+
+const DEFAULT_REQUEST = {
+  gradeName: 'A.1',
+}
+
+function getRequestRows(request) {
+  if (!isNightWorkGrade(request?.gradeName)) {
+    return REQUEST_ROWS
+  }
+
+  return [
+    ...REQUEST_ROWS,
+    { icon: ScheduleIcon, label: 'DGM Night Shift', value: 'Yes' },
+  ]
+}
 
 // Outer modal shell keeps the dialog centered while allowing internal scroll.
 const Overlay = styled(Box)`
@@ -215,7 +238,9 @@ const Footer = styled(Typography)`
 `
 
 // Main request review dialog shown on the request details page.
-function RequestDetailsModal({ onRejectClick }) {
+function RequestDetailsModal({ onRejectClick, request = DEFAULT_REQUEST }) {
+  const requestRows = getRequestRows(request)
+
   return (
     <>
       <GlobalStyle />
@@ -231,7 +256,6 @@ function RequestDetailsModal({ onRejectClick }) {
                 <StatusBadge tone="green" dot>
                   Pending Review
                 </StatusBadge>
-                <StatusBadge>Priority · Normal</StatusBadge>
               </BadgeGroup>
             </Header>
 
@@ -239,7 +263,7 @@ function RequestDetailsModal({ onRejectClick }) {
               <InfoCard
                 title="Request Information"
                 subtitle="Visit and scheduling details"
-                rows={REQUEST_ROWS}
+                rows={requestRows}
               />
               <InfoCard
                 title="Visitor Information"
