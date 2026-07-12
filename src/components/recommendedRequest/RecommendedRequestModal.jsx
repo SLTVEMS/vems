@@ -32,6 +32,18 @@ const PersonIcon = muiIcon(PersonOutlineOutlinedIcon)
 const PendingIcon = muiIcon(RadioButtonUncheckedOutlinedIcon)
 const RequestTypeIcon = muiIcon(WorkOutlineOutlinedIcon)
 
+const NIGHT_WORK_GRADES = ['A.1', 'A.2', 'A.3']
+
+const DEFAULT_REQUEST = {
+  gradeName: 'A.1',
+}
+
+function isNightWorkGrade(gradeName) {
+  if (!gradeName) return false
+  const normalized = gradeName.trim().replace(/\.$/, '')
+  return NIGHT_WORK_GRADES.includes(normalized)
+}
+
 // Global modal styles are scoped here because this screen owns the full viewport.
 const GlobalStyle = createGlobalStyle`
   * {
@@ -74,7 +86,7 @@ const REQUEST_ROWS = [
 ]
 
 // Static recommendation details displayed in the right information card.
-const APPROVAL_ROWS = [
+const BASE_APPROVAL_ROWS = [
   { icon: PersonIcon, label: 'Recommended By', value: 'Dilani Karunaratne' },
   { icon: CalendarIcon, label: 'Recommendation Date', value: 'May 15, 2025' },
   {
@@ -113,8 +125,22 @@ const APPROVAL_ROWS = [
       </StatusBadge>
     ),
   },
-  { icon: ClockIcon, label: 'Night Shift Required', badge: <StatusBadge>No</StatusBadge> },
 ]
+
+function getApprovalRows(request) {
+  if (!isNightWorkGrade(request?.gradeName)) {
+    return BASE_APPROVAL_ROWS
+  }
+
+  return [
+    ...BASE_APPROVAL_ROWS,
+    {
+      icon: ClockIcon,
+      label: 'Night Shift Required',
+      badge: <StatusBadge tone="blue">Yes</StatusBadge>,
+    },
+  ]
+}
 
 // Full-page centered shell for the recommended request dialog.
 const Page = styled(Box)`
@@ -276,7 +302,9 @@ const CardTitle = styled(Typography)`
 `
 
 // Shows complete details for a request that has been supervisor-recommended.
-function RecommendedRequestModal() {
+function RecommendedRequestModal({ request = DEFAULT_REQUEST }) {
+  const approvalRows = getApprovalRows(request)
+
   return (
     <>
       <GlobalStyle />
@@ -301,7 +329,7 @@ function RecommendedRequestModal() {
           <Body>
             <CardGrid>
               <InfoCard title="Request Information" rows={REQUEST_ROWS} />
-              <InfoCard title="Approval & Recommendation" rows={APPROVAL_ROWS} />
+              <InfoCard title="Approval & Recommendation" rows={approvalRows} />
             </CardGrid>
 
             <CommentsCard>
