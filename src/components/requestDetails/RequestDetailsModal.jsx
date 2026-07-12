@@ -231,7 +231,6 @@ function RequestDetailsModal({ onRejectClick }) {
                 <StatusBadge tone="green" dot>
                   Pending Review
                 </StatusBadge>
-                <StatusBadge>Priority · Normal</StatusBadge>
               </BadgeGroup>
             </Header>
 
