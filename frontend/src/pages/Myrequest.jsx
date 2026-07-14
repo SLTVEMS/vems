@@ -6,26 +6,32 @@ import {
   MenuItem,
   Select,
   OutlinedInput,
-<<<<<<< HEAD
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
   Chip,
-  Divider,
   IconButton,
   TextField,
   InputAdornment,
-=======
->>>>>>> 2ee48b3b76b5087391959dee1ed80a3be46a619e
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import CloseIcon from "@mui/icons-material/Close";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
+import PersonIcon from "@mui/icons-material/Person";
+import BadgeIcon from "@mui/icons-material/Badge";
+import EmailIcon from "@mui/icons-material/Email";
+import PhoneIcon from "@mui/icons-material/Phone";
 import styled from "styled-components";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import RequestsTable from "../components/RequestsTable";
 import RequestDetailModal from "../components/RequestDetaipopup";
 import requestData from "../mocks/requestData";
+import PopupTestPage from "./PopupTestPage"; // TEMP — remove when done testing
+import SupervisorRequest from "./SupervisorRequest";
+import DGMRequest from "./DGMRequest";
 import "../App.css";
 
 // ─────────────────────────────────────────────────────────────
@@ -35,21 +41,27 @@ const HEADER_HEIGHT = 72;
 const HEADER_HEIGHT_SM = 76;
 const SIDEBAR_WIDTH = 304;
 
-// ─────────────────────────────────────────────────────────────
-<<<<<<< HEAD
-// Status config
-// ─────────────────────────────────────────────────────────────
-const STATUS_CONFIG = {
-  Approved: { bg: "#e8f5e9", color: "#2e7d32" },
-  Pending: { bg: "#fff8e1", color: "#f57f17" },
-  Rejected: { bg: "#fce4ec", color: "#c62828" },
+// Sidebar labels that should route to the SupervisorRequest page,
+// mapped to which tab of that page should be active.
+const SUPERVISOR_TABS = {
+  "Supervisor Request": "All",
+  "Pending Requests": "Pending",
+  "Recommended Requests": "Recommended",
+  "Rejected Requests": "Rejected",
+  "Approval Requests": "All",
+};
+
+// Sidebar labels that should route to the DGMRequest page,
+// mapped to which tab of that page should be active.
+// NOTE: the sidebar currently has a single "DGM Request" (singular)
+// entry — tab switching (Pending/Recommended/Rejected) happens via the
+// pills inside the DGM table itself, not via separate sidebar items.
+const DGM_TABS = {
+  "DGM Request": "All",
 };
 
 // ─────────────────────────────────────────────────────────────
 // Styled components
-=======
-// Styled components — EXACTLY as provided, no changes
->>>>>>> 2ee48b3b76b5087391959dee1ed80a3be46a619e
 // ─────────────────────────────────────────────────────────────
 const PageWrapper = styled.div`
   min-height: 100vh;
@@ -84,17 +96,12 @@ const PageWrapper = styled.div`
 const MainContent = styled.div`
   position: fixed;
   top: ${HEADER_HEIGHT}px;
-<<<<<<< HEAD
   left: ${({ $sidebarOpen }) => ($sidebarOpen ? `${SIDEBAR_WIDTH}px` : "0")};
-=======
-  left: 0; 
->>>>>>> 2ee48b3b76b5087391959dee1ed80a3be46a619e
   right: 0;
   bottom: 0;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-<<<<<<< HEAD
   padding: 36px 40px 0 ${({ $sidebarOpen }) => ($sidebarOpen ? "40px" : "88px")};
   box-sizing: border-box;
   background: #f5f7fa;
@@ -113,23 +120,6 @@ const MainContent = styled.div`
     left: 0;
     padding: 24px 20px 0;
   }
-=======
-  padding: 36px 40px 0 75px; 
-  box-sizing: border-box;
-  background: #f5f7fa;
-  transition: left 260ms ease, padding-left 260ms ease;
-
-  .sidebar-open & {
-    @media (min-width: 901px) {
-      padding-left: 40px; 
-    }
-  }
-
-  @media (max-width: 900px) {
-    padding: 24px 20px 0;
-  }
-  
->>>>>>> 2ee48b3b76b5087391959dee1ed80a3be46a619e
   @media (max-width: 600px) {
     padding: 16px 14px 0;
   }
@@ -177,17 +167,9 @@ const StatsRow = styled.div`
   grid-template-columns: repeat(4, 1fr);
   gap: 16px;
   margin-top: 20px;
-<<<<<<< HEAD
   @media (max-width: 900px) {
     grid-template-columns: repeat(2, 1fr);
   }
-=======
-  
-  @media (max-width: 900px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
->>>>>>> 2ee48b3b76b5087391959dee1ed80a3be46a619e
   @media (max-width: 500px) {
     grid-template-columns: 1fr;
   }
@@ -252,60 +234,12 @@ const PillSelect = styled(Select)`
     padding-left: 14px !important;
     padding-right: 28px !important;
   }
-<<<<<<< HEAD
   & .MuiOutlinedInput-notchedOutline {
     border: none !important;
   }
   & .MuiSvgIcon-root {
     color: #ffffff !important;
   }
-`;
-
-/* Detail modal rows */
-const DetailRow = styled.div`
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 10px 0;
-`;
-
-const DetailIcon = styled.div`
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  background: #f0f4ff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  color: #0f2042;
-`;
-
-const DetailLabel = styled(Typography)`
-  font-size: 0.72rem !important;
-  color: #8a94a6 !important;
-  font-weight: 600 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.05em !important;
-  line-height: 1 !important;
-  margin-bottom: 3px !important;
-`;
-
-const DetailValue = styled(Typography)`
-  font-size: 0.88rem !important;
-  color: #1a2332 !important;
-  font-weight: 600 !important;
-  line-height: 1.3 !important;
-=======
-  
-  & .MuiOutlinedInput-notchedOutline {
-    border: none !important;
-  }
-  
-  & .MuiSvgIcon-root {
-    color: #ffffff !important;
-  }
->>>>>>> 2ee48b3b76b5087391959dee1ed80a3be46a619e
 `;
 
 // ─────────────────────────────────────────────────────────────
@@ -313,7 +247,6 @@ const DetailValue = styled(Typography)`
 // ─────────────────────────────────────────────────────────────
 const STATUS_OPTIONS = [
   { label: "All Requests", value: "all" },
-<<<<<<< HEAD
   { label: "Approved", value: "Approved" },
   { label: "Pending", value: "Pending" },
   { label: "Rejected", value: "Rejected" },
@@ -321,32 +254,22 @@ const STATUS_OPTIONS = [
 
 const DATE_OPTIONS = [
   { label: "Last 7 days", value: "7d" },
-=======
-  { label: "Approved",     value: "Approved" },
-  { label: "Pending",      value: "Pending" },
-  { label: "Rejected",     value: "Rejected" },
-];
-
-const DATE_OPTIONS = [
-  { label: "Last 7 days",  value: "7d" },
->>>>>>> 2ee48b3b76b5087391959dee1ed80a3be46a619e
   { label: "Last 30 days", value: "30d" },
   { label: "Last 90 days", value: "90d" },
   { label: "All time", value: "all" },
 ];
 
+// NOTE: filters relative to the most recent date *in the mock dataset*,
+// not the real "today". This keeps filtering meaningful against static
+// mock data regardless of when the app is actually run. If/when this
+// is wired to a real API with live dates, switch `latest` back to
+// `new Date()`.
 const filterByDate = (rows, range) => {
   if (range === "all") return rows;
-<<<<<<< HEAD
-  const now = new Date();
   const days = range === "7d" ? 7 : range === "30d" ? 30 : 90;
-  const cutoff = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
-=======
-  const days     = range === "7d" ? 7 : range === "30d" ? 30 : 90;
   const allDates = rows.map((r) => new Date(r.visitingDate).getTime());
-  const latest   = new Date(Math.max(...allDates));
-  const cutoff   = new Date(latest.getTime() - days * 24 * 60 * 60 * 1000);
->>>>>>> 2ee48b3b76b5087391959dee1ed80a3be46a619e
+  const latest = new Date(Math.max(...allDates));
+  const cutoff = new Date(latest.getTime() - days * 24 * 60 * 60 * 1000);
   return rows.filter((r) => new Date(r.visitingDate) >= cutoff);
 };
 
@@ -664,167 +587,22 @@ const NewRequestModal = ({ open, onClose, onSubmit }) => {
 };
 
 // ─────────────────────────────────────────────────────────────
-<<<<<<< HEAD
-// View Detail Modal
-// ─────────────────────────────────────────────────────────────
-const ViewDetailModal = ({ open, row, onClose }) => {
-  if (!row) return null;
-  const statusCfg = STATUS_CONFIG[row.status] || STATUS_CONFIG.Pending;
-
-  const fields = [
-    {
-      icon: <CalendarTodayIcon fontSize="small" />,
-      label: "Visiting Date",
-      value: row.visitingDate,
-    },
-    {
-      icon: <QrCodeIcon fontSize="small" />,
-      label: "Entry Code",
-      value: row.entryCode,
-    },
-    {
-      icon: <BadgeIcon fontSize="small" />,
-      label: "Visitor NIC",
-      value: row.visitorNIC,
-    },
-    {
-      icon: <PersonIcon fontSize="small" />,
-      label: "Visitor Name",
-      value: row.visitorName,
-    },
-    {
-      icon: <EmailIcon fontSize="small" />,
-      label: "Visitor Email",
-      value: row.visitorEmail,
-    },
-    {
-      icon: <SupervisorAccountIcon fontSize="small" />,
-      label: "Supervisor Name",
-      value: row.supervisorName,
-    },
-    {
-      icon: <PhoneIcon fontSize="small" />,
-      label: "Contact No",
-      value: row.contactNo,
-    },
-  ];
-
-  return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      maxWidth="sm"
-      fullWidth
-      PaperProps={{
-        sx: {
-          borderRadius: "16px",
-          overflow: "hidden",
-          boxShadow: "0 24px 64px rgba(15,32,66,0.18)",
-        },
-      }}
-    >
-      <DialogTitle
-        sx={{
-          background: "#0f2042",
-          color: "#fff",
-          px: 3,
-          py: 2.5,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <Box>
-          <Typography
-            sx={{ fontSize: "1.1rem", fontWeight: 700, color: "#fff" }}
-          >
-            Request Details
-          </Typography>
-          <Typography sx={{ fontSize: "0.78rem", color: "#94a8c4", mt: 0.5 }}>
-            Entry Code: {row.entryCode}
-          </Typography>
-        </Box>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-          <Chip
-            label={row.status}
-            size="small"
-            sx={{
-              background: statusCfg.bg,
-              color: statusCfg.color,
-              fontWeight: 700,
-              fontSize: "0.78rem",
-              height: 26,
-            }}
-          />
-          <IconButton onClick={onClose} size="small" sx={{ color: "#fff" }}>
-            <CloseIcon fontSize="small" />
-          </IconButton>
-        </Box>
-      </DialogTitle>
-
-      <DialogContent sx={{ px: 3, py: 2 }}>
-        {fields.map((field, i) => (
-          <React.Fragment key={field.label}>
-            <DetailRow>
-              <DetailIcon>{field.icon}</DetailIcon>
-              <Box>
-                <DetailLabel>{field.label}</DetailLabel>
-                <DetailValue>{field.value}</DetailValue>
-              </Box>
-            </DetailRow>
-            {i < fields.length - 1 && (
-              <Divider sx={{ borderColor: "#f0f3f7" }} />
-            )}
-          </React.Fragment>
-        ))}
-      </DialogContent>
-
-      <DialogActions
-        sx={{
-          px: 3,
-          py: 2,
-          background: "#fafbfc",
-          borderTop: "1px solid #f0f3f7",
-        }}
-      >
-        <Button
-          onClick={onClose}
-          variant="outlined"
-          sx={{
-            borderRadius: "8px",
-            textTransform: "none",
-            fontWeight: 600,
-            borderColor: "#dde3ec",
-            color: "#3d4a5c",
-            "&:hover": { borderColor: "#0f2042", background: "#f5f7fa" },
-          }}
-        >
-          Close
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
-};
-
-// ─────────────────────────────────────────────────────────────
-=======
->>>>>>> 2ee48b3b76b5087391959dee1ed80a3be46a619e
 // Main Component
 // ─────────────────────────────────────────────────────────────
 const MyRequestsPage = () => {
   const [requests, setRequests] = useState(requestData);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [searchValue, setSearchValue] = useState("");
-<<<<<<< HEAD
   const [status, setStatus] = useState("all");
-  const [dateRange, setDateRange] = useState("30d");
-=======
-  const [status,      setStatus]      = useState("all");
-  const [dateRange,   setDateRange]   = useState("7d");
->>>>>>> 2ee48b3b76b5087391959dee1ed80a3be46a619e
+  const [dateRange, setDateRange] = useState("7d");
   const [selectedRow, setSelectedRow] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [newModalOpen, setNewModalOpen] = useState(false);
+  const [showPopupTest, setShowPopupTest] = useState(false); // TEMP — remove when done testing
+
+  // Tracks which sidebar item is currently selected. Starts on
+  // "My Requests" since that's this page's own default view.
+  const [currentView, setCurrentView] = useState("My Requests");
 
   // Filter pipeline
   const byDate = filterByDate(requests, dateRange);
@@ -871,16 +649,19 @@ const MyRequestsPage = () => {
   const handleSidebarItemChange = (item) => {
     if (item === "Create Request" || item === "Tracking Details") {
       setNewModalOpen(true);
+      return;
     }
+    setCurrentView(item);
   };
+ {/* ── Spervisor and DGM── */}
+  const isSupervisorView = Object.keys(SUPERVISOR_TABS).includes(currentView);
+  const supervisorTab = SUPERVISOR_TABS[currentView] || "All";
+
+  const isDGMView = Object.keys(DGM_TABS).includes(currentView);
+  const dgmTab = DGM_TABS[currentView] || "All";
 
   return (
-<<<<<<< HEAD
     <PageWrapper className={`app-shell${sidebarOpen ? " sidebar-open" : ""}`}>
-=======
-    <PageWrapper className={sidebarOpen ? "sidebar-open" : ""}>
-
->>>>>>> 2ee48b3b76b5087391959dee1ed80a3be46a619e
       <Header
         searchValue={searchValue}
         onSearchChange={setSearchValue}
@@ -891,199 +672,235 @@ const MyRequestsPage = () => {
 
       <Sidebar
         isOpen={sidebarOpen}
-        activeItem="My Requests"
+        activeItem={currentView}
         onItemChange={handleSidebarItemChange}
         onLogout={() => {}}
         onToggle={() => setSidebarOpen((o) => !o)}
       />
-
-<<<<<<< HEAD
+  {/* ── Supervisor and DGM── */}
       <MainContent $sidebarOpen={sidebarOpen}>
-=======
-      <MainContent className="main-content">
->>>>>>> 2ee48b3b76b5087391959dee1ed80a3be46a619e
-        <StaticSection>
-          {/* ── Page header ── */}
-<<<<<<< HEAD
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "flex-start",
-              gap: 2,
-              flexWrap: "wrap",
-            }}
-          >
-            {/* LEFT — breadcrumb + title row (title + pills inline) + subtitle */}
-            <Box>
-              <Breadcrumb>Visitor Management</Breadcrumb>
-
-              {/* Title and pills on exact same line, pills shifted right toward middle */}
+        {isDGMView ? (
+          <DGMRequest activeTab={dgmTab} />
+        ) : isSupervisorView ? (
+          <SupervisorRequest activeTab={supervisorTab} />
+        ) : (
+          <>
+            <StaticSection>
+              {/* ── Page header ── */}
               <Box
                 sx={{
                   display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
+                  justifyContent: "space-between",
+                  alignItems: "flex-start",
+                  gap: 2,
                   flexWrap: "wrap",
                 }}
               >
-                <Typography
-                  sx={{
-                    fontSize: "1.75rem",
-                    fontWeight: 700,
-                    color: "#0f2042",
-                    lineHeight: 1.2,
-                    whiteSpace: "nowrap",
+                {/* LEFT — breadcrumb + title row (title + pills inline) + subtitle */}
+                <Box>
+                  <Breadcrumb>Visitor Management</Breadcrumb>
+
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "10px",
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        fontSize: "1.75rem",
+                        fontWeight: 700,
+                        color: "#0f2042",
+                        lineHeight: 1.2,
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      Requests
+                    </Typography>
+
+                    <Box sx={{ width: "160px", flexShrink: 0 }} />
+
+                    <PillSelect
+                      value={status}
+                      onChange={(e) => setStatus(e.target.value)}
+                      displayEmpty
+                      input={<OutlinedInput />}
+                      sx={{ minWidth: 128 }}
+                    >
+                      {STATUS_OPTIONS.map((opt) => (
+                        <MenuItem
+                          key={opt.value}
+                          value={opt.value}
+                          sx={{ fontSize: "0.82rem" }}
+                        >
+                          {opt.label}
+                        </MenuItem>
+                      ))}
+                    </PillSelect>
+
+                    <PillSelect
+                      value={dateRange}
+                      onChange={(e) => setDateRange(e.target.value)}
+                      input={<OutlinedInput />}
+                      sx={{ minWidth: 128 }}
+                    >
+                      {DATE_OPTIONS.map((opt) => (
+                        <MenuItem
+                          key={opt.value}
+                          value={opt.value}
+                          sx={{ fontSize: "0.82rem" }}
+                        >
+                          {opt.label}
+                        </MenuItem>
+                      ))}
+                    </PillSelect>
+                  </Box>
+
+                  <PageSubtitle>
+                    All visitor entry requests approved by supervisors and security.
+                  </PageSubtitle>
+                </Box>
+
+                {/* RIGHT — New Request button alone on far right */}
+                <NewRequestBtn
+                  startIcon={<AddIcon />}
+                  onClick={() => setNewModalOpen(true)}
+                >
+                  New Request
+                </NewRequestBtn>
+              </Box>
+
+              {/* ── Stat cards ── */}
+              <StatsRow>
+                <StatCard>
+                  <StatLabel>All Requests</StatLabel>
+                  <StatValue $color="#0f2042">{allCount}</StatValue>
+                </StatCard>
+                <StatCard>
+                  <StatLabel>Approved</StatLabel>
+                  <StatValue $color="#2e7d32">{approvedCount}</StatValue>
+                </StatCard>
+                <StatCard>
+                  <StatLabel>Pending</StatLabel>
+                  <StatValue $color="#f57f17">{pendingCount}</StatValue>
+                </StatCard>
+                <StatCard>
+                  <StatLabel>Rejected</StatLabel>
+                  <StatValue $color="#c62828">{rejectedCount}</StatValue>
+                </StatCard>
+              </StatsRow>
+            </StaticSection>
+
+            {/* ── Table card ── */}
+            <CardPanel>
+              <CardTopBar>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <Typography
+                    sx={{ fontSize: "0.88rem", fontWeight: 700, color: "#1a2332" }}
+                  >
+                    {activeLabel}
+                  </Typography>
+                  <Box
+                    sx={{
+                      background: "#0f2042",
+                      color: "#fff",
+                      borderRadius: "999px",
+                      fontSize: "0.72rem",
+                      fontWeight: 700,
+                      px: 1,
+                      py: 0.3,
+                      lineHeight: 1.4,
+                      minWidth: 24,
+                      textAlign: "center",
+                    }}
+                  >
+                    {filteredRows.length}
+                  </Box>
+                </Box>
+              </CardTopBar>
+
+              <Box sx={{ flex: 1, overflow: "auto", minHeight: 0 }}>
+                <RequestsTable
+                  rows={filteredRows}
+                  stickyHeader
+                  onView={(row) => {
+                    setSelectedRow(row);
+                    setModalOpen(true);
                   }}
-                >
-=======
-          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 2, flexWrap: "wrap" }}>
-            <Box>
-              <Breadcrumb>Visitor Management</Breadcrumb>
-
-              <Box sx={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
-                <Typography sx={{ fontSize: "1.75rem", fontWeight: 700, color: "#0f2042", lineHeight: 1.2, whiteSpace: "nowrap" }}>
->>>>>>> 2ee48b3b76b5087391959dee1ed80a3be46a619e
-                  Requests
-                </Typography>
-
-                <Box sx={{ width: "160px", flexShrink: 0 }} />
-
-                <PillSelect
-                  value={status}
-                  onChange={(e) => setStatus(e.target.value)}
-                  displayEmpty
-                  input={<OutlinedInput />}
-                  sx={{ minWidth: 128 }}
-                >
-                  {STATUS_OPTIONS.map((opt) => (
-                    <MenuItem
-                      key={opt.value}
-                      value={opt.value}
-                      sx={{ fontSize: "0.82rem" }}
-                    >
-                      {opt.label}
-                    </MenuItem>
-                  ))}
-                </PillSelect>
-
-                <PillSelect
-                  value={dateRange}
-                  onChange={(e) => setDateRange(e.target.value)}
-                  input={<OutlinedInput />}
-                  sx={{ minWidth: 128 }}
-                >
-                  {DATE_OPTIONS.map((opt) => (
-                    <MenuItem
-                      key={opt.value}
-                      value={opt.value}
-                      sx={{ fontSize: "0.82rem" }}
-                    >
-                      {opt.label}
-                    </MenuItem>
-                  ))}
-                </PillSelect>
+                />
               </Box>
-
-              <PageSubtitle>
-                All visitor entry requests approved by supervisors and security.
-              </PageSubtitle>
-            </Box>
-
-<<<<<<< HEAD
-            {/* RIGHT — New Request button alone on far right */}
-            <NewRequestBtn
-              startIcon={<AddIcon />}
-              onClick={() => setNewModalOpen(true)}
-            >
-              New Request
-            </NewRequestBtn>
-=======
-            <NewRequestBtn startIcon={<AddIcon />}>New Request</NewRequestBtn>
->>>>>>> 2ee48b3b76b5087391959dee1ed80a3be46a619e
-          </Box>
-
-          {/* ── Stat cards ── */}
-          <StatsRow>
-            <StatCard>
-              <StatLabel>All Requests</StatLabel>
-              <StatValue $color="#0f2042">{allCount}</StatValue>
-            </StatCard>
-            <StatCard>
-              <StatLabel>Approved</StatLabel>
-              <StatValue $color="#2e7d32">{approvedCount}</StatValue>
-            </StatCard>
-            <StatCard>
-              <StatLabel>Pending</StatLabel>
-              <StatValue $color="#f57f17">{pendingCount}</StatValue>
-            </StatCard>
-            <StatCard>
-              <StatLabel>Rejected</StatLabel>
-              <StatValue $color="#c62828">{rejectedCount}</StatValue>
-            </StatCard>
-          </StatsRow>
-        </StaticSection>
-
-        {/* ── Table card ── */}
-        <CardPanel>
-          <CardTopBar>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <Typography
-                sx={{ fontSize: "0.88rem", fontWeight: 700, color: "#1a2332" }}
-              >
-                {activeLabel}
-              </Typography>
-              <Box
-                sx={{
-                  background: "#0f2042",
-                  color: "#fff",
-                  borderRadius: "999px",
-                  fontSize: "0.72rem",
-                  fontWeight: 700,
-                  px: 1,
-                  py: 0.3,
-                  lineHeight: 1.4,
-                  minWidth: 24,
-                  textAlign: "center",
-                }}
-              >
-                {filteredRows.length}
-              </Box>
-            </Box>
-          </CardTopBar>
-
-          <Box sx={{ flex: 1, overflow: "auto", minHeight: 0 }}>
-            <RequestsTable
-              rows={filteredRows}
-<<<<<<< HEAD
-              stickyHeader
-              onView={(row) => {
-                setSelectedRow(row);
-                setModalOpen(true);
-              }}
-=======
-              onView={(row) => { setSelectedRow(row); setModalOpen(true); }}
->>>>>>> 2ee48b3b76b5087391959dee1ed80a3be46a619e
-            />
-          </Box>
-        </CardPanel>
+            </CardPanel>
+          </>
+        )}
       </MainContent>
 
-      {/* ── Modal as separate component ── */}
+      {/* ── Modals ── */}
       <RequestDetailModal
         open={modalOpen}
         row={selectedRow}
         onClose={() => setModalOpen(false)}
       />
-<<<<<<< HEAD
       <NewRequestModal
         open={newModalOpen}
         onClose={() => setNewModalOpen(false)}
         onSubmit={createRequest}
       />
-=======
 
->>>>>>> 2ee48b3b76b5087391959dee1ed80a3be46a619e
+      {/* TEMP — dev-only popup test trigger. Remove this button and the
+          overlay block below once popup testing is done. */}
+      <button
+        type="button"
+        onClick={() => setShowPopupTest(true)}
+        style={{
+          position: "fixed",
+          bottom: 20,
+          right: 20,
+          zIndex: 40,
+          padding: "10px 16px",
+          borderRadius: 8,
+          border: "none",
+          background: "#0B1B33",
+          color: "#fff",
+          fontWeight: 600,
+          cursor: "pointer",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
+        }}
+      >
+        Test Popups
+      </button>
+
+      {showPopupTest && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 50,
+            background: "#fff",
+            overflow: "auto",
+          }}
+        >
+          <button
+            type="button"
+            onClick={() => setShowPopupTest(false)}
+            style={{
+              position: "fixed",
+              top: 16,
+              right: 16,
+              zIndex: 60,
+              padding: "8px 14px",
+              borderRadius: 8,
+              border: "1px solid #ccc",
+              background: "#fff",
+              cursor: "pointer",
+            }}
+          >
+            Close Test
+          </button>
+          <PopupTestPage />
+        </div>
+      )}
     </PageWrapper>
   );
 };
