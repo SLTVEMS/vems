@@ -1,20 +1,40 @@
-import { useState } from "react";
-import QueueTable from "./supervisorRequest/QueueTable";
+import QueueTable from "../components/QueueTable";
+import { mockRequests, mockStats, statusConfig, priorityConfig } from "./supervisorRequest/mockData";
+import styled from "styled-components";
 
-const headers = ["ENTRY CODE","SUBMITTED BY","VISITOR","DATE","COMPANY / ADDRESS","PURPOSE","STATUS","PRIORITY","ACTIONS"];
+const SupervisorContainer = styled.div`
+   padding: 24px;
+   height: 100%;
+   overflow-y: auto;
+   box-sizing: border-box;
+`;
 
-function SupervisorRequest({ activeTab: initialTab = "All" }) {
-  const [activeTab, setActiveTab] = useState(initialTab);
+const headers = [
+   "ENTRY CODE",
+   "SUBMITTED BY",
+   "VISITOR",
+   "DATE",
+   "COMPANY / ADDRESS",
+   "PURPOSE",
+   "STATUS",
+   "ACTIONS",
+];
 
-  return (
-    <div style={{ padding: 24, overflowY: "auto", height: "100%" }}>
-      <QueueTable
-        activeTab={activeTab}
-        lockedTab={false}
-        onTabChange={(t) => setActiveTab(t)}
-        headers={headers}
-      />
-    </div>
-  );
+function SupervisorRequest({ activeTab = "All" }) {
+   return (
+      <SupervisorContainer>
+         <QueueTable
+            key={activeTab}
+            activeTab={activeTab}
+            lockedTab={false}
+            headers={headers}
+            requests={mockRequests}
+            statusConfig={statusConfig}
+            priorityConfig={priorityConfig}
+            coloredChips={true}
+         />
+      </SupervisorContainer>
+   );
 }
+
 export default SupervisorRequest;

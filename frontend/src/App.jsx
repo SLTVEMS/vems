@@ -9,7 +9,11 @@ import {
   markNotificationReadRequested,
 } from "./features/notifications/notifications.actions.js";
 import SupervisorRequest from "./pages/SupervisorRequest";
+import DGMRequest from "./pages/DGMRequest";
 import PopupTestPage from "./pages/PopupTestPage"; // TEMP — remove when done testing
+import CreateRequestForm from "./pages/CreateRequestForm";
+import Myrequest from "./pages/Myrequest";
+import VisitorRequestFlow from "./pages/VisitorRequestFlow";
 import "./App.css";
 
 const metrics = [
@@ -25,13 +29,22 @@ const requests = [
   { id: "REQ-24020", visitor: "Ruwan Silva", vehicle: "SP BCL-7710", branch: "Galle", status: "Review" },
 ];
 
-// Tab map — sidebar items that belong to SupervisorRequest
-// Renamed to avoid collision with existing "Pending Requests" / "Rejected Requests" labels
 const SUPERVISOR_TABS = {
+  // Accept both singular and plural sidebar labels
   "Supervisor Requests": "All",
+  "Supervisor Request": "All",
   "Supervisor Pending": "Pending",
   "Supervisor Recommended": "Recommended",
   "Supervisor Rejected": "Rejected",
+};
+
+const DGM_TABS = {
+  // Accept both singular and plural sidebar labels
+  "DGM Requests": "All",
+  "DGM Request": "All",
+  "DGM Pending": "Pending",
+  "DGM Recommended": "Recommended",
+  "DGM Rejected": "Rejected",
 };
 
 function App() {
@@ -56,14 +69,51 @@ function App() {
     dispatch(loadNotificationsRequested());
   }, [dispatch]);
 
+  // Listen for navigation events dispatched by stand-alone Sidebar instances
+  useEffect(() => {
+    const handler = (e) => {
+      // Debug log for navigation events
+      // eslint-disable-next-line no-console
+      console.log("app-nav ->", e.detail);
+      setActiveItem(e.detail);
+    };
+    window.addEventListener("app-nav", handler);
+    return () => window.removeEventListener("app-nav", handler);
+  }, []);
+
   // Check if current sidebar item maps to SupervisorRequest
   const isSupervisorPage = Object.keys(SUPERVISOR_TABS).includes(activeItem);
   const supervisorTab = SUPERVISOR_TABS[activeItem] || "All";
 
+  // Check if current sidebar item maps to DGMRequest
+  const isDGMPage = Object.keys(DGM_TABS).includes(activeItem);
+  const dgmTab = DGM_TABS[activeItem] || "All";
+
   const renderContent = () => {
+    // Debug logs to help identify which page will render
+    // eslint-disable-next-line no-console
+    console.log({ activeItem, isSupervisorPage, isDGMPage });
+
     if (isSupervisorPage) {
       return <SupervisorRequest activeTab={supervisorTab} />;
     }
+
+    if (isDGMPage) {
+      return <DGMRequest activeTab={dgmTab} />;
+    }
+
+      // Explicit mappings for other sidebar pages
+      if (activeItem === "Visitor Flow" || activeItem === "Visitor Request Flow") {
+        return <VisitorRequestFlow />;
+      }
+
+      if (activeItem === "Create Request") {
+        return <CreateRequestForm />;
+      }
+
+      if (activeItem === "My Requests" || activeItem === "Myrequest") {
+        return <Myrequest />;
+      }
 
     // Default dashboard content
     return (

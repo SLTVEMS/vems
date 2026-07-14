@@ -1,36 +1,60 @@
-import { useState } from "react";
-import QueueTable from "./dgmRequest/QueueTable";
+import QueueTable from "../components/QueueTable";
+import {
+  mockRequests,
+  mockStats,
+  statusConfig,
+  priorityConfig,
+  isNightWorkGrade,
+} from "./dgmRequest/mockData";
+import styled from "styled-components";
 
-// Same columns as SupervisorRequest, plus NIGHT WORK (derived from gradeName:
-// A.1 / A.2 / A.3 show "Yes", every other grade renders a blank cell).
+const DGMContainer = styled.div`
+   padding: 24px;
+   height: 100%;
+   overflow-y: auto;
+   box-sizing: border-box;
+`;
+
 const headers = [
-  "ENTRY CODE",
-  "SUBMITTED BY",
-  "VISITOR",
-  "DATE",
-  "COMPANY / ADDRESS",
-  "PURPOSE",
-  "NIGHT WORK",
-  "STATUS",
-  "PRIORITY",
-  "ACTIONS",
+   "ENTRY CODE",
+   "SUBMITTED BY",
+   "VISITOR",
+   "DATE",
+   "COMPANY / ADDRESS",
+   "PURPOSE",
+   "NIGHT WORK",
+   "STATUS",
+   "ACTIONS",
 ];
 
-function DGMRequest({ activeTab: initialTab = "All" }) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [searchValue, setSearchValue] = useState("");
-  const [activeTab, setActiveTab] = useState(initialTab);
+const dgmTabsConfig = {
+  All:      { label: "Requests Queue",  filterStatus: null },
+  Pending:  { label: "Pending Queue",   filterStatus: "Pending" },
+  Approved: { label: "Approved Queue",  filterStatus: "Approved" },
+  Rejected: { label: "Rejected Queue",  filterStatus: "Rejected" },
+};
 
-  return (
-    <div style={{ padding: 24 }}>
-      <QueueTable
-        activeTab={activeTab}
-        lockedTab={false}
-        onTabChange={(t) => setActiveTab(t)}
-        headers={headers}
-      />
-    </div>
-  );
+const requestsWithNightWork = mockRequests.map((r) => ({
+   ...r,
+   nightWork: isNightWorkGrade(r.gradeName),
+}));
+
+function DGMRequest({ activeTab = "All" }) {
+   return (
+      <DGMContainer>
+         <QueueTable
+            key={activeTab}
+            activeTab={activeTab}
+            lockedTab={false}
+            headers={headers}
+            requests={requestsWithNightWork}
+            statusConfig={statusConfig}
+            priorityConfig={priorityConfig}
+            coloredChips={true}
+            tabsConfig={dgmTabsConfig}
+         />
+      </DGMContainer>
+   );
 }
 
 export default DGMRequest;

@@ -1,13 +1,3 @@
-// ============================================================
-// MOCK DATA — Remove this file and replace with real API calls
-// once the backend database is connected.
-//
-// NOTE: "gradeName" was added for the DGM page. The Night Work
-// column only shows "Yes" when gradeName is A.1, A.2, or A.3
-// (with or without a trailing dot, e.g. "A.3."). Any other grade
-// (B.1, staff grade, no grade, etc.) leaves the cell blank.
-// ============================================================
-
 export const mockRequests = [
   {
     id: "VE20260515-001",
@@ -31,7 +21,7 @@ export const mockRequests = [
     company: "Ericsson Sri Lanka",
     address: "Trans Asia Hotel, Kandy",
     purpose: "5G site survey",
-    status: "Recommended",
+    status: "Approved",  
     priority: "MEDIUM",
     gradeName: "B.1",
   },
@@ -83,7 +73,7 @@ export const mockRequests = [
     company: "PwC Sri Lanka",
     address: "Lotus Road, Colombo 01",
     purpose: "Compliance...",
-    status: "Recommended",
+    status: "Approved",   // CHANGED from "Recommended"
     priority: "MEDIUM",
     gradeName: "B.2",
   },
@@ -126,10 +116,9 @@ export const mockStats = {
 };
 
 export const statusConfig = {
-  Pending:     { color: "#f97316", bg: "#fff7ed" },
-  Recommended: { color: "#3b82f6", bg: "#eff6ff" },
-  Approved:    { color: "#22c55e", bg: "#f0fdf4" },
-  Rejected:    { color: "#ef4444", bg: "#fef2f2" },
+  Pending:  { color: "#f97316", bg: "#fff7ed" },
+  Approved: { color: "#22c55e", bg: "#f0fdf4" },
+  Rejected: { color: "#ef4444", bg: "#fef2f2" },
 };
 
 export const priorityConfig = {
@@ -138,8 +127,6 @@ export const priorityConfig = {
   LOW:    { color: "#6b7280", bg: "#f3f4f6" },
 };
 
-// Grades that should show "Yes" in the Night Work column.
-// Normalizes away a trailing dot so "A.3." and "A.3" both match.
 export const NIGHT_WORK_GRADES = ["A.1", "A.2", "A.3"];
 
 export function isNightWorkGrade(gradeName) {

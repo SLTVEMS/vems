@@ -2,29 +2,36 @@ import { useEffect, useRef } from "react";
 
 const navSections = [
   {
-    title: "Workspace",
+    title: "Main",
     items: [
-      { label: "Dashboard", icon: "grid", badge: "Live" },
+      { label: "Dashboard", icon: "grid" },
       { label: "Create Request", icon: "filePlus" },
+      { label: "Visitor Flow", icon: "document" },
+    ],
+  },
+  {
+    title: "Requests",
+    items: [
       { label: "My Requests", icon: "document" },
+      { label: "Tracking Details", icon: "pin" },
     ],
   },
   {
     title: "Approvals",
     items: [
       { label: "Supervisor Request", icon: "check" },
-      { label: "Approval Requests", icon: "check" },
-      { label: "Pending Requests", icon: "clock" },
-      { label: "Recommended Requests", icon: "check" },
-      { label: "Rejected Requests", icon: "xCircle" },
+      { label: "DGM Request", icon: "check" },
     ],
   },
   {
-    title: "Operations",
+    title: "Reports",
     items: [
-      { label: "Tracking Details", icon: "pin" },
-      { label: "Vehicle Log", icon: "vehicle" },
       { label: "Reports", icon: "chart" },
+    ],
+  },
+  {
+    title: "Administration",
+    items: [
       { label: "Settings", icon: "settings" },
     ],
   },
@@ -209,7 +216,16 @@ function Sidebar({ activeItem, isOpen, onItemChange, onLogout, onToggle }) {
                   <button
                     className={`nav-item${activeItem === item.label ? " active" : ""}`}
                     key={item.label}
-                    onClick={() => onItemChange(item.label)}
+                    onClick={() => {
+                      const label = (item.label || "").trim();
+                      // Log click for debugging routing issues
+                      // eslint-disable-next-line no-console
+                      console.log("sidebar click ->", label);
+                      if (onItemChange) onItemChange(label);
+                      // Always dispatch app-nav so the top-level App can react even
+                      // when a page passed a noop handler (many pages do).
+                      window.dispatchEvent(new CustomEvent("app-nav", { detail: label }));
+                    }}
                     type="button"
                     aria-current={activeItem === item.label ? "page" : undefined}
                   >

@@ -31,6 +31,7 @@ import RequestDetailModal from "../components/RequestDetaipopup";
 import requestData from "../mocks/requestData";
 import PopupTestPage from "./PopupTestPage"; // TEMP — remove when done testing
 import SupervisorRequest from "./SupervisorRequest";
+import DGMRequest from "./DGMRequest";
 import "../App.css";
 
 // ─────────────────────────────────────────────────────────────
@@ -48,6 +49,15 @@ const SUPERVISOR_TABS = {
   "Recommended Requests": "Recommended",
   "Rejected Requests": "Rejected",
   "Approval Requests": "All",
+};
+
+// Sidebar labels that should route to the DGMRequest page,
+// mapped to which tab of that page should be active.
+// NOTE: the sidebar currently has a single "DGM Request" (singular)
+// entry — tab switching (Pending/Recommended/Rejected) happens via the
+// pills inside the DGM table itself, not via separate sidebar items.
+const DGM_TABS = {
+  "DGM Request": "All",
 };
 
 // ─────────────────────────────────────────────────────────────
@@ -643,9 +653,12 @@ const MyRequestsPage = () => {
     }
     setCurrentView(item);
   };
-
+ {/* ── Spervisor and DGM── */}
   const isSupervisorView = Object.keys(SUPERVISOR_TABS).includes(currentView);
   const supervisorTab = SUPERVISOR_TABS[currentView] || "All";
+
+  const isDGMView = Object.keys(DGM_TABS).includes(currentView);
+  const dgmTab = DGM_TABS[currentView] || "All";
 
   return (
     <PageWrapper className={`app-shell${sidebarOpen ? " sidebar-open" : ""}`}>
@@ -664,9 +677,11 @@ const MyRequestsPage = () => {
         onLogout={() => {}}
         onToggle={() => setSidebarOpen((o) => !o)}
       />
-
+  {/* ── Supervisor and DGM── */}
       <MainContent $sidebarOpen={sidebarOpen}>
-        {isSupervisorView ? (
+        {isDGMView ? (
+          <DGMRequest activeTab={dgmTab} />
+        ) : isSupervisorView ? (
           <SupervisorRequest activeTab={supervisorTab} />
         ) : (
           <>
