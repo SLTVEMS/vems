@@ -6,7 +6,7 @@ import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined'
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined'
 import ScheduleOutlinedIcon from '@mui/icons-material/ScheduleOutlined'
 import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded'
-import { Box, Button, IconButton, Typography } from '@mui/material'
+import { Box, Button, IconButton, TextField, Typography } from '@mui/material'
 import styled from 'styled-components'
 import { muiIcon } from './iconUtils'
 import SummaryRow from './SummaryRow'
@@ -51,7 +51,7 @@ const Modal = styled(Box)`
   position: relative;
   width: min(92vw, 640px);
   max-height: calc(100dvh - 32px);
-  overflow: hidden;
+  overflow: auto;
   border: 1px solid rgba(219, 228, 240, 0.9);
   border-radius: 21px;
   background: #ffffff;
@@ -75,7 +75,7 @@ const CloseButton = styled(IconButton)`
 `
 
 const Body = styled(Box)`
-  padding: 26px 29px 18px;
+  padding: 26px 18px 18px;
 
   @media (max-width: 560px) {
     padding: 18px 16px 14px;
@@ -147,7 +147,7 @@ const WarningBox = styled(Box)`
   grid-template-columns: 22px 1fr;
   gap: 9px;
   margin-top: 12px;
-  padding: 13px 15px 12px;
+  padding: 14px 15px 13px;
   border: 1px solid #ffb4b4;
   border-radius: 12px;
   background: #fff1f1;
@@ -214,12 +214,48 @@ const NoteText = styled(Typography)`
   }
 `
 
+const RemarksLabel = styled(Typography)`
+  && {
+    margin-top: 12px;
+    margin-bottom: 6px;
+    color: #334155;
+    font-size: 11px;
+    font-weight: 600;
+  }
+`
+
+const RemarksField = styled(TextField)`
+  && {
+    width: 100%;
+  }
+
+  && .MuiInputBase-root {
+    align-items: flex-start;
+    min-height: 106px;
+    border-radius: 12px;
+    background: #f8fafc;
+    color: #0f172a;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  && .MuiOutlinedInput-notchedOutline {
+    border-color: #dbe4f0;
+  }
+
+  && .MuiInputBase-root:hover .MuiOutlinedInput-notchedOutline,
+  && .MuiInputBase-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+    border-color: #c7d3e2;
+    border-width: 1px;
+  }
+`
+
 // Action row keeps cancel and confirm controls grouped at the bottom.
 const Footer = styled(Box)`
   display: flex;
   justify-content: flex-end;
   gap: 12px;
-  padding: 16px 29px;
+  padding: 16px 18px;
   border-top: 1px solid #e2e8f0;
 
   @media (max-width: 560px) {
@@ -320,6 +356,9 @@ function RejectConfirmationModal({ open, onClose, onConfirm }) {
               and visible in tracking details.
             </NoteText>
           </Note>
+
+          <RemarksLabel>Remarks / Comments</RemarksLabel>
+          <RemarksField multiline minRows={4} />
         </Body>
 
         <Footer>
