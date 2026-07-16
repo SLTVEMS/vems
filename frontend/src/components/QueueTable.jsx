@@ -108,6 +108,7 @@ function QueueTable({
   activeTab = "All",
   lockedTab = false,
   onTabChange,
+  onView,
   headers,
   requests = [],
   statusConfig = {},
@@ -248,7 +249,7 @@ function QueueTable({
                     </TableCell>
                     <TableCell>
                       <Stack direction="row" spacing="6px">
-                        <Tooltip title="View"><IconButton size="small" sx={{ border: "1px solid #e5e7eb", borderRadius: "8px" }}><VisibilityOutlinedIcon sx={{ fontSize: "16px", color: "#9ca3af" }} /></IconButton></Tooltip>
+                        <Tooltip title="View"><IconButton size="small" onClick={() => onView?.(row, currentTab)} sx={{ border: "1px solid #e5e7eb", borderRadius: "8px" }}><VisibilityOutlinedIcon sx={{ fontSize: "16px", color: "#9ca3af" }} /></IconButton></Tooltip>
                         <Tooltip title="Block"><IconButton size="small" sx={{ border: "1px solid #e5e7eb", borderRadius: "8px" }}><BlockOutlinedIcon sx={{ fontSize: "16px", color: "#9ca3af" }} /></IconButton></Tooltip>
                       </Stack>
                     </TableCell>
